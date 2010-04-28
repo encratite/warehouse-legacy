@@ -26,7 +26,7 @@ class ReleaseData
 			match = pattern.match(input)
 			if match == nil
 				errorMessage = "#{name} match failed"
-				raise errorMessage
+				raise StandardError.new(errorMessage)
 			end
 			data = match[1]
 			puts "#{name}: \"#{data}\" (#{match.size} matches)" if Debugging
@@ -58,7 +58,10 @@ class ReleaseData
 		end
 		
 		size = @sizeString.gsub(',', '')
-		raise "Invalid file size specified: #{@sizeString}" if !size.isNumber
+		if !size.isNumber
+			errorMessage = "Invalid file size specified: #{@sizeString}"
+			raise StandardError.new(errorMessage)
+		end
 		@size = size.to_i
 		
 		@hits = @hits.to_i

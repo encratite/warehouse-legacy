@@ -1,4 +1,5 @@
 require 'sequel'
+require 'ReleaseData'
 
 class ReleaseHandler
 	def initialize(manager, configuration)
@@ -26,6 +27,12 @@ class ReleaseHandler
 		if data == nil
 			puts "Error: Failed to retrieve URL #{url} (path: #{path}, release; #{release})"
 			return
+		end
+		begin
+			releaseData = ReleaseData.new data
+			
+		rescue StandardException => exception
+			puts "Error: Unable to parse data from release #{release} at #{url}: #{exception}"
 		end
 	end
 end

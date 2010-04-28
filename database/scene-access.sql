@@ -8,12 +8,14 @@ create table release
 	site_id integer not null,
 	section_id integer not null,
 	name text not null,
+	info_hash text not null,
 	--may be null if no pre-time is available
 	pre_time integer,
 	file_count integer not null,
 	comment_count integer not null,
 	release_date timestamp not null,
 	size bigint not null,
+	hit_count integer not null,
 	download_count integer not null,
 	seeder_count integer not null,
 	leecher_count integer not null

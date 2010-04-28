@@ -1,3 +1,5 @@
+require 'nil/irc'
+
 class ConsoleHandler
 	def initialize(manager)
 		@manager = manager
@@ -11,6 +13,7 @@ class ConsoleHandler
 		@irc = @manager.irc.irc
 		
 		@irc.onLine = method(:onLine)
+		@irc.onChannelMessage = method(:onChannelMessage)
 	end
 	
 	def commandHelp(arguments)
@@ -34,6 +37,11 @@ class ConsoleHandler
 	
 	def onEntry
 		puts 'Trying to enter the announce channel'
+	end
+	
+	def onChannelMessage(channel, user, message)
+		message = Nil::IRCClient.stripTags(message)
+		puts "\##{channel} <#{user}> #{message}"
 	end
 	
 	def terminate

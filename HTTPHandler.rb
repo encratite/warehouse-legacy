@@ -25,4 +25,18 @@ class HTTPHandler
 			return nil
 		end
 	end
+	
+	def post(path, input)
+		data = input.map { |key, value| "#{key}=#{value}" }
+		postData = data.join '&'
+		puts "Post data: #{postData}"
+		begin
+			@http.request_post(path, postData, @headers) do |response|
+				response.value
+				return response.read_body
+			end
+		rescue Net::HTTPError
+			return nil
+		end
+	end
 end

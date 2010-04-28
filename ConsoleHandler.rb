@@ -32,6 +32,10 @@ class ConsoleHandler
 		puts "| #{line}"
 	end
 	
+	def onEntry
+		puts 'Trying to enter the announce channel'
+	end
+	
 	def terminate
 		puts 'Terminating'
 		exit

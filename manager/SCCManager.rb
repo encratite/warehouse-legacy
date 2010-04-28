@@ -1,9 +1,10 @@
 require 'HTTPHandler'
 require 'IRCHandler'
 require 'ConsoleHandler'
+require 'ReleaseHandler'
 
 class SCCManager
-	attr_reader :http, :irc, :console
+	attr_reader :http, :irc, :console, :releaseHandler
 	
 	def initialize(configuration)
 		cookieData = configuration.const_get(:Cookie)
@@ -16,9 +17,13 @@ class SCCManager
 		server = ircData.const_get(:Server)
 		nick = ircData.const_get(:Nick)
 		
-		@irc = IRCHandler.new(self, server, nick)
+		channelConfiguration = configuration.const_get(:ReleaseChannel)
+		
+		@irc = IRCHandler.new(channelConfiguration, self, server, nick)
 		@console = ConsoleHandler.new(self)
 		@irc.postConsoleInitialisation(self)
+		
+		@releaseHandler = ReleaseHandler.new(configuration)
 	end
 	
 	def run

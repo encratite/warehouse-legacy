@@ -13,6 +13,18 @@ module Configuration
 		Adapter = 'postgres'
 		Host = '127.0.0.1'
 		User = 'void'
+		Password = ''
 		Database = 'scene_access'
+	end
+	
+	module ReleaseChannel
+		Channel = '#scc-announce'
+		Nick = 'SCC'
+		Host = 'csops.sceneaccess.org'
+		
+		module Regexp
+			Release = /\-\> ([^ ]+) \(Uploaded/
+			URL = /(http\:\/\/[^\)]+)\)/
+		end
 	end
 end

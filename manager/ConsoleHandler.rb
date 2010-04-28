@@ -11,9 +11,6 @@ class ConsoleHandler
 		}
 		
 		@irc = @manager.irc.irc
-		
-		@irc.onLine = method(:onLine)
-		@irc.onChannelMessage = method(:onChannelMessage)
 	end
 	
 	def commandHelp(arguments)

@@ -23,7 +23,7 @@ class SCCManager
 		@console = ConsoleHandler.new(self)
 		@irc.postConsoleInitialisation(self)
 		
-		@releaseHandler = ReleaseHandler.new(configuration)
+		@releaseHandler = ReleaseHandler.new(self, configuration)
 	end
 	
 	def run

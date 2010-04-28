@@ -1,7 +1,7 @@
 require 'sequel'
 
 class ReleaseHandler
-	def initialize(configuration)
+	def initialize(manager, configuration)
 		databaseConfiguration = configuration.const_get(:Database)
 		@database =
 			Sequel.connect(
@@ -13,8 +13,19 @@ class ReleaseHandler
 			)
 			
 		#Sequel::DatabaseConnectionError
+		
+		@http = manager.http
 	end
 	
 	def processMessage(release, url)
+		prefix = 'http://'
+		return if url.size <= prefix.size
+		offset = url.find('/', prefix.size)
+		path = url[offset..-1]
+		data = @http.get(path)
+		if data == nil
+			puts "Error: Failed to retrieve URL #{url} (path: #{path}, release; #{release})"
+			return
+		end
 	end
 end

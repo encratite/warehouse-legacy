@@ -8,4 +8,11 @@ module Configuration
 		Server = 'irc.sceneaccess.org'
 		Nick = 'malleruet'
 	end
+	
+	module Database
+		Adapter = 'postgres'
+		Host = '127.0.0.1'
+		User = 'void'
+		Database = 'scene_access'
+	end
 end

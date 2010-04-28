@@ -41,7 +41,7 @@ class ConsoleHandler
 	
 	def onChannelMessage(channel, user, message)
 		message = Nil::IRCClient.stripTags(message)
-		puts "\##{channel} <#{user}> #{message}"
+		puts "\##{channel} <#{user.nick}> #{message}"
 	end
 	
 	def terminate

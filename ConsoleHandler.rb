@@ -8,7 +8,9 @@ class ConsoleHandler
 			'quit' => [:commandQuit, 'quit the program'],
 		}
 		
-		@quitDelay = 2
+		@irc = @manager.irc.irc
+		
+		@irc.onLine = method(:onLine)
 	end
 	
 	def commandHelp(arguments)
@@ -21,9 +23,17 @@ class ConsoleHandler
 	
 	def commandQuit(arguments)
 		puts 'Disconnecting from IRC server'
-		@irc.irc.quit('Shutdown')
-		sleep @quitDelay
+		@irc.quit('Shutdown')
 		puts 'Quitting'
+		exit
+	end
+	
+	def onLine(line)
+		puts "| #{line}"
+	end
+	
+	def terminate
+		puts 'Terminating'
 		exit
 	end
 	
@@ -33,7 +43,7 @@ class ConsoleHandler
 				print '> '
 				line = STDIN.readline
 				tokens = line.split(' ')
-				continue if tokens.empty?
+				next if tokens.empty?
 				command = tokens[0]
 				arguments = tokens[1..-1]
 				commandData = @commands[command]
@@ -42,11 +52,13 @@ class ConsoleHandler
 					next
 				end
 				symbol, description = commandData
-				function = method(:symbol)
+				function = method(symbol)
 				function.call(arguments)
 			end
 		rescue EOFError
+			terminate
 		rescue Interrupt
+			terminate
 		end
 	end
 end

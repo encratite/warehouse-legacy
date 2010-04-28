@@ -10,7 +10,6 @@ class IRCHandler
 		@irc = Nil::IRCClient.new
 		@irc.setServer(server)
 		@irc.setUser(nick, user, localHost, realName)
-		@irc.onLine = method(:onLine)
 	end
 	
 	def run

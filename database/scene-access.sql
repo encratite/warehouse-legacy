@@ -26,7 +26,8 @@ drop table if exists user_data cascade;
 create table user_data
 (
 	id serial primary key,
-	name text unique not null
+	name text unique not null,
+	is_administrator boolean not null default false
 );
 
 drop table if exists user_release_filter cascade;

@@ -7,15 +7,15 @@ class SCCManager
 	attr_reader :http, :irc, :console, :releaseHandler
 	
 	def initialize(configuration)
-		cookieData = configuration.const_get(:Cookie)
-		uId = cookieData.const_get(:UId)
-		pass = cookieData.const_get(:Pass)
+		cookieData = configuration::Cookie
+		uId = cookieData::UId
+		pass = cookieData::Pass
 		
 		@http = HTTPHandler.new(uId, pass)
 		
-		ircData = configuration.const_get(:IRC)
-		server = ircData.const_get(:Server)
-		nick = ircData.const_get(:Nick)
+		ircData = configuration::IRC
+		server = ircData::Server
+		nick = ircData::Nick
 		
 		channelConfiguration = configuration.const_get(:ReleaseChannel)
 		

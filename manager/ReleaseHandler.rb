@@ -1,6 +1,7 @@
 require 'sequel'
 require 'pg'
 require 'ReleaseData'
+require 'database'
 
 require 'nil/file'
 
@@ -9,24 +10,7 @@ class ReleaseHandler
 		@http = manager.http
 		@torrentPath = configuration::Torrent::Path
 		@sizeLimit = configuration::Torrent::SizeLimit
-		
-		begin
-			database = configuration::Database
-			
-			@database =
-				Sequel.connect(
-					adapter: database::Adapter,
-					host: database::Host,
-					user: database::User,
-					password: database::Password,
-					database: database::Database
-				)
-		
-			#run an early test to see if the DBMS is accessible?
-			@database[:user_data].where(name: '').all
-		rescue Sequel::DatabaseConnectionError => exception
-			databaseDown exception
-		end
+		@database = getDatabase configuration
 	end
 	
 	def databaseDown(exception)

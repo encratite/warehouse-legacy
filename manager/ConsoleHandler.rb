@@ -29,7 +29,7 @@ class ConsoleHandler
 	end
 	
 	def onLine(line)
-		puts "| #{line}"
+		puts "| > #{line}"
 	end
 	
 	def onEntry
@@ -42,7 +42,7 @@ class ConsoleHandler
 	end
 	
 	def onSendLine(line)
-		puts ">> #{line}"
+		puts "| < #{line}"
 	end
 	
 	def terminate

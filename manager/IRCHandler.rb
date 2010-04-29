@@ -3,7 +3,7 @@ require 'nil/irc'
 class IRCHandler
 	attr_reader :irc
 	
-	def initialize(channelConfiguration, manager, server, nick)
+	def initialize(channel, manager, server, nick)
 		@http = manager.http
 		@releaseHandler = manager.releaseHandler
 		
@@ -16,13 +16,13 @@ class IRCHandler
 		@irc.onEntry = method(:onEntry)
 		@irc.onChannelMessage = method(:onChannelMessage)
 		
-		@releaseChannel = channelConfiguration.const_get(:Channel)
-		@botNick = channelConfiguration.const_get(:Nick)
-		@botHost = channelConfiguration.const_get(:Host)
+		@releaseChannel = channel::Channel
+		@botNick = channel::Nick
+		@botHost = channel::Host
 		
-		regexpConfiguration = channelConfiguration.const_get(:Regexp)
-		@releasePattern = regexpConfiguration.const_get(:Release)
-		@urlPattern = regexpConfiguration.const_get(:URL)
+		regexp = channel::Regexp
+		@releasePattern = regexp::Release
+		@urlPattern = regexp::URL
 	end
 	
 	def postConsoleInitialisation(manager)

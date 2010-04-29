@@ -1,3 +1,5 @@
+$:.concat '../shared'
+
 require 'SCCManager'
 require 'Configuration'
 

@@ -5,7 +5,6 @@ class UserShell
 	Commands =
 	[
 		['help', 'prints this help', :commandHelp],
-		['exit', 'terminate your session', :commandExit],
 		['add <regular expression>', 'add a new release filter to your account', :commandAddFilter],
 		['list', 'retrieve a list of your filters', :commandListFilters],
 		['delete <index 1> <index 2> <...>', 'removes one or several filters which are identified by their numeric index', :commandDeleteFilter],
@@ -14,7 +13,8 @@ class UserShell
 		['search <regular expression>', 'search the database for release names matching the regular expression', :commandSearch],
 		['download <numeric identifier or release name>', 'start the download of a release', :commandDownload],
 		['status', 'retrieve the status of downloads in progress', :commandStatus],
-		['cancel', 'cancel a download', :commandCancel]
+		['cancel', 'cancel a download', :commandCancel],
+		['exit', 'terminate your session', :commandExit],
 	]
 	
 	def initialize(configuration, database, user, http)
@@ -40,13 +40,16 @@ class UserShell
 			@arguments = tokens[1..-1]
 			@argument = line[command.size..-1].strip
 			
-			Commands.each do |name, description, symbol|
-				next if name != command
+			validCommand = false
+			
+			Commands.each do |arguments, description, symbol|
+				next if arguments.split(' ')[0] != command
 				method(symbol).call
-				next
+				validCommand = true
+				break
 			end
 			
-			puts 'Invalid command.'
+			puts 'Invalid command.' if !validCommand
 		end
 	end
 	
@@ -76,7 +79,7 @@ class UserShell
 	end
 	
 	def commandListFilters
-		filters = @filters.where(user_id: @user.id).filter(:filter)
+		filters = @filters.where(user_id: @user.id).select(:filter)
 		if filters.empty?
 			puts 'You currently have no filters.'
 			return
@@ -102,9 +105,24 @@ class UserShell
 			end
 		end
 		
-		indices = @arguments.map { |index| index.to_i }
-		indices.each do |index|
-			@filters.limit(1, index).delete
+		@database.transaction do
+			indices = @arguments.map { |index| index.to_i }
+			ids = []
+			
+			indices.each do |index|
+				if index <= 0
+					puts "Index too low: #{index}"
+					return
+				end
+				result = @filters.where(user_id: @user.id).select(:id).limit(1, index - 1)
+				if result.empty?
+					puts "Invalid index: #{index}"
+					return
+				end
+				ids << result.first[:id]
+			end
+			
+			ids.each { |id| @filters.where(id: id).delete }
 		end
 		
 		if @arguments.size == 1
@@ -129,13 +147,14 @@ class UserShell
 			return
 		end
 		
-		if filter.size > @filterLengthMaximum
+		if @argument.size > @filterLengthMaximum
 			puts "Your search filter exceeds the maximum length of #{@filterLengthMaximum}."
 			return
 		end
 		
-		results = @releases.filter(name: Regexp.new(@argument)).limit(@searchResultMaximum)
-		results.filter(:site_id, :section_name, :name, :release_date, :release_size, :seeder_count)
+		results = @releases.filter(name: Regexp.new(@argument))
+		results = results.select(:site_id, :section_name, :name, :release_date, :release_size, :seeder_count)
+		results = results.limit(@searchResultMaximum)
 		
 		if results.empty?
 			puts 'Your search yielded no results.'
@@ -206,5 +225,11 @@ class UserShell
 	
 	def commandCancel
 		puts 'Yet to be implemented, sorry.'
+	end
+	
+	def commandExit
+		puts 'See you.'
+		#sleep 1
+		exit
 	end
 end

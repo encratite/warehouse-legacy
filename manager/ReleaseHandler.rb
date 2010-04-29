@@ -25,7 +25,7 @@ class ReleaseHandler
 		#Sequel::DatabaseConnectionError
 		
 			#run an early test to see if the DBMS is accessible?
-			@database[:user_data]
+			@database[:user_data].where(:name)
 		rescue Sequel::DatabaseConnectionError => exception
 			databaseDown exception
 		end

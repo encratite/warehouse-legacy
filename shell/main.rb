@@ -1,4 +1,4 @@
-$:.concat '../shared'
+$:.concat ['../shared']
 
 require 'sequel'
 
@@ -24,21 +24,21 @@ def getUser(database)
 			#new user, possibly even the first user
 			if userData.count == 0
 				#make the user an administrator, they are the first user to connect
-				userData.insert(name: username, is_administrator: true)
-				puts "Welcome, #{username}! You have been made administrator."
-				user = User.new(database.insert_id, username, true)
+				id = userData.insert(name: username, is_administrator: true)
+				puts "Welcome, #{username}! You have been made an administrator."
+				user = User.new(id, username, true)
 			else
 				#it's not the first user, add them to the system
-				userData.insert(name: username)
+				id = userData.insert(name: username)
 				puts "Welcome to the system, #{username}!"
-				user = User.new(database.insert_id, username)
+				user = User.new(id, username)
 			end
 			
 			puts "Use the 'help' command to familiarise yourself with this environment."
 		else
 			puts "Welcome back, #{username}."
 			currentUserData = dataset.first
-			user = User.new(currentUserData.id, username, currentUserData.is_administrator)
+			user = User.new(currentUserData[:id], username, currentUserData[:is_administrator])
 		end
 	end
 
@@ -53,5 +53,6 @@ end
 database = getDatabase Configuration
 http = getHTTPHandler Configuration
 user = getUser database
+shell = Shell.new(nil, nil)
 shell = Shell.new(Configuration, database, user, http)
 shell.run

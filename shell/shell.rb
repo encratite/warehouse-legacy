@@ -4,7 +4,7 @@ require 'nil/file'
 class Shell
 	Commands =
 	[
-		['help', 'prints this help', :commandHelp]
+		['help', 'prints this help', :commandHelp],
 		['exit', 'terminate your session', :commandExit],
 		['add <regular expression>', 'add a new release filter to your account', :commandAddFilter],
 		['list', 'retrieve a list of your filters', :commandListFilters],
@@ -84,7 +84,7 @@ class Shell
 		puts 'This is a list of your filters:'
 		counter = 1
 		filters.each do |filter|
-			puts "#{counter}. #{filter}"
+			puts "#{counter}. #{filter[:filter]}"
 			counter += 1
 		end
 	end
@@ -142,10 +142,10 @@ class Shell
 			return
 		end
 		
-		sizeString = Nil.getSizeString(result.release_size)
+		sizeString = Nil.getSizeString(result[:release_size])
 		
 		results.each do |result|
-			puts "[#{result.site_id}] [#{result.section_name}] #{result.name} (#{sizeString}, #{result.release_date}, #{result.seeder_count} seed(s))"
+			puts "[#{result[:site_id]}] [#{result[:section_name]}] #{result[:name]} (#{sizeString}, #{result[:release_date]}, #{result[:seeder_count]} seed(s))"
 		end
 		
 		if results.size > 5
@@ -171,9 +171,9 @@ class Shell
 			return
 		end
 		result = result.first
-		puts "Attempting to queue release #{result.name}"
+		puts "Attempting to queue release #{result[:name]}"
 		
-		httpPath = result.torrent_path
+		httpPath = result[:torrent_path]
 		
 		torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)
 		if torrentMatch == nil

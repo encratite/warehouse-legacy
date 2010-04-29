@@ -37,10 +37,21 @@ class ReleaseHandler
 	end
 	
 	def isReleaseOfInterest(release)
-		result = @database['select count(*) from user_data where ? ~ name', release]
-		matchCount = result.first.values.first
+		result = @database['select user_data.name as user_name, user_release_filter.filter as user_filter from user_release_filter, user_data where ? ~ user_release_filter.filter and user_data.id = user_release_filter.user_id;', release]
+		matchCount = result.size
 		isOfInterest = matchCount > 0
-		puts "Number of matches: #{matchCount}" if isOfInterest
+		if isOfInterest
+			puts 'Matches:'
+			filterDictionary = {}
+			result.each do |row|
+				name = row.user_name
+				filterDictionary[name] = [] if filterDictionary[name] == nil
+				filterDictionary[name] << row.user_filter
+			end
+			filterDictionary.each do |name, filters|
+				puts "#{name}: #{filters.inspect}"
+			end
+		end
 		return isOfInterest
 	end
 	

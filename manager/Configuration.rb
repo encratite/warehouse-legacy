@@ -33,8 +33,8 @@ module Configuration
 	module Torrent
 		Path =
 			Nil.getOS === :windows ?
-			'/home/void/torrent/torrent' :
-			'G:\\Torrents'
+			'G:\\Torrent' :
+			'/home/void/torrent/torrent'
 			
 		SizeLimit = 10 * (2**30)
 	end

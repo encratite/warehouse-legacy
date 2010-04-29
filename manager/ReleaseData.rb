@@ -1,7 +1,10 @@
 require 'nil/string'
 
 class ReleaseData
-	attr_reader :path
+	class Error < StandardError
+	end
+	
+	attr_reader :path, :size
 	
 	Targets =
 	[
@@ -31,7 +34,7 @@ class ReleaseData
 			match = pattern.match(input)
 			if match == nil
 				errorMessage = "#{name} match failed"
-				raise StandardError.new(errorMessage)
+				raise Error.new(errorMessage)
 			end
 			data = match[1]
 			puts "#{name}: \"#{data}\" (#{match.size} match(es))" if Debugging
@@ -65,7 +68,7 @@ class ReleaseData
 		size = @sizeString.gsub(',', '')
 		if !size.isNumber
 			errorMessage = "Invalid file size specified: #{@sizeString}"
-			raise StandardError.new(errorMessage)
+			raise Error.new(errorMessage)
 		end
 		@size = size.to_i
 		
@@ -86,6 +89,7 @@ class ReleaseData
 	def getData
 		return [
 			:site_id => @id,
+			:torrent_path => @path,
 			:section_name => @section,
 			:name => @release,
 			:info_hash => @infoHash,

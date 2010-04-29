@@ -5,7 +5,8 @@ drop table if exists release cascade;
 create table release
 (
 	id serial primary key,
-	site_id integer not null,
+	site_id integer unique not null,
+	torrent_path text not null,
 	section_name text not null,
 	name text not null,
 	info_hash text not null,

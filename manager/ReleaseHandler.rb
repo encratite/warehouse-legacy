@@ -1,4 +1,5 @@
 require 'sequel'
+require 'pg'
 require 'ReleaseData'
 
 require 'nil/file'
@@ -37,12 +38,17 @@ class ReleaseHandler
 	
 	def isReleaseOfInterest(release)
 		result = @database['select count(*) from user_data where ? ~ name', release]
-		return result.first.values.first > 0
+		#return result.first.values.first > 0
+		return true
 	end
 	
 	def insertData(releaseData)
-		insertData = releaseData.getData
-		@database[:release].insert(*insertData)
+		begin
+			insertData = releaseData.getData
+			@database[:release].insert(*insertData)
+		rescue	Sequel::DatabaseError => exception
+			puts "DBMS exception: #{exception.message}"
+		end
 	end
 	
 	def processMessage(release, url)
@@ -77,7 +83,7 @@ class ReleaseHandler
 				torrent = torrentMatch[1]
 				puts "Downloading #{path}"
 				torrentData = @http.get(path)
-				torrentPath = File.extend_path(torrent, @torrentPath)
+				torrentPath = File.expand_path(torrent, @torrentPath)
 				Nil.writeFile(torrentPath, torrentData)
 				puts "Downloaded #{path} to #{torrentPath}"
 			else
@@ -85,7 +91,7 @@ class ReleaseHandler
 			end
 		rescue Sequel::DatabaseConnectionError => exception
 			databaseDown exception
-		rescue StandardError => exception
+		rescue ReleaseData::Error => exception
 			puts "Error: Unable to parse data from release #{release} at #{url}: #{exception.message}"
 		end
 	end

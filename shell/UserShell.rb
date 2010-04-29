@@ -1,7 +1,7 @@
 require 'nil/string'
 require 'nil/file'
 
-class Shell
+class UserShell
 	Commands =
 	[
 		['help', 'prints this help', :commandHelp],

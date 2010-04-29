@@ -8,7 +8,7 @@ require 'database'
 require 'HTTPHandler'
 require 'Configuration'
 
-require 'Shell'
+require 'UserShell'
 require 'User'
 
 def getUser(database)
@@ -53,6 +53,5 @@ end
 database = getDatabase Configuration
 http = getHTTPHandler Configuration
 user = getUser database
-shell = Shell.new(nil, nil)
-shell = Shell.new(Configuration, database, user, http)
+shell = UserShell.new(Configuration, database, user, http)
 shell.run

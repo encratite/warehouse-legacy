@@ -29,8 +29,12 @@ class ReleaseHandler
 			return
 		end
 		begin
-			releaseData = ReleaseData.new data
-			
+			releaseData = ReleaseData.new(data)
+			insertData = releaseData.getData
+			@database.insert(*insertData)
+		rescue Sequel::DatabaseConnectionError => exception
+			puts "The DBMS appears to be down: #{exception.message}"
+			exit
 		rescue StandardException => exception
 			puts "Error: Unable to parse data from release #{release} at #{url}: #{exception}"
 		end

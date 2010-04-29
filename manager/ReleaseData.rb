@@ -7,10 +7,12 @@ class ReleaseData
 		['ID', /\?id=(\d+)\"/, :id],
 		['Info hash', /<td valign=\"top\" align=left>(.+?)<\/td>/, :infoHash],
 		['Pre-time', />Pre Time<\/td>.+?>(.+?)<\/td>/, :preTimeString],
+		['Section', />Type<\/td>.+>(.+)<\/td>/, :section],
 		['Size', />Size<\/td>.+?\((.+?) bytes/, :sizeString],
 		['Date', />Added<\/td>.+?>(.+?)</, :date],
 		['Hits', />Hits<\/td>.+?>(\d+)</, :hits],
 		['Downloads', />Snatched<\/td>.+?>(\d+) time\(s\)/, :downloads],
+		['Files', />Num files<.+?>(\d+) file/, :files],
 		['Seeders', />(\d+) seeder\(s\)/, :seeders],
 		['Leechers', /, (\d+) leecher\(s\)/, :leechers],
 	]
@@ -64,6 +66,7 @@ class ReleaseData
 		end
 		@size = size.to_i
 		
+		@id = @id.to_i
 		@hits = @hits.to_i
 		@downloads = @downloads.to_i
 		@seeders = @seeders.to_i
@@ -73,5 +76,23 @@ class ReleaseData
 			puts "Size: #{@size}"
 			puts "Pre-time in seconds: #{@preTime.inspect}"
 		end
+	end
+	
+	def getData
+		return [
+			:site_id => @id,
+			:section_name => @section,
+			:name => @release,
+			:info_hash => @infoHash,
+			:pre_time => @preTime,
+			:file_count => @files,
+			#no idea if this works
+			:release_date => @date,
+			:size => @size,
+			:hit_count => @hits,
+			:download_count => @downloads,
+			:seeder_count => @seeders,
+			:leecher_count => @leechers
+		]
 	end
 end

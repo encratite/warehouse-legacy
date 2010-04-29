@@ -1,6 +1,8 @@
 require 'nil/string'
 
 class ReleaseData
+	attr_reader :url
+	
 	Targets =
 	[
 		['Release', /<h1>(.+?)<\/h1>/, :release],
@@ -15,6 +17,7 @@ class ReleaseData
 		['Files', />Num files<.+?>(\d+) file/, :files],
 		['Seeders', />(\d+) seeder\(s\)/, :seeders],
 		['Leechers', /, (\d+) leecher\(s\)/, :leechers],
+		['Torrent URL', /Download \(SSH\).+?href=\"(.+?)\"/, :url]
 	]
 	
 	Debugging = false
@@ -31,7 +34,7 @@ class ReleaseData
 				raise StandardError.new(errorMessage)
 			end
 			data = match[1]
-			puts "#{name}: \"#{data}\" (#{match.size} matches)" if Debugging
+			puts "#{name}: \"#{data}\" (#{match.size} match(es))" if Debugging
 			symbol = ('@' + symbol.to_s).to_sym
 			instance_variable_set(symbol, data)
 		end

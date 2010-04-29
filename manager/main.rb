@@ -1,4 +1,4 @@
-$:.concat '../shared'
+$:.concat ['../shared']
 
 require 'SCCManager'
 require 'Configuration'

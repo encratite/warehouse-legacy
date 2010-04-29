@@ -1,6 +1,6 @@
-require 'nil/file'
+$:.concat ['../shared', '../manager']
 
-$:.concat ['../manager']
+require 'nil/file'
 
 require 'SCCManager'
 require 'Configuration'

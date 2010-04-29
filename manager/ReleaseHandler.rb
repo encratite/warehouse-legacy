@@ -19,7 +19,7 @@ class ReleaseHandler
 	end
 	
 	def isReleaseOfInterest(release)
-		result = @database['select user_data.name as user_name, user_release_filter.filter as user_filter from user_release_filter, user_data where ? ~ user_release_filter.filter and user_data.id = user_release_filter.user_id;', release]
+		result = @database['select user_data.name as user_name, user_release_filter.filter as user_filter from user_release_filter, user_data where ? ~ user_release_filter.filter and user_data.id = user_release_filter.user_id', release]
 		matchCount = result.count
 		isOfInterest = matchCount > 0
 		if isOfInterest

@@ -38,8 +38,10 @@ class ReleaseHandler
 	
 	def isReleaseOfInterest(release)
 		result = @database['select count(*) from user_data where ? ~ name', release]
-		#return result.first.values.first > 0
-		return true
+		matchCount = result.first.values.first
+		isOfInterest = matchCount > 0
+		puts "Number of matches: #{matchCount}" if isOfInterest
+		return isOfInterest
 	end
 	
 	def insertData(releaseData)

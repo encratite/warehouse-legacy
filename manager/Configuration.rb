@@ -1,4 +1,4 @@
-require 'environment'
+require 'nil/environment'
 
 module Configuration
 	module Cookie

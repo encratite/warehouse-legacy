@@ -14,6 +14,7 @@ class IRCHandler
 		@irc.setServer(server)
 		@irc.setUser(nick, user, localHost, realName)
 		@irc.onEntry = method(:onEntry)
+		@irc.onChannelMessage = method(:onChannelMessage)
 		
 		@releaseChannel = channelConfiguration.const_get(:Channel)
 		@botNick = channelConfiguration.const_get(:Nick)

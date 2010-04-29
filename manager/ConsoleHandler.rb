@@ -41,6 +41,10 @@ class ConsoleHandler
 		puts "\##{channel} <#{user.nick}> #{message}"
 	end
 	
+	def onSendLine(line)
+		puts ">> #{line}"
+	end
+	
 	def terminate
 		puts 'Terminating'
 		exit

@@ -48,7 +48,7 @@ class ReleaseHandler
 	def processMessage(release, url)
 		prefix = 'http://'
 		return if url.size <= prefix.size
-		offset = url.find('/', prefix.size)
+		offset = url.index('/', prefix.size)
 		path = url[offset..-1]
 		data = @http.get(path)
 		if data == nil
@@ -85,8 +85,8 @@ class ReleaseHandler
 			end
 		rescue Sequel::DatabaseConnectionError => exception
 			databaseDown exception
-		rescue StandardException => exception
-			puts "Error: Unable to parse data from release #{release} at #{url}: #{exception}"
+		rescue StandardError => exception
+			puts "Error: Unable to parse data from release #{release} at #{url}: #{exception.message}"
 		end
 	end
 end

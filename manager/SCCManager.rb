@@ -19,11 +19,10 @@ class SCCManager
 		
 		channelConfiguration = configuration.const_get(:ReleaseChannel)
 		
+		@releaseHandler = ReleaseHandler.new(self, configuration)
 		@irc = IRCHandler.new(channelConfiguration, self, server, nick)
 		@console = ConsoleHandler.new(self)
 		@irc.postConsoleInitialisation(self)
-		
-		@releaseHandler = ReleaseHandler.new(self, configuration)
 	end
 	
 	def run

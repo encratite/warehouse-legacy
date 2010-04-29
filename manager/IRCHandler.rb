@@ -28,6 +28,7 @@ class IRCHandler
 	def postConsoleInitialisation(manager)
 		@console = manager.console
 		@irc.onLine = @console.method(:onLine)
+		@irc.onSendLine = @console.method(:onSendLine)
 	end
 	
 	def run
@@ -51,12 +52,13 @@ class IRCHandler
 			user.nick == @botNick &&
 			user.host == @botHost
 		if isBotMessage
+			message = Nil::IRCClient::stripTags(message)
 			releaseMatch = @releasePattern.match(message)
 			urlMatch = @urlPattern.match(message)
 			if releaseMatch != nil && urlMatch != nil
 				release = releaseMatch[1]
 				url = urlMatch[1]
-				@releaseHandler.processMessage(relase, url)
+				@releaseHandler.processMessage(release, url)
 			end
 		end
 		@console.onChannelMessage(channel, user, message)

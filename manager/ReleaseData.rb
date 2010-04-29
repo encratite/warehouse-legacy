@@ -93,7 +93,7 @@ class ReleaseData
 			:file_count => @files,
 			#no idea if this works
 			:release_date => @date,
-			:size => @release_size,
+			:release_size => @size,
 			:hit_count => @hits,
 			:download_count => @downloads,
 			:seeder_count => @seeders,

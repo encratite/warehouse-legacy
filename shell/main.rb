@@ -1,10 +1,14 @@
 $:.concat '../shared'
 
-require 'nil/environment'
 require 'sequel'
+
+require 'nil/environment'
+
 require 'database'
+require 'HTTPHandler'
 require 'Configuration'
 
+require 'Shell'
 require 'User'
 
 def getUser(database)
@@ -41,5 +45,13 @@ def getUser(database)
 	return user
 end
 
+def getHTTPHandler(configuration)
+	http = HTTPHandler.new(configuration::Cookie::UId, configuration::Cookie::Pass)
+	return http
+end
+
 database = getDatabase Configuration
+http = getHTTPHandler Configuration
 user = getUser database
+shell = Shell.new(Configuration, database, user, http)
+shell.run

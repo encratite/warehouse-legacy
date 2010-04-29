@@ -1,4 +1,5 @@
 require 'nil/string'
+require 'nil/file'
 
 class Shell
 	Commands =
@@ -16,7 +17,7 @@ class Shell
 		['cancel', 'cancel a download', :commandCancel]
 	]
 	
-	def initialize(configuration, database, user)
+	def initialize(configuration, database, user, http)
 		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
 		@filterCountMaximum = configuration::Shell::FilterCountMaximum
 		@searchResultMaximum = configuration::Shell::SearchResultMaximum
@@ -24,6 +25,8 @@ class Shell
 		@user = user
 		@releases = @database[:release]
 		@filters = @database[:user_release_filter]
+		@http = http
+		@torrentPath = configuration::Torrent::Path
 	end
 	
 	def run
@@ -148,5 +151,60 @@ class Shell
 		if results.size > 5
 			puts "Found #{results.size} results."
 		end
+	end
+	
+	def commandDownload
+		if @argument.empty?
+			puts "You have not specified a release to download."
+			return
+		end
+		
+		if @argument.isNumber
+			id = @argument.to_i
+			result = @releases.where(site_id: id)
+		else
+			result = @releases.filter(name: Regexp.new(@argument))
+		end
+		result = result.filter(:name, :torrent_path)
+		if result.empty?
+			puts 'Unable to find the release you have specified.'
+			return
+		end
+		result = result.first
+		puts "Attempting to queue release #{result.name}"
+		
+		httpPath = result.torrent_path
+		
+		torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)
+		if torrentMatch == nil
+			puts 'Database error: Unable to queue release'
+			return
+		end
+		torrent = torrentMatch[1]
+		
+		torrentPath = File.expand_path(torrent, @torrentPath)
+		
+		if Nil.readFile(torrentPath) != nil
+			puts 'This release has already been queued'
+			return
+		end
+		
+		data = @http.get(httpPath)
+		if data == nil
+			puts 'HTTP error: Unable to queue release'
+			return
+		end
+		
+		Nil.writeFile(torrentPath, torrentData)
+		
+		puts 'Success!'
+	end
+	
+	def commandStatus
+		puts 'STATUS... just kidding, not implemented yet.'
+	end
+	
+	def commandCancel
+		puts 'Yet to be implemented, sorry.'
 	end
 end

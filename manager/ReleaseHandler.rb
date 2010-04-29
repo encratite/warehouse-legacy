@@ -1,21 +1,48 @@
 require 'sequel'
 require 'ReleaseData'
 
+require 'nil/file'
+
 class ReleaseHandler
 	def initialize(manager, configuration)
-		databaseConfiguration = configuration.const_get(:Database)
-		@database =
-			Sequel.connect(
-				adapter: databaseConfiguration.const_get(:Adapter),
-				host: databaseConfiguration.const_get(:Host),
-				user: databaseConfiguration.const_get(:User),
-				password: databaseConfiguration.const_get(:Password),
-				database: databaseConfiguration.const_get(:Database)
-			)
+		@http = manager.http
+		@torrentPath = configuration::Torrent::Path
+		@sizeLimit = configuration::Torrent::SizeLimit
+		
+		begin
+			database = configuration::Database
+			
+			@database =
+				Sequel.connect(
+					adapter: database::Adapter,
+					host: database::Host,
+					user: database::User,
+					password: database::Password,
+					database: database::Database
+				)
 			
 		#Sequel::DatabaseConnectionError
 		
-		@http = manager.http
+			#run an early test to see if the DBMS is accessible?
+			@database[:user_data]
+		rescue Sequel::DatabaseConnectionError => exception
+			databaseDown exception
+		end
+	end
+	
+	def databaseDown(exception)
+		puts "The DBMS appears to be down: #{exception.message}"
+		exit
+	end
+	
+	def isReleaseOfInterest(release)
+		result = @database['select count(*) from user_data where ? ~ name', release]
+		return result.first.values.first > 0
+	end
+	
+	def insertData(releaseData)
+		insertData = releaseData.getData
+		@database[:release].insert(*insertData)
 	end
 	
 	def processMessage(release, url)
@@ -30,11 +57,34 @@ class ReleaseHandler
 		end
 		begin
 			releaseData = ReleaseData.new(data)
-			insertData = releaseData.getData
-			@database.insert(*insertData)
+			isOfInterest = false
+			@database.transaction do
+				insertData(releaseData)
+				isOfInterest = isReleaseOfInterest(release)
+			end
+			if isOfInterest
+				puts "Discovered a release of interest: #{release}"
+				if releaseData.size > @sizeLimit
+					puts "Unluckily the size of this release exceeds the limit (#{releaseData.size} > #{@sizeLimit})"
+					return
+				end
+				path = releaseData.path
+				torrentMatch = /\/([^\/]+\.torrent)/.match(path)
+				if torrentMatch == nil
+					puts "Failed to retrieve the torrent name from the torrent path: #{path}"
+					return
+				end
+				torrent = torrentMatch[1]
+				puts "Downloading #{path}"
+				torrentData = @http.get(path)
+				torrentPath = File.extend_path(torrent, @torrentPath)
+				Nil.writeFile(torrentPath, torrentData)
+				puts "Downloaded #{path} to #{torrentPath}"
+			else
+				puts "#{release} is not a release of interest"
+			end
 		rescue Sequel::DatabaseConnectionError => exception
-			puts "The DBMS appears to be down: #{exception.message}"
-			exit
+			databaseDown exception
 		rescue StandardException => exception
 			puts "Error: Unable to parse data from release #{release} at #{url}: #{exception}"
 		end

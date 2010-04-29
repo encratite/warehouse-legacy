@@ -1,7 +1,7 @@
 require 'nil/string'
 
 class ReleaseData
-	attr_reader :url
+	attr_reader :path
 	
 	Targets =
 	[
@@ -17,7 +17,7 @@ class ReleaseData
 		['Files', />Num files<.+?>(\d+) file/, :files],
 		['Seeders', />(\d+) seeder\(s\)/, :seeders],
 		['Leechers', /, (\d+) leecher\(s\)/, :leechers],
-		['Torrent URL', /Download \(SSH\).+?href=\"(.+?)\"/, :url]
+		['Torrent path', /Download \(SSH\).+?href=\"(.+?)\"/, :path]
 	]
 	
 	Debugging = false
@@ -73,7 +73,9 @@ class ReleaseData
 		@hits = @hits.to_i
 		@downloads = @downloads.to_i
 		@seeders = @seeders.to_i
-		@leechers = @leechers.to_i		
+		@leechers = @leechers.to_i
+		
+		@path = "/#{@path}" if !@path.empty? && @path[0] != '/'
 		
 		if Debugging
 			puts "Size: #{@size}"

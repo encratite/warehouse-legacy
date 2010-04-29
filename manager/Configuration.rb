@@ -1,3 +1,5 @@
+require 'environment'
+
 module Configuration
 	module Cookie
 		UId = '953675'
@@ -26,5 +28,14 @@ module Configuration
 			Release = /\-\> ([^ ]+) \(Uploaded/
 			URL = /(http\:\/\/[^\)]+)\)/
 		end
+	end
+	
+	module Torrent
+		Path =
+			Nil.getOS === :windows ?
+			'/home/void/torrent/torrent' :
+			'G:\\Torrents'
+			
+		SizeLimit = 10 * (2**30)
 	end
 end

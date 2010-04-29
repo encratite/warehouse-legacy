@@ -29,7 +29,7 @@ class HTTPHandler
 	def post(path, input)
 		data = input.map { |key, value| "#{key}=#{value}" }
 		postData = data.join '&'
-		puts "Post data: #{postData}"
+		#puts "Post data: #{postData}"
 		begin
 			@http.request_post(path, postData, @headers) do |response|
 				response.value

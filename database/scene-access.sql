@@ -27,6 +27,7 @@ create table user_data
 (
 	id serial primary key,
 	name text unique not null,
+	email text default null,
 	is_administrator boolean not null default false
 );
 

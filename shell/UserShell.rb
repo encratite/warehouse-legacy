@@ -14,6 +14,7 @@ class UserShell
 		['download <numeric identifier or release name>', 'start the download of a release', :commandDownload],
 		['status', 'retrieve the status of downloads in progress', :commandStatus],
 		['cancel', 'cancel a download', :commandCancel],
+		['permissions', 'view your permissions/limits', :commandPermissions],
 		['exit/quit', 'terminate your session', :commandExit],
 	]
 	
@@ -21,6 +22,7 @@ class UserShell
 		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
 		@filterCountMaximum = configuration::Shell::FilterCountMaximum
 		@searchResultMaximum = configuration::Shell::SearchResultMaximum
+		@releaseSizeLimit = configuration::Torrent::SizeLimit
 		@database = database
 		@user = user
 		@releases = @database[:release]
@@ -42,12 +44,17 @@ class UserShell
 			
 			validCommand = false
 			
-			Commands.each do |arguments, description, symbol|
-				commandNames = arguments.split(' ')[0].split('/')
-				next if !commandNames.include?(command)
-				method(symbol).call
-				validCommand = true
-				break
+			begin
+				Commands.each do |arguments, description, symbol|
+					commandNames = arguments.split(' ')[0].split('/')
+					next if !commandNames.include?(command)
+					method(symbol).call
+					validCommand = true
+					break
+				end
+			rescue RegexpError => exception
+				puts "You have entered an invalid regular expression: #{exception.message}"
+				next
 			end
 			
 			puts 'Invalid command.' if !validCommand
@@ -168,7 +175,7 @@ class UserShell
 		end
 		
 		if results.count > 5
-			puts "Found #{results.size} results."
+			puts "Found #{results.count} results."
 		end
 	end
 	
@@ -184,12 +191,22 @@ class UserShell
 		else
 			result = @releases.filter(name: Regexp.new(@argument))
 		end
-		result = result.select(:name, :torrent_path)
+		result = result.select(:name, :torrent_path, :release_size)
 		if result.empty?
 			puts 'Unable to find the release you have specified.'
 			return
 		end
 		result = result.first
+		
+		size = result[:release_size]
+		if size > @releaseSizeLimit
+			sizeString = Nil.getSizeString size
+			sizeLimitString = Nil.getSizeString @releaseSizeLimit
+			
+			puts "This release has a size of #{sizeString} which exceeds the current limit of #{sizeLimitString}"
+			return
+		end
+		
 		puts "Attempting to queue release #{result[:name]}"
 		
 		httpPath = result[:torrent_path]
@@ -232,5 +249,16 @@ class UserShell
 		puts 'See you.'
 		#sleep 1
 		exit
+	end
+
+	def commandPermissions
+		if @user.isAdministrator
+			userLevel = 'Administrator'
+		else
+			userLevel = 'Regular user'
+		end
+		puts "User level: #{userLevel}"
+		sizeLimitString = Nil.getSizeString @releaseSizeLimit
+		puts "Size limit per release: #{sizeLimitString}"
 	end
 end

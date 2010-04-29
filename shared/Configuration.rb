@@ -37,6 +37,7 @@ module Configuration
 			'/home/void/torrent/torrent'
 			
 		SizeLimit = 10 * (2**30)
+		#SizeLimit = 2**10
 	end
 	
 	module Shell

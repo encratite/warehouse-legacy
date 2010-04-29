@@ -4,7 +4,7 @@ require 'nil/file'
 class UserShell
 	Commands =
 	[
-		['help', 'prints this help', :commandHelp],
+		['help/?', 'prints this help', :commandHelp],
 		['add <regular expression>', 'add a new release filter to your account', :commandAddFilter],
 		['list', 'retrieve a list of your filters', :commandListFilters],
 		['delete <index 1> <index 2> <...>', 'removes one or several filters which are identified by their numeric index', :commandDeleteFilter],
@@ -14,7 +14,7 @@ class UserShell
 		['download <numeric identifier or release name>', 'start the download of a release', :commandDownload],
 		['status', 'retrieve the status of downloads in progress', :commandStatus],
 		['cancel', 'cancel a download', :commandCancel],
-		['exit', 'terminate your session', :commandExit],
+		['exit/quit', 'terminate your session', :commandExit],
 	]
 	
 	def initialize(configuration, database, user, http)
@@ -43,7 +43,8 @@ class UserShell
 			validCommand = false
 			
 			Commands.each do |arguments, description, symbol|
-				next if arguments.split(' ')[0] != command
+				commandNames = arguments.split(' ')[0].split('/')
+				next if !commandNames.include?(command)
 				method(symbol).call
 				validCommand = true
 				break
@@ -184,7 +185,7 @@ class UserShell
 		else
 			result = @releases.filter(name: Regexp.new(@argument))
 		end
-		result = result.filter(:name, :torrent_path)
+		result = result.select(:name, :torrent_path)
 		if result.empty?
 			puts 'Unable to find the release you have specified.'
 			return
@@ -220,7 +221,8 @@ class UserShell
 	end
 	
 	def commandStatus
-		puts 'STATUS... just kidding, not implemented yet.'
+		puts 'STATUS!'
+		puts '... just kidding, not implemented yet.'
 	end
 	
 	def commandCancel

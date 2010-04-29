@@ -13,7 +13,7 @@ create table release
 	pre_time integer,
 	file_count integer not null,
 	release_date timestamp not null,
-	size bigint not null,
+	release_size bigint not null,
 	hit_count integer not null,
 	download_count integer not null,
 	seeder_count integer not null,

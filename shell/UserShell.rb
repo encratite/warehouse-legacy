@@ -161,7 +161,7 @@ class UserShell
 		end
 		
 		results = @releases.filter(name: Regexp.new(@argument))
-		results = results.select(:site_id, :section_name, :name, :release_date, :release_size, :seeder_count)
+		results = results.select(:site_id, :section_name, :name, :release_date, :release_size)
 		results = results.limit(@searchResultMaximum)
 		
 		if results.empty?
@@ -171,7 +171,8 @@ class UserShell
 		
 		results.each do |result|
 			sizeString = Nil.getSizeString(result[:release_size])
-			puts "[#{result[:site_id]}] [#{result[:section_name]}] #{result[:name]} (#{sizeString}, #{result[:release_date]}, #{result[:seeder_count]} seed(s))"
+			timestamp = result[:release_date].utc.to_s
+			puts "[#{result[:site_id]}] [#{result[:section_name]}] #{result[:name]} (#{sizeString}, #{timestamp})"
 		end
 		
 		if results.count > 5

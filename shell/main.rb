@@ -22,17 +22,19 @@ def getUser(database)
 				#make the user an administrator, they are the first user to connect
 				userData.insert(name: username, is_administrator: true)
 				puts "Welcome, #{username}! You have been made administrator."
-				user = User.new(username, true)
+				user = User.new(database.insert_id, username, true)
 			else
 				#it's not the first user, add them to the system
 				userData.insert(name: username)
 				puts "Welcome to the system, #{username}!"
-				user = User.new(username)
+				user = User.new(database.insert_id, username)
 			end
+			
+			puts "Use the 'help' command to familiarise yourself with this environment."
 		else
 			puts "Welcome back, #{username}."
-			isAdministrator = dataset.first.is_administrator
-			user = User.new(username, isAdministrator)
+			currentUserData = dataset.first
+			user = User.new(currentUserData.id, username, currentUserData.is_administrator)
 		end
 	end
 

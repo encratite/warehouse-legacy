@@ -38,4 +38,8 @@ module Configuration
 			
 		SizeLimit = 10 * (2**30)
 	end
+	
+	module Shell
+		FilterLengthMaximum = 128
+	end
 end

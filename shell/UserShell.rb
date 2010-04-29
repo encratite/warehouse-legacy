@@ -162,13 +162,12 @@ class UserShell
 			return
 		end
 		
-		sizeString = Nil.getSizeString(result[:release_size])
-		
 		results.each do |result|
+			sizeString = Nil.getSizeString(result[:release_size])
 			puts "[#{result[:site_id]}] [#{result[:section_name]}] #{result[:name]} (#{sizeString}, #{result[:release_date]}, #{result[:seeder_count]} seed(s))"
 		end
 		
-		if results.size > 5
+		if results.count > 5
 			puts "Found #{results.size} results."
 		end
 	end
@@ -215,7 +214,7 @@ class UserShell
 			return
 		end
 		
-		Nil.writeFile(torrentPath, torrentData)
+		Nil.writeFile(torrentPath, data)
 		
 		puts 'Success!'
 	end

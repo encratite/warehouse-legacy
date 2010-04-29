@@ -9,7 +9,7 @@ class ReleaseData
 	Targets =
 	[
 		['Release', /<h1>(.+?)<\/h1>/, :release],
-		['ID', /\?id=(\d+)\"/, :id],
+		['ID', /Download.+?\?id=(\d+)\"/, :id],
 		['Info hash', /<td valign=\"top\" align=left>(.+?)<\/td>/, :infoHash],
 		['Pre-time', />Pre Time<\/td>.+?>(.+?)<\/td>/, :preTimeString],
 		['Section', />Type<\/td>.+>(.+)<\/td>/, :section],
@@ -87,6 +87,7 @@ class ReleaseData
 	end
 	
 	def getData
+		puts "site_id: #{@id}"
 		return [
 			:site_id => @id,
 			:torrent_path => @path,

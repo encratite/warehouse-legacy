@@ -45,4 +45,8 @@ module Configuration
 		FilterCountMaximum = 500
 		SearchResultMaximum = 100
 	end
+	
+	module Logging
+		ManagerLog = '../log/manager.log'
+	end
 end

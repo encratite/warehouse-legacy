@@ -11,6 +11,7 @@ class ConsoleHandler
 		}
 		
 		@irc = @manager.irc.irc
+		@log = File.open(manager.configuration::Logging::ManagerLog, 'ab')
 	end
 	
 	def getTimestamp
@@ -34,21 +35,26 @@ class ConsoleHandler
 		exit
 	end
 	
+	def output(line)
+		puts line
+		@log.puts line
+	end
+	
 	def onLine(line)
-		puts "#{getTimestamp} | > #{line}"
+		output "#{getTimestamp} | > #{line}"
 	end
 	
 	def onEntry
-		puts 'Trying to enter the announce channel'
+		output 'Trying to enter the announce channel'
 	end
 	
 	def onChannelMessage(channel, user, message)
 		message = Nil::IRCClient.stripTags(message)
-		puts "\##{channel} <#{user.nick}> #{message}"
+		output "\##{channel} <#{user.nick}> #{message}"
 	end
 	
 	def onSendLine(line)
-		puts "#{getTimestamp} | < #{line}"
+		output "#{getTimestamp} | < #{line}"
 	end
 	
 	def terminate

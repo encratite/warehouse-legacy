@@ -4,9 +4,11 @@ require 'ConsoleHandler'
 require 'ReleaseHandler'
 
 class SCCManager
-	attr_reader :http, :irc, :console, :releaseHandler
+	attr_reader :http, :irc, :console, :releaseHandler, :configuration
 	
 	def initialize(configuration)
+		@configuration = configuration
+		
 		cookieData = configuration::Cookie
 		uId = cookieData::UId
 		pass = cookieData::Pass

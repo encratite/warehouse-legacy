@@ -11,7 +11,7 @@ class ReleaseHandler
 		@torrentPath = configuration::Torrent::Path
 		@sizeLimit = configuration::Torrent::SizeLimit
 		@database = getDatabase configuration
-		@releaseHandler = manager.releaseHandler
+		@manager = manager
 	end
 	
 	def databaseDown(exception)
@@ -48,7 +48,7 @@ class ReleaseHandler
 	end
 	
 	def output(line)
-		@releaseHandler.output(line)
+		@manager.console.output(line)
 	end
 	
 	def processMessage(release, url)

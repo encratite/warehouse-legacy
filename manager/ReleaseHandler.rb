@@ -11,10 +11,11 @@ class ReleaseHandler
 		@torrentPath = configuration::Torrent::Path
 		@sizeLimit = configuration::Torrent::SizeLimit
 		@database = getDatabase configuration
+		@releaseHandler = manager.releaseHandler
 	end
 	
 	def databaseDown(exception)
-		puts "The DBMS appears to be down: #{exception.message}"
+		output "The DBMS appears to be down: #{exception.message}"
 		exit
 	end
 	
@@ -23,7 +24,7 @@ class ReleaseHandler
 		matchCount = result.count
 		isOfInterest = matchCount > 0
 		if isOfInterest
-			puts 'Matches:'
+			output 'Matches:'
 			filterDictionary = {}
 			result.each do |row|
 				name = row.user_name
@@ -31,7 +32,7 @@ class ReleaseHandler
 				filterDictionary[name] << row.user_filter
 			end
 			filterDictionary.each do |name, filters|
-				puts "#{name}: #{filters.inspect}"
+				output "#{name}: #{filters.inspect}"
 			end
 		end
 		return isOfInterest
@@ -42,8 +43,12 @@ class ReleaseHandler
 			insertData = releaseData.getData
 			@database[:release].insert(insertData)
 		rescue	Sequel::DatabaseError => exception
-			puts "DBMS exception: #{exception.message}"
+			output "DBMS exception: #{exception.message}"
 		end
+	end
+	
+	def output(line)
+		@releaseHandler.output(line)
 	end
 	
 	def processMessage(release, url)
@@ -53,7 +58,7 @@ class ReleaseHandler
 		path = url[offset..-1]
 		data = @http.get(path)
 		if data == nil
-			puts "Error: Failed to retrieve URL #{url} (path: #{path}, release; #{release})"
+			output "Error: Failed to retrieve URL #{url} (path: #{path}, release; #{release})"
 			return
 		end
 		begin
@@ -64,30 +69,30 @@ class ReleaseHandler
 				isOfInterest = isReleaseOfInterest(release)
 			end
 			if isOfInterest
-				puts "Discovered a release of interest: #{release}"
+				output "Discovered a release of interest: #{release}"
 				if releaseData.size > @sizeLimit
-					puts "Unluckily the size of this release exceeds the limit (#{releaseData.size} > #{@sizeLimit})"
+					output "Unluckily the size of this release exceeds the limit (#{releaseData.size} > #{@sizeLimit})"
 					return
 				end
 				path = releaseData.path
 				torrentMatch = /\/([^\/]+\.torrent)/.match(path)
 				if torrentMatch == nil
-					puts "Failed to retrieve the torrent name from the torrent path: #{path}"
+					output "Failed to retrieve the torrent name from the torrent path: #{path}"
 					return
 				end
 				torrent = torrentMatch[1]
-				puts "Downloading #{path}"
+				output "Downloading #{path}"
 				torrentData = @http.get(path)
 				torrentPath = File.expand_path(torrent, @torrentPath)
 				Nil.writeFile(torrentPath, torrentData)
-				puts "Downloaded #{path} to #{torrentPath}"
+				output "Downloaded #{path} to #{torrentPath}"
 			else
-				puts "#{release} is not a release of interest"
+				output "#{release} is not a release of interest"
 			end
 		rescue Sequel::DatabaseConnectionError => exception
 			databaseDown exception
 		rescue ReleaseData::Error => exception
-			puts "Error: Unable to parse data from release #{release} at #{url}: #{exception.message}"
+			output "Error: Unable to parse data from release #{release} at #{url}: #{exception.message}"
 		end
 	end
 end

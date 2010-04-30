@@ -5,12 +5,14 @@ class UserShell
 	Commands =
 	[
 		['help/?', 'prints this help', :commandHelp],
-		['add <regular expression>', 'add a new release filter to your account', :commandAddFilter],
+		['add <regular expression>', 'add a new release filter to your account (case insensitive)', :commandAddFilterInsensitive],
+		['add-cs <regular expression>', 'the case sensitive version of the add command', :commandAddFilterSensitive],
 		['list', 'retrieve a list of your filters', :commandListFilters],
 		['delete <index 1> <index 2> <...>', 'removes one or several filters which are identified by their numeric index', :commandDeleteFilter],
 		['clear', 'remove all your release filters', :commandClearFilters],
 		['database', 'get statistics on the database', :commandDatabase],
-		['search <regular expression>', 'search the database for release names matching the regular expression', :commandSearch],
+		['search <regular expression>', 'search the database for release names matching the regular expression (case insensitive)', :commandSearchInsensitive],
+		['search-cs <regular expression>', 'the case sensitive version of the search command', :commandSearchSensitive],
 		['download <numeric identifier or release name>', 'start the download of a release', :commandDownload],
 		['status', 'retrieve the status of downloads in progress', :commandStatus],
 		['cancel', 'cancel a download', :commandCancel],
@@ -76,7 +78,7 @@ class UserShell
 		end
 	end
 	
-	def commandAddFilter
+	def commandAddFilter(caseSensitive)
 		if @argument.empty?
 			puts 'Please specify a filter to add.'
 			return
@@ -90,12 +92,20 @@ class UserShell
 			puts "You have too many filters already (#{filterCountMaximum})."
 			return
 		end
-		@filters.insert(user_id: @user.id, filter: filter)
+		@filters.insert(user_id: @user.id, filter: filter, is_case_sensitive: caseSensitive)
 		puts "Your filter has been added."
 	end
 	
+	def commandAddFilterInsensitive
+		commandAddFilter false
+	end
+	
+	def commandAddFilterSensitive
+		commandAddFilter true
+	end
+	
 	def commandListFilters
-		filters = @filters.where(user_id: @user.id).select(:filter)
+		filters = @filters.where(user_id: @user.id).select(:filter, :is_case_sensitive)
 		if filters.empty?
 			puts 'You currently have no filters.'
 			return
@@ -103,7 +113,12 @@ class UserShell
 		puts 'This is a list of your filters:'
 		counter = 1
 		filters.each do |filter|
-			puts "#{counter}. #{filter[:filter]}"
+			info = "#{counter}. #{filter[:filter]}"
+			if filter[:is_case_sensitive]
+				puts "#{info} [case sensitive]"
+			else
+				puts info
+			end
 			counter += 1
 		end
 	end
@@ -159,7 +174,7 @@ class UserShell
 		puts "Size of releases available on demand: #{sizeString}"
 	end
 	
-	def commandSearch
+	def commandSearch(caseSensitive)
 		if @argument.empty?
 			puts "Specify a regular expression to look for."
 			return
@@ -170,9 +185,16 @@ class UserShell
 			return
 		end
 		
-		results = @releases.filter(name: Regexp.new(@argument))
-		results = results.select(:site_id, :section_name, :name, :release_date, :release_size).reverse_order(:site_id)
-		results = results.limit(@searchResultMaximum)
+		#results = @releases.filter(name: Regexp.new(@argument))
+		#results = results.select(:site_id, :section_name, :name, :release_date, :release_size).reverse_order(:site_id)
+		#results = results.limit(@searchResultMaximum)
+		
+		operator =
+			caseSensitive ?
+			'~' :
+			'~*'
+		
+		results = @database["select site_id, section_name, name, release_date, release_size from release where name #{operator} ? limit ?", @argument, @searchResultMaximum]
 		
 		if results.empty?
 			puts 'Your search yielded no results.'
@@ -188,6 +210,14 @@ class UserShell
 		if results.count > 5
 			puts "Found #{results.count} results."
 		end
+	end
+	
+	def commandSearchInsensitive
+		commandSearch(false)
+	end
+	
+	def commandSearchSensitive
+		commandSearch(true)
 	end
 	
 	def commandDownload

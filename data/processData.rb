@@ -2,8 +2,12 @@ $:.concat ['../shared']
 
 require 'nil/file'
 require 'preTime'
+require 'Configuration'
+require 'database'
 
 class ReleaseData
+	attr_reader :name
+	
 	Symbols =
 	[
 		:section,
@@ -36,7 +40,7 @@ class ReleaseData
 		
 		units =
 		[
-			'KB',
+			'kB',
 			'MB',
 			'GB'
 		]
@@ -89,23 +93,35 @@ class DataExtractor
 	#Pattern = /"\/browse.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?filelist=1">(\d+)<.+?right">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?todlers=1>(\d+)</
 	Pattern = /"\/browse.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?filelist=1">(\d+)<.+?right">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?>(\d+)</
 
-	def self.processFile(path)
-	
+	def initialize(database)
+		@dataset = database[:release]
+	end
+
+	def processFile(path)
+		puts "Processing #{path}"
 		data = Nil.readFile path
 		return false if data == nil
 		data = data.gsub("\n", '')
-		puts "Scanning"
 		results = data.scan(Pattern)
-		puts "Done scanning: #{results}"
 		if results.empty?
 			puts "No hits in #{path}"
 			exit
 		end
 		results.each do |array|
-			output = ReleaseData.new array
-			puts output.getData
+			release = ReleaseData.new array
+			begin
+				@dataset.insert(release.getData)
+			rescue
+				puts "Already got #{release.name}"
+			end
 		end
 	end
 end
 
-DataExtractor.processFile('browse/0')
+database = getDatabase(Configuration)
+extractor = DataExtractor.new database
+counter = 83
+while true
+	break if !extractor.processFile("browse/#{counter}")
+	counter += 1
+end

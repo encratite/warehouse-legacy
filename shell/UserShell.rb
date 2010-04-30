@@ -62,7 +62,7 @@ class UserShell
 			rescue Interrupt
 				puts 'Interrupt.'
 				exit
-			rescue EOFerror
+			rescue EOFError
 				puts 'Terminating.'
 				exit
 			end

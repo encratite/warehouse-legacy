@@ -222,8 +222,8 @@ class UserShell
 		torrentPath = File.expand_path(torrent, @torrentPath)
 		
 		if Nil.readFile(torrentPath) != nil
-			puts 'This release has already been queued'
-			return
+			puts 'This release had already been queued, overwriting it'
+			#return
 		end
 		
 		data = @http.get(httpPath)

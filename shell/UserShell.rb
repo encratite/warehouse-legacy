@@ -52,6 +52,12 @@ class UserShell
 					validCommand = true
 					break
 				end
+			rescue Interrupt
+				puts 'Interrupt.'
+				exit
+			rescue EOFerror
+				puts 'Terminating.'
+				exit
 			rescue RegexpError => exception
 				puts "You have entered an invalid regular expression: #{exception.message}"
 				next

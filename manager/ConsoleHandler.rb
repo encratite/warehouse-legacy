@@ -38,6 +38,7 @@ class ConsoleHandler
 	def output(line)
 		puts line
 		@log.puts line
+		@log.flush
 	end
 	
 	def onLine(line)

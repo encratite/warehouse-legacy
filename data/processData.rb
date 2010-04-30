@@ -70,7 +70,7 @@ class ReleaseData
 		
 		download =
 			@type == 'archive' ?
-			'downloadbig' :
+			'downloadbig2' :
 			'download2'
 			
 		@name = @name.gsub(' ', '_')

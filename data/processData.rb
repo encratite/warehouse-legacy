@@ -6,10 +6,11 @@ require 'Configuration'
 require 'database'
 
 class ReleaseData
-	attr_reader :name
+	attr_reader :name, :id
 	
 	Symbols =
 	[
+		:type,
 		:section,
 		:id,
 		:name,
@@ -67,7 +68,16 @@ class ReleaseData
 		@seeders = @seeders.to_i
 		@leechers = @leechers.to_i
 		
-		@torrentPath = "/download2.php/#{@id}/40d5b69470486753f78986717cf55ce7/#{@name}.torrent"
+		download =
+			@type == 'archive' ?
+			'downloadbig' :
+			'download2'
+			
+		@name = @name.gsub(' ', '_')
+		
+		@torrentPath = "/#{download}.php/#{@id}/40d5b69470486753f78986717cf55ce7/#{@name}.torrent"
+		
+		#puts @id
 	end
 	
 	def getData
@@ -90,10 +100,9 @@ class ReleaseData
 end
 
 class DataExtractor
-	Pattern = /"\/browse.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?filelist=1">(\d+)<.+?right">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?>(\d+)</
-
-	def initialize(database)
+	def initialize(database, pattern)
 		@dataset = database[:release]
+		@pattern = pattern
 	end
 
 	def processFile(path)
@@ -101,26 +110,49 @@ class DataExtractor
 		data = Nil.readFile path
 		return false if data == nil
 		data = data.gsub("\n", '')
-		results = data.scan(Pattern)
+		results = data.scan(@pattern)
 		if results.empty?
 			puts "No hits in #{path}"
-			exit
+			return false
 		end
 		results.each do |array|
+			#puts array.inspect
+			#next
 			release = ReleaseData.new array
-			begin
-				@dataset.insert(release.getData)
-			rescue
-				puts "Already got #{release.name}"
-			end
+			data = release.getData
+			@dataset.filter(site_id: release.id).delete
+			@dataset.insert(data)
 		end
+		if results.size != 15
+			puts "Not enough results! #{results.size}"
+		end
+		return true
 	end
 end
 
-database = getDatabase(Configuration)
-extractor = DataExtractor.new database
-counter = 0
-while true
-	break if !extractor.processFile("browse/#{counter}")
-	counter += 1
+def processDirectory(directory)
+	#attern = /"\/(browse|browse2|archive)\.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?filelist=1">(\d+)<.+?right">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?>(\d+)</
+
+	pattern = /"\/(browse|browse2|archive)\.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?">(\d+)<.+?">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?>(\d+)</
+
+	database = getDatabase(Configuration)
+	extractor = DataExtractor.new(database, pattern)
+
+	#extractor.processFile("#{directory}/0")
+	#exit
+
+	#counter = 0
+	counter = 0
+	while true
+		break if !extractor.processFile("#{directory}/#{counter}")
+		counter += 1
+	end
+end
+
+[
+	'browse',
+	'browse2',
+	'archive'
+].each do |directory|
+	processDirectory directory
 end

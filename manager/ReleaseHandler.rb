@@ -40,7 +40,7 @@ class ReleaseHandler
 	def insertData(releaseData)
 		begin
 			insertData = releaseData.getData
-			@database[:release].insert(*insertData)
+			@database[:release].insert(insertData)
 		rescue	Sequel::DatabaseError => exception
 			puts "DBMS exception: #{exception.message}"
 		end

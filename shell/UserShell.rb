@@ -155,6 +155,8 @@ class UserShell
 	
 	def commandDatabase
 		puts "Number of releases in the database: #{@releases.count}"
+		sizeString = Nil.getSizeString(@releases.sum(:release_size))
+		puts "Size of releases available on demand: #{sizeString}"
 	end
 	
 	def commandSearch

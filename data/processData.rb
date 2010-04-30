@@ -90,7 +90,6 @@ class ReleaseData
 end
 
 class DataExtractor
-	#Pattern = /"\/browse.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?filelist=1">(\d+)<.+?right">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?todlers=1>(\d+)</
 	Pattern = /"\/browse.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?filelist=1">(\d+)<.+?right">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?>(\d+)</
 
 	def initialize(database)
@@ -120,7 +119,7 @@ end
 
 database = getDatabase(Configuration)
 extractor = DataExtractor.new database
-counter = 83
+counter = 0
 while true
 	break if !extractor.processFile("browse/#{counter}")
 	counter += 1

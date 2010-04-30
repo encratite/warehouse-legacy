@@ -261,5 +261,6 @@ class UserShell
 		puts "User level: #{userLevel}"
 		sizeLimitString = Nil.getSizeString @releaseSizeLimit
 		puts "Size limit per release: #{sizeLimitString}"
+		puts "Search result limit: #{@searchResultMaximum}"
 	end
 end

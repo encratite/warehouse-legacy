@@ -1,3 +1,5 @@
+$:.concat ['../shared']
+
 require 'nil/file'
 require 'preTime'
 
@@ -22,7 +24,7 @@ class ReleaseData
 	def initialize(array)
 		offset = 0
 		if array.size != Symbols.size
-			puts "Size mismatch"
+			puts "Size mismatch: #{array}"
 			exit
 		end
 		while offset < array.size
@@ -41,9 +43,9 @@ class ReleaseData
 		
 		factor = 1024
 		
-		unitOffset = units.index unit
+		unitOffset = units.index @unit
 		if unitOffset == nil
-			puts "Unable to find unit: #{unit}"
+			puts "Unable to find unit: #{@unit}"
 			exit
 		end
 		
@@ -56,7 +58,7 @@ class ReleaseData
 		@id = @id.to_i
 		@files = @files.to_i
 		@commentCount = @commentCOunt.to_i
-		@date = "#{date} #{time}"
+		@date = "#{@date} #{@time}"
 		@hits = @hits.to_i
 		@seeders = @seeders.to_i
 		@leechers = @leechers.to_i
@@ -83,21 +85,27 @@ class ReleaseData
 	end
 end
 
-def processFile(path)
-	pattern = /"\/browse.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?filelist=1">(\d+)<.+?right">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?todlers=1>(\d+)</
+class DataExtractor
+	#Pattern = /"\/browse.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?filelist=1">(\d+)<.+?right">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?todlers=1>(\d+)</
+	Pattern = /"\/browse.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?filelist=1">(\d+)<.+?right">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?>(\d+)</
+
+	def self.processFile(path)
 	
-	
-	data = Nil.readFile path
-	return false if data == nil
-	data = data.gsub("\n", '')
-	match = pattern.match(data)
-	if match == nil
-		puts 'Fuck'
-		exit
-	else
-		output = match.to_a[1..-1]
-		puts output.inspect
+		data = Nil.readFile path
+		return false if data == nil
+		data = data.gsub("\n", '')
+		puts "Scanning"
+		results = data.scan(Pattern)
+		puts "Done scanning: #{results}"
+		if results.empty?
+			puts "No hits in #{path}"
+			exit
+		end
+		results.each do |array|
+			output = ReleaseData.new array
+			puts output.getData
+		end
 	end
 end
 
-processFile('browse/0')
+DataExtractor.processFile('browse/0')

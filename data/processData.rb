@@ -150,8 +150,8 @@ def processDirectory(directory)
 end
 
 [
-	'browse',
-	'browse2',
+	#'browse',
+	#'browse2',
 	'archive'
 ].each do |directory|
 	processDirectory directory

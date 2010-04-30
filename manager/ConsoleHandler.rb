@@ -13,6 +13,12 @@ class ConsoleHandler
 		@irc = @manager.irc.irc
 	end
 	
+	def getTimestamp
+		output = Time.now.utc.to_s
+		output = output.split(' ')[0..-2].join(' ')
+		return output
+	end
+	
 	def commandHelp(arguments)
 		puts 'Available commands:'
 		@commands.each do |command, data|
@@ -29,7 +35,7 @@ class ConsoleHandler
 	end
 	
 	def onLine(line)
-		puts "| > #{line}"
+		puts "#{getTimestamp} | > #{line}"
 	end
 	
 	def onEntry
@@ -42,7 +48,7 @@ class ConsoleHandler
 	end
 	
 	def onSendLine(line)
-		puts "| < #{line}"
+		puts "#{getTimestamp} | < #{line}"
 	end
 	
 	def terminate

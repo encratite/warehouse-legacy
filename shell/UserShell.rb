@@ -34,36 +34,38 @@ class UserShell
 	def run
 		prefix = @user.shellPrefix
 		while true
-			print prefix
-			line = STDIN.readline
-			tokens = line.split(' ')
-			next if tokens.empty?
-			command = tokens[0]
-			@arguments = tokens[1..-1]
-			@argument = line[command.size..-1].strip
-			
-			validCommand = false
-			
 			begin
-				Commands.each do |arguments, description, symbol|
-					commandNames = arguments.split(' ')[0].split('/')
-					next if !commandNames.include?(command)
-					method(symbol).call
-					validCommand = true
-					break
+				print prefix
+				line = STDIN.readline
+				tokens = line.split(' ')
+				next if tokens.empty?
+				command = tokens[0]
+				@arguments = tokens[1..-1]
+				@argument = line[command.size..-1].strip
+				
+				validCommand = false
+				
+				begin
+					Commands.each do |arguments, description, symbol|
+						commandNames = arguments.split(' ')[0].split('/')
+						next if !commandNames.include?(command)
+						method(symbol).call
+						validCommand = true
+						break
+					end
+				rescue RegexpError => exception
+					puts "You have entered an invalid regular expression: #{exception.message}"
+					next
 				end
+				
+				puts 'Invalid command.' if !validCommand
 			rescue Interrupt
 				puts 'Interrupt.'
 				exit
 			rescue EOFerror
 				puts 'Terminating.'
 				exit
-			rescue RegexpError => exception
-				puts "You have entered an invalid regular expression: #{exception.message}"
-				next
 			end
-			
-			puts 'Invalid command.' if !validCommand
 		end
 	end
 	

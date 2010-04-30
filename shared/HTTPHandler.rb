@@ -23,6 +23,8 @@ class HTTPHandler
 			end
 		rescue Net::HTTPError
 			return nil
+		rescue
+			return nil
 		end
 	end
 	
@@ -36,6 +38,17 @@ class HTTPHandler
 				return response.read_body
 			end
 		rescue Net::HTTPError
+			return nil
+			
+		rescue Errno::ETIMEDOUT
+			return nil
+			
+		rescue Errno::ECONNRESET
+			return nil
+			
+		rescue Net::HTTPFatalError
+			return nil
+		rescue
 			return nil
 		end
 	end

@@ -9,7 +9,8 @@ create table release
 	torrent_path text not null,
 	section_name text not null,
 	name text not null,
-	info_hash text not null,
+	--may be null because it cannot be extracted from the pages
+	info_hash text,
 	--may be null if no pre-time is available
 	pre_time integer,
 	file_count integer not null,

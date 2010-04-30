@@ -161,7 +161,7 @@ class UserShell
 		end
 		
 		results = @releases.filter(name: Regexp.new(@argument))
-		results = results.select(:site_id, :section_name, :name, :release_date, :release_size)
+		results = results.select(:site_id, :section_name, :name, :release_date, :release_size).reverse_order(:site_id)
 		results = results.limit(@searchResultMaximum)
 		
 		if results.empty?

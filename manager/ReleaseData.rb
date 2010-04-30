@@ -1,5 +1,7 @@
 require 'nil/string'
 
+require 'preTime'
+
 class ReleaseData
 	class Error < StandardError
 	end
@@ -42,28 +44,7 @@ class ReleaseData
 			instance_variable_set(symbol, data)
 		end
 		
-		preTimePatterns =
-		[
-			[/(\d+) second/, 1],
-			[/(\d+) minute/, 60],
-			[/(\d+) hour/, 60]
-		]
-		
-		factor = 1
-		preTime = 0
-		preTimePatterns.each do |pattern, currentFactor|
-			factor *= currentFactor
-			match = pattern.match(@preTimeString)
-			break if match == nil
-			data = match[1]
-			preTime += data.to_i * factor
-		end
-		
-		if preTime == 0
-			@preTime = nil
-		else
-			@preTime = preTime
-		end
+		@preTime = parsePreTimeString @preTimeString
 		
 		size = @sizeString.gsub(',', '')
 		if !size.isNumber
@@ -87,22 +68,20 @@ class ReleaseData
 	end
 	
 	def getData
-		puts "site_id: #{@id}"
-		return [
-			:site_id => @id,
-			:torrent_path => @path,
-			:section_name => @section,
-			:name => @release,
-			:info_hash => @infoHash,
-			:pre_time => @preTime,
-			:file_count => @files,
-			#no idea if this works
-			:release_date => @date,
-			:release_size => @size,
-			:hit_count => @hits,
-			:download_count => @downloads,
-			:seeder_count => @seeders,
-			:leecher_count => @leechers
-		]
+		return {
+			site_id: @id,
+			torrent_path: @path,
+			section_name: @section,
+			name: @release,
+			info_hash: @infoHash,
+			pre_time: @preTime,
+			file_count: @files,
+			release_date: @date,
+			release_size: @size,
+			hit_count: @hits,
+			download_count: @downloads,
+			seeder_count: @seeders,
+			leecher_count: @leechers
+		}
 	end
 end

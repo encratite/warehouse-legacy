@@ -31,9 +31,9 @@ class ReleaseHandler
 			output "Matches with operator #{operator}:"
 			filterDictionary = {}
 			result.each do |row|
-				name = row.user_name
+				name = row[:user_name]
 				filterDictionary[name] = [] if filterDictionary[name] == nil
-				filterDictionary[name] << row.user_filter
+				filterDictionary[name] << row[:user_filter]
 			end
 			filterDictionary.each do |name, filters|
 				output "#{name}: #{filters.inspect}"

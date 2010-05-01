@@ -1,5 +1,6 @@
 require 'nil/string'
 require 'nil/file'
+require 'nil/console'
 
 require 'fileutils'
 require 'readline'
@@ -41,13 +42,25 @@ class UserShell
 		@torrentPath = configuration::Torrent::Path
 	end
 	
+	def error(line)
+		puts Nil.red(line)
+	end
+	
+	def warning(line)
+		puts Nil.yellow(line)
+	end
+	
+	def success(line)
+		puts Nil.lightGreen(line)
+	end
+	
 	def run
 		prefix = @user.shellPrefix
 		while true
 			begin
 				line = Readline.readline(prefix, true)
 				if line == nil
-					puts 'Terminating.'
+					puts Nil.blue('Terminating.')
 					exit
 				end
 				tokens = line.split(' ')
@@ -67,23 +80,23 @@ class UserShell
 						break
 					end
 				rescue RegexpError => exception
-					puts "You have entered an invalid regular expression: #{exception.message}"
+					error('You have entered an invalid regular expression: ' + exception.message)
 					next
 				end
 				
-				puts 'Invalid command.' if !validCommand
+				error('Invalid command.') if !validCommand
 			rescue Interrupt
-				puts 'Interrupt.'
+				puts Nil.blue('Interrupt.')
 				exit
 			rescue EOFError
-				puts 'Terminating.'
+				puts Nil.blue('Terminating.')
 				exit
 			end
 		end
 	end
 	
 	def commandHelp
-		puts 'List of available commands:'
+		puts Nil.green('List of available commands:')
 		sortedCommands = Commands.sort { |a, b| a[0] <=> b[0] }
 		names = sortedCommands.map { |x| x[0] }
 		maximum = 0
@@ -92,22 +105,22 @@ class UserShell
 		end
 		sortedCommands.each do |name, description, symbol|
 			name += ' ' * (maximum - name.size)
-			puts "#{name} - #{description}"
+			puts "#{Nil.white name} - #{description}"
 		end
 	end
 	
 	def commandAddFilter(caseSensitive)
 		if @argument.empty?
-			puts 'Please specify a filter to add.'
+			warning 'Please specify a filter to add.'
 			return
 		end
 		filter = @argument
 		if filter.size > @filterLengthMaximum
-			puts "Your filter exceeds the maximum length of #{@filterLengthMaximum}."
+			error "Your filter exceeds the maximum length of #{@filterLengthMaximum}."
 			return
 		end
 		if @filters.where(user_id: @user.id).count > @filterCountMaximum
-			puts "You have too many filters already (#{filterCountMaximum})."
+			error "You have too many filters already (#{filterCountMaximum})."
 			return
 		end
 		@filters.insert(user_id: @user.id, filter: filter, is_case_sensitive: caseSensitive)
@@ -128,12 +141,12 @@ class UserShell
 			puts 'You currently have no filters.'
 			return
 		end
-		puts 'This is a list of your filters:'
+		puts Nil.white('This is a list of your filters:')
 		counter = 1
 		filters.each do |filter|
 			info = "#{counter}. #{filter[:filter]}"
 			if filter[:is_case_sensitive]
-				puts "#{info} [case sensitive]"
+				puts info + ' ' + Nil.darkGrey('[case sensitive]')
 			else
 				puts info
 			end
@@ -143,13 +156,13 @@ class UserShell
 	
 	def commandDeleteFilter
 		if @arguments.empty?
-			puts 'Please specify the index of a filter to delete.'
+			warning 'Please specify the index of a filter to delete.'
 			return
 		end
 		
 		@arguments.each do |index|
 			if !index.isNumber
-				puts "Invalid argument: #{index}"
+				error "Invalid argument: #{index}"
 				return
 			end
 		end
@@ -160,12 +173,12 @@ class UserShell
 			
 			indices.each do |index|
 				if index <= 0
-					puts "Index too low: #{index}"
+					error "Index too low: #{index}"
 					return
 				end
 				result = @filters.where(user_id: @user.id).select(:id).limit(1, index - 1)
 				if result.empty?
-					puts "Invalid index: #{index}"
+					error "Invalid index: #{index}"
 					return
 				end
 				ids << result.first[:id]
@@ -194,12 +207,12 @@ class UserShell
 	
 	def commandSearch(caseSensitive)
 		if @argument.empty?
-			puts "Specify a regular expression to look for."
+			warning "Specify a regular expression to look for."
 			return
 		end
 		
 		if @argument.size > @filterLengthMaximum
-			puts "Your search filter exceeds the maximum length of #{@filterLengthMaximum}."
+			error "Your search filter exceeds the maximum length of #{@filterLengthMaximum}."
 			return
 		end
 		
@@ -215,7 +228,7 @@ class UserShell
 		results = @database["select site_id, section_name, name, release_date, release_size from release where name #{operator} ? order by site_id desc limit ?", @argument, @searchResultMaximum]
 		
 		if results.empty?
-			puts 'Your search yielded no results.'
+			warning 'Your search yielded no results.'
 			return
 		end
 		
@@ -226,7 +239,7 @@ class UserShell
 		end
 		
 		if results.count > 5
-			puts "Found #{results.count} results."
+			success "Found #{results.count} results."
 		end
 	end
 	
@@ -240,7 +253,7 @@ class UserShell
 	
 	def commandDownload
 		if @argument.empty?
-			puts "You have not specified a release to download."
+			warning "You have not specified a release to download."
 			return
 		end
 		
@@ -272,7 +285,7 @@ class UserShell
 		
 		torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)
 		if torrentMatch == nil
-			puts 'Database error: Unable to queue release'
+			error 'Database error: Unable to queue release'
 			return
 		end
 		torrent = torrentMatch[1]
@@ -280,23 +293,23 @@ class UserShell
 		torrentPath = File.expand_path(torrent, @torrentPath)
 		
 		if Nil.readFile(torrentPath) != nil
-			puts 'This release had already been queued, overwriting it'
+			warning 'This release had already been queued, overwriting it'
 			#return
 		end
 		
 		data = @http.get(httpPath)
 		if data == nil
-			puts 'HTTP error: Unable to queue release'
+			error 'HTTP error: Unable to queue release - please contact the administrator'
 			return
 		end
 		
 		Nil.writeFile(torrentPath, data)
 		
-		puts 'Success!'
+		success 'Success!'
 	end
 	
 	def commandStatus
-		puts 'STATUS!'
+		puts Nil.pink('STATUS!')
 		puts '... just kidding, not implemented yet.'
 	end
 	
@@ -305,7 +318,7 @@ class UserShell
 	end
 	
 	def commandExit
-		puts 'See you.'
+		puts Nil.lightGreen('See you.')
 		#sleep 1
 		exit
 	end
@@ -324,16 +337,16 @@ class UserShell
 	
 	def commandSSH
 		if @argument.size >= @sshKeyMaximum
-			puts "Your SSH data exceeds the maximal length of #{@sshKeyMaximum}."
+			error "Your SSH data exceeds the maximal length of #{@sshKeyMaximum}."
 			return
 		end
 		if @arguments.size < 2
-			puts "Your SSH data does not fit the following pattern: ssh-(rsa|dsa) data [comment]"
+			error "Your SSH data does not fit the following pattern: ssh-(rsa|dsa) data [comment]"
 			return
 		end
 		type = @arguments[0]
 		if !['ssh-rsa', 'ssh-dsa'].include?(type)
-			puts "Unknown SSH key type: #{type}"
+			error "Unknown SSH key type: #{type}"
 			return
 		end
 		sshDirectory = "/home/scene/user/#{@user.name}/.ssh"
@@ -341,13 +354,13 @@ class UserShell
 			FileUtils.mkdir(sshDirectory)
 		rescue Errno::EEXIST
 		rescue Errno::ENOENT
-			puts 'Unable to create the directory'
+			error 'Unable to create the directory - please contract the administrator'
 			return
 		end
 		FileUtils.chmod(0700, sshDirectory)
 		keysFile = "#{sshDirectory}/authorized_keys"
 		Nil.writeFile(keysFile, @argument + "\n")
 		FileUtils.chmod(0600, keysFile)
-		puts "Your SSH key has been changed."
+		success 'Your SSH key has been changed.'
 	end
 end

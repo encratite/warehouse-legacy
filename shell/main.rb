@@ -3,6 +3,7 @@ $:.concat ['../shared']
 require 'sequel'
 
 require 'nil/environment'
+require 'nil/console'
 
 require 'database'
 require 'HTTPHandler'
@@ -13,6 +14,7 @@ require 'User'
 
 def getUser(database)
 	username = Nil.getUser
+	highlightedName = Nil.white username
 
 	userData = database[:user_data]
 
@@ -25,18 +27,18 @@ def getUser(database)
 			if userData.count == 0
 				#make the user an administrator, they are the first user to connect
 				id = userData.insert(name: username, is_administrator: true)
-				puts "Welcome, #{username}! You have been made an administrator."
+				puts "Welcome, #{highlightedName}! You have been made an administrator."
 				user = User.new(id, username, true)
 			else
 				#it's not the first user, add them to the system
 				id = userData.insert(name: username)
-				puts "Welcome to the system, #{username}!"
+				puts "Welcome to the system, #{highlightedName}!"
 				user = User.new(id, username)
 			end
 			
-			puts "Use the 'help' command to familiarise yourself with this environment."
+			puts "Use the '#{Nil.white 'help'}' command to familiarise yourself with this environment."
 		else
-			puts "Welcome back, #{username}."
+			puts "Welcome back, #{highlightedName}."
 			currentUserData = dataset.first
 			user = User.new(currentUserData[:id], username, currentUserData[:is_administrator])
 		end

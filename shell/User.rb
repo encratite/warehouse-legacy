@@ -1,3 +1,5 @@
+require 'nil/console'
+
 class User
 	attr_reader :id, :name, :isAdministrator
 	
@@ -9,7 +11,7 @@ class User
 	
 	def shellPrefix
 		return isAdministrator ?
-			'# ' :
-			'$ '
+			Nil.cyan('# ') :
+			Nil.green('$ ')
 	end
 end

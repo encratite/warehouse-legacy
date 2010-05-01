@@ -2,6 +2,7 @@ require 'nil/string'
 require 'nil/file'
 
 require 'fileutils'
+require 'readline'
 
 class UserShell
 	Commands =
@@ -44,8 +45,11 @@ class UserShell
 		prefix = @user.shellPrefix
 		while true
 			begin
-				print prefix
-				line = STDIN.readline
+				line = Readline.readline(prefix, true)
+				if line == nil
+					puts 'Terminating.'
+					exit
+				end
 				tokens = line.split(' ')
 				next if tokens.empty?
 				command = tokens[0]

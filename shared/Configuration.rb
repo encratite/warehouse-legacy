@@ -44,6 +44,8 @@ module Configuration
 		FilterLengthMaximum = 128
 		FilterCountMaximum = 500
 		SearchResultMaximum = 100
+		SSHKeyMaximum = 2048
+		Group = 'scene-shell'
 	end
 	
 	module Logging

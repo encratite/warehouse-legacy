@@ -127,7 +127,7 @@ class UserShell
 			return
 		end
 		@filters.insert(user_id: @user.id, filter: filter, is_case_sensitive: caseSensitive)
-		puts "Your filter has been added."
+		success "Your filter has been added."
 	end
 	
 	def commandAddFilterInsensitive
@@ -147,7 +147,7 @@ class UserShell
 		puts Nil.white('This is a list of your filters:')
 		counter = 1
 		filters.each do |filter|
-			info = "#{counter}. #{filter[:filter]}"
+			info = "#{Nil.darkGrey counter}. #{filter[:filter]}"
 			if filter[:is_case_sensitive]
 				puts info + ' ' + Nil.darkGrey('[case sensitive]')
 			else

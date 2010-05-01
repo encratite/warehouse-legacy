@@ -21,10 +21,10 @@ useradd -M -N -G scene-shell -s /bin/scene-shell -d $USER_HOME $LOGIN
 useradd -M -N -G scene-sftp -s /usr/lib/sftp-server -d $USER_HOME $SFTP_LOGIN
 mkdir $USER_HOME
 chown $LOGIN:scene-shell $USER_HOME
-chmod 700 $USER_HOME
+#chmod 700 $USER_HOME
 ln -s ../../complete $LINK
 chown $LOGIN:scene-shell $LINK
-chmod 700 $LINK
+#chmod 700 $LINK
 cat $PASSWORD_FILE
 chpasswd < $PASSWORD_FILE
 rm $PASSWORD_FILE

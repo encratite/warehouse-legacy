@@ -82,6 +82,9 @@ class UserShell
 				rescue RegexpError => exception
 					error('You have entered an invalid regular expression: ' + exception.message)
 					next
+				rescue Sequel::DatabaseError => exception
+					error "DBMS error: #{exception.message}"
+					next
 				end
 				
 				error('Invalid command.') if !validCommand
@@ -96,7 +99,7 @@ class UserShell
 	end
 	
 	def commandHelp
-		puts Nil.green('List of available commands:')
+		puts 'List of available commands:'
 		sortedCommands = Commands.sort { |a, b| a[0] <=> b[0] }
 		names = sortedCommands.map { |x| x[0] }
 		maximum = 0
@@ -215,10 +218,6 @@ class UserShell
 			error "Your search filter exceeds the maximum length of #{@filterLengthMaximum}."
 			return
 		end
-		
-		#results = @releases.filter(name: Regexp.new(@argument))
-		#results = results.select(:site_id, :section_name, :name, :release_date, :release_size).reverse_order(:site_id)
-		#results = results.limit(@searchResultMaximum)
 		
 		operator =
 			caseSensitive ?

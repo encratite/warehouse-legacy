@@ -332,7 +332,7 @@ class UserShell
 			puts "Unknown SSH key type: #{type}"
 			return
 		end
-		sshDirectory = '~/.ssh'
+		sshDirectory = "/home/scene/user/#{@user.name}/.ssh"
 		begin
 			FileUtils.mkdir(sshDirectory)
 		rescue Errno::EEXIST

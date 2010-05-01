@@ -203,9 +203,9 @@ class UserShell
 	end
 	
 	def commandDatabase
-		puts "Number of releases in the database: #{@releases.count}"
+		puts "Number of releases in the database: #{Nil.yellow @releases.count}"
 		sizeString = Nil.getSizeString(@releases.sum(:release_size))
-		puts "Size of releases available on demand: #{sizeString}"
+		puts "Size of releases available on demand: #{Nil.yellow sizeString}"
 	end
 	
 	def commandSearch(caseSensitive)
@@ -328,10 +328,10 @@ class UserShell
 		else
 			userLevel = 'Regular user'
 		end
-		puts "User level: #{userLevel}"
+		puts "User level: #{Nil.yellow userLevel}"
 		sizeLimitString = Nil.getSizeString @releaseSizeLimit
-		puts "Size limit per release: #{sizeLimitString}"
-		puts "Search result limit: #{@searchResultMaximum}"
+		puts "Size limit per release: #{Nil.yellow sizeLimitString}"
+		puts "Search result limit: #{Nil.yellow @searchResultMaximum}"
 	end
 	
 	def commandSSH

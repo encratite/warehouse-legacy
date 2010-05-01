@@ -340,11 +340,10 @@ class UserShell
 			puts 'Unable to create the directory'
 			return
 		end
-		permission = 0700
-		FileUtils.chmod(permission, sshDirectory)
+		FileUtils.chmod(0700, sshDirectory)
 		keysFile = "#{sshDirectory}/authorized_keys"
 		Nil.writeFile(keysFile, @argument)
-		FileUtils.chmod(permission, keysFile)
+		FileUtils.chmod(0600, keysFile)
 		puts "Your SSH key has been changed."
 	end
 end

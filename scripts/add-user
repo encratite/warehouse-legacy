@@ -17,8 +17,8 @@ echo -n $LOGIN":">$PASSWORD_FILE
 ruby password.rb $LENGTH>>$PASSWORD_FILE
 echo -n $SFTP_LOGIN":">>$PASSWORD_FILE
 ruby password.rb $LENGTH>>$PASSWORD_FILE
-useradd -M -N -G scene-shell -s /bin/scene-shell -d $USER_HOME $LOGIN
-useradd -M -N -G scene-sftp -s /usr/lib/sftp-server -d $USER_HOME $SFTP_LOGIN
+useradd -M -N -g scene-shell -s /bin/scene-shell -d $USER_HOME $LOGIN
+useradd -M -N -g scene-sftp -s /usr/lib/sftp-server -d $USER_HOME $SFTP_LOGIN
 mkdir $USER_HOME
 chown $LOGIN:scene-shell $USER_HOME
 #chmod 700 $USER_HOME

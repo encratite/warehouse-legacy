@@ -83,7 +83,7 @@ class UserShell
 					error('You have entered an invalid regular expression: ' + exception.message)
 					next
 				rescue Sequel::DatabaseError => exception
-					error "DBMS error: #{exception.message}"
+					error "DBMS error: #{exception.message.chop}"
 					next
 				end
 				

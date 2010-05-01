@@ -1,7 +1,7 @@
 require 'nil/string'
 require 'nil/file'
 
-require 'FileUtils'
+require 'fileutils'
 
 class UserShell
 	Commands =

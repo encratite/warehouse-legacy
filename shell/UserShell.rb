@@ -194,7 +194,7 @@ class UserShell
 			'~' :
 			'~*'
 		
-		results = @database["select site_id, section_name, name, release_date, release_size from release where name #{operator} ? limit ?", @argument, @searchResultMaximum]
+		results = @database["select site_id, section_name, name, release_date, release_size from release where name #{operator} ? order by site_id desc limit ?", @argument, @searchResultMaximum]
 		
 		if results.empty?
 			puts 'Your search yielded no results.'

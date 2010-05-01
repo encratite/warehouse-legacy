@@ -23,7 +23,7 @@ mkdir $USER_HOME
 chown $LOGIN:scene-shell $USER_HOME
 chmod 700 $USER_HOME
 ln -s ../../complete $LINK
-chown $LOGIN:scene-shell $ULINK
+chown $LOGIN:scene-shell $LINK
 chmod 700 $LINK
 cat $PASSWORD_FILE
 chpasswd < $PASSWORD_FILE

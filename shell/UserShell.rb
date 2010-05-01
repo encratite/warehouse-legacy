@@ -203,7 +203,7 @@ class UserShell
 	end
 	
 	def commandDatabase
-		puts "Number of releases in the database: #{Nil.yellow @releases.count}"
+		puts "Number of releases in the database: #{Nil.yellow(@releases.count.to_s)}"
 		sizeString = Nil.getSizeString(@releases.sum(:release_size))
 		puts "Size of releases available on demand: #{Nil.yellow sizeString}"
 	end

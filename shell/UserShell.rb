@@ -331,7 +331,7 @@ class UserShell
 		puts "User level: #{Nil.yellow userLevel}"
 		sizeLimitString = Nil.getSizeString @releaseSizeLimit
 		puts "Size limit per release: #{Nil.yellow sizeLimitString}"
-		puts "Search result limit: #{Nil.yellow @searchResultMaximum}"
+		puts "Search result limit: #{Nil.yellow(@searchResultMaximum.to_s)}"
 	end
 	
 	def commandSSH

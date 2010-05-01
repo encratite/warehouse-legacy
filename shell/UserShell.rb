@@ -323,8 +323,8 @@ class UserShell
 			puts "Your SSH data exceeds the maximal length of #{@sshKeyMaximum}."
 			return
 		end
-		if @arguments.size != 3
-			puts "Your SSH data does not fit the following pattern: ssh-(rsa|dsa) data comment"
+		if @arguments.size < 2
+			puts "Your SSH data does not fit the following pattern: ssh-(rsa|dsa) data [comment]"
 			return
 		end
 		type = @arguments[0]
@@ -342,7 +342,7 @@ class UserShell
 		end
 		FileUtils.chmod(0700, sshDirectory)
 		keysFile = "#{sshDirectory}/authorized_keys"
-		Nil.writeFile(keysFile, @argument)
+		Nil.writeFile(keysFile, @argument + "\n")
 		FileUtils.chmod(0600, keysFile)
 		puts "Your SSH key has been changed."
 	end

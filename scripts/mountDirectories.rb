@@ -1,0 +1,11 @@
+source = '/home/void/torrent/complete'
+target = '/home/warehouse/user/'
+directory = 'all'
+
+Dir.foreach target do |user|
+	next if user[0] == '.'
+	puts "Processing #{user}"
+	current = target + user + '/' + directory
+	`mkdir #{current}`
+	`mount --bind #{source} #{current}`
+end

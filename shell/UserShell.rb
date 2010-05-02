@@ -147,7 +147,7 @@ class UserShell
 		puts Nil.white('This is a list of your filters:')
 		counter = 1
 		filters.each do |filter|
-			info = "#{Nil.darkGrey counter}. #{filter[:filter]}"
+			info = "#{counter.to_s}. #{filter[:filter]}"
 			if filter[:is_case_sensitive]
 				puts info + ' ' + Nil.darkGrey('[case sensitive]')
 			else

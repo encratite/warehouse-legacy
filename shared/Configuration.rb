@@ -36,7 +36,7 @@ module Configuration
 			'G:\\Torrent' :
 			'/home/void/torrent/torrent'
 			
-		SizeLimit = 10 * (2**30)
+		SizeLimit = 25 * (2**30)
 		#SizeLimit = 2**10
 	end
 	

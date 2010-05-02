@@ -2,7 +2,7 @@ set client_min_messages = warning;
 
 drop table if exists release cascade;
 
-create table release
+create table scene_access_data
 (
 	id serial primary key,
 	site_id integer unique not null,

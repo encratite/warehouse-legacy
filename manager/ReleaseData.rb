@@ -10,7 +10,7 @@ class ReleaseData
 	
 	Targets =
 	[
-		['Release', /<h1>(.+?)<\/h1>/, :release],
+		['Release', /<h1>(.+?)<\/h1>/, :scene_access_data],
 		['ID', /Download.+?\?id=(\d+)\"/, :id],
 		['Info hash', /<td valign=\"top\" align=left>(.+?)<\/td>/, :infoHash],
 		['Pre-time', />Pre Time<\/td>.+?>(.+?)<\/td>/, :preTimeString],

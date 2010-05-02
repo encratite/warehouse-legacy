@@ -36,10 +36,10 @@ class UserShell
 		@releaseSizeLimit = configuration::Torrent::SizeLimit
 		@database = database
 		@user = user
-		@releases = @database[:release]
+		@releases = @database[:scene_access_data]
 		@filters = @database[:user_release_filter]
 		@http = http
-		@torrentPath = configuration::Torrent::Path
+		@torrentPath = configuration::Torrent::TorrentPath
 	end
 	
 	def error(line)
@@ -224,7 +224,7 @@ class UserShell
 			'~' :
 			'~*'
 		
-		results = @database["select site_id, section_name, name, release_date, release_size from release where name #{operator} ? order by site_id desc limit ?", @argument, @searchResultMaximum]
+		results = @database["select site_id, section_name, name, release_date, release_size from scene_access_data where name #{operator} ? order by site_id desc limit ?", @argument, @searchResultMaximum]
 		
 		if results.empty?
 			warning 'Your search yielded no results.'

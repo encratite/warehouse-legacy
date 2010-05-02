@@ -8,7 +8,7 @@ require 'nil/file'
 class ReleaseHandler
 	def initialize(manager, configuration)
 		@http = manager.http
-		@torrentPath = configuration::Torrent::Path
+		@torrentPath = configuration::Torrent::TorrentPath
 		@sizeLimit = configuration::Torrent::SizeLimit
 		@database = getDatabase configuration
 		@manager = manager
@@ -45,7 +45,7 @@ class ReleaseHandler
 	def insertData(releaseData)
 		begin
 			insertData = releaseData.getData
-			@database[:release].insert(insertData)
+			@database[:scene_access_data].insert(insertData)
 		rescue	Sequel::DatabaseError => exception
 			output "DBMS exception: #{exception.message}"
 		end

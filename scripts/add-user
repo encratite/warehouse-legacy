@@ -11,17 +11,14 @@ SFTP_LOGIN=$1-sftp
 LENGTH=20
 PASSWORD_FILE=logins
 USER_HOME=/home/warehouse/user/$LOGIN
-LINK=$USER_HOME/complete
 
 echo -n $LOGIN":">$PASSWORD_FILE
 ruby password.rb $LENGTH>>$PASSWORD_FILE
 echo -n $SFTP_LOGIN":">>$PASSWORD_FILE
 ruby password.rb $LENGTH>>$PASSWORD_FILE
 useradd -M -N -g warehouse-shell -s /bin/warehouse-shell -d $USER_HOME $LOGIN
-useradd -M -N -g warehouse-sftp -s /usr/lib/sftp-server -d $USER_HOME $SFTP_LOGIN
+useradd -M -N -g warehouse-sftp -s /bin/false -d $USER_HOME $SFTP_LOGIN
 mkdir $USER_HOME
-chown $LOGIN:warehouse-shell $USER_HOME
-ln -s ../../complete $LINK
 cat $PASSWORD_FILE
 chpasswd < $PASSWORD_FILE
 rm $PASSWORD_FILE

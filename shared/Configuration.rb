@@ -31,7 +31,7 @@ module Configuration
 	end
 	
 	module Torrent
-		Path =
+		TorrentPath =
 			Nil.getOS === :windows ?
 			'G:\\Torrent' :
 			'/home/void/torrent/torrent'

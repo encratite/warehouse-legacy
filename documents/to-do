@@ -1,0 +1,8 @@
+script which cleans up the disk on a regular basis
+add tcng/tcc QoS stuff - requires a newer kernel
+HTTP URL should be retrieved from details, not from the DB
+implement filter categories with symbolic links
+add NFO filtering
+solve the on-download notification problem
+need status stuff, XMLRPC data from rtorrent
+integrate further sites

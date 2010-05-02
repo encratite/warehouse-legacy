@@ -16,7 +16,7 @@ module Configuration
 		Host = '127.0.0.1'
 		User = 'void'
 		Password = ''
-		Database = 'scene_access'
+		Database = 'warehouse'
 	end
 	
 	module ReleaseChannel

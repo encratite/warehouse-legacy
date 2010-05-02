@@ -348,7 +348,7 @@ class UserShell
 			error "Unknown SSH key type: #{type}"
 			return
 		end
-		sshDirectory = "/home/scene/user/#{@user.name}/.ssh"
+		sshDirectory = "/home/warehouse/user/#{@user.name}/.ssh"
 		begin
 			FileUtils.mkdir(sshDirectory)
 		rescue Errno::EEXIST

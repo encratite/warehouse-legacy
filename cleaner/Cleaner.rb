@@ -5,7 +5,7 @@ require 'nil/time'
 require 'fileutils'
 
 class Cleaner
-	Debugging = true
+	Debugging = false
 	
 	def initialize(configuration)
 		@torrentPath = configuration::Torrent::TorrentPath

@@ -20,10 +20,7 @@ class ReleaseHandler
 	end
 	
 	def isReleaseOfInterest(release, caseSensitive)
-		if release == nil
-			puts 'Release is nil!'
-			exit
-		end
+		puts "isReleaseOfInterest called with #{release.inspect}, #{caseSensitive.inspect}"
 		operator =
 			caseSensitive ?
 			'~' :

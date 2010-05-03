@@ -41,6 +41,11 @@ module Configuration
 		DownloadPath =
 			Nil.getOS == :windows ?
 			'G:\BTTemp' :
+			'/home/void/torrent/download'
+			
+		DownloadDonePath =
+			Nil.getOS == :windows ?
+			'G:\BTTemp' :
 			'/home/void/torrent/complete'
 			
 		Gigabyte = 2**30

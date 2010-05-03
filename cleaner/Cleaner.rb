@@ -1,5 +1,6 @@
 require 'nil/string'
 require 'nil/file'
+require 'nil/time'
 
 require 'fileutils'
 
@@ -23,7 +24,7 @@ class Cleaner
 		end
 	end
 	
-	def getSortFiles(path)
+	def getSortedFiles(path)
 		input = Nil.readDirectory path
 		return input.sort do |x, y|
 			x.timeCreated <=> y.timeCreated
@@ -50,7 +51,7 @@ class Cleaner
 	
 	def deleteFile(path)
 		puts "Deleting file #{path}"
-		FileUtil.rm path if !Debugging
+		FileUtil.rm_f path if !Debugging
 	end
 	
 	def orphanCheck
@@ -73,31 +74,36 @@ class Cleaner
 	end
 	
 	def getFreeSpace
+		return 0 if Debugging
 		return Nil.getFreeSpace @downloadPath
 	end
 	
-	def freeSpaceInDirectory(entries)
-		return false if entries.empty?
+	def freeSpaceInDirectory(entries, directory)
+		puts "Attempting to free space in directory #{directory}"
+		if entries.empty?
+			puts 'This directory is empty'
+			return false
+		end
 		target = entries[0]
 		deleteDirectory target.path
-		torrentFile = File.extend_Path(target.name + '.torrent', @torrentPath)
+		torrentFile = File.expand_path(target.name + '.torrent', @torrentPath)
 		deleteFile torrentFile
 		return true
 	end
 	
 	def freeCompletedDownloadSpace
-		return freeSpaceInDirectory @completedDownloads
+		return freeSpaceInDirectory(@completedDownloads, @downloadDonePath)
 	end
 	
 	def freeDownloadSpace
-		return freeSpaceInDirectory @downloads
+		return freeSpaceInDirectory(@downloads, @downloadPath)
 	end
 	
 	def freeSomeSpace
 		freeSpace = getFreeSpace
 		freeSpaceString = Nil.getSizeString freeSpace
 		freeSpaceMinimumString = Nil.getSizeString @freeSpaceMinimum
-		infoString = "#{Time.now.utc} Free space: #{freeSpaceString}, required minimum: #{freeSpaceMinimumString}"
+		infoString = "#{Nil.timestamp} Free space: #{freeSpaceString}, required minimum: #{freeSpaceMinimumString}"
 		if freeSpace > @freeSpaceMinimum
 			puts "#{infoString} - no action required"
 			return false
@@ -107,7 +113,7 @@ class Cleaner
 		@completedDownloads = getCompletedDownloads
 		@torrents = getTorrents
 		orphanCheck
-		return true if getFreeSpace < @freeSpaceMinimum
+		return true if getFreeSpace > @freeSpaceMinimum
 		return true if freeCompletedDownloadSpace
 		freeDownloadSpace
 		return true

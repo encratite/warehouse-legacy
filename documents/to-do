@@ -1,4 +1,5 @@
 script which cleans up the disk on a regular basis
+add more customisation features to the search results
 add tcng/tcc QoS stuff - requires a newer kernel
 HTTP URL should be retrieved from details, not from the DB
 implement filter categories with symbolic links

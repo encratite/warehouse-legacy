@@ -1,4 +1,5 @@
 require 'nil/string'
+require 'nil/file'
 
 require 'fileutils'
 
@@ -96,7 +97,7 @@ class Cleaner
 		freeSpace = getFreeSpace
 		freeSpaceString = Nil.getSizeString freeSpace
 		freeSpaceMinimumString = Nil.getSizeString @freeSpaceMinimum
-		infoString = "#{Time.now.UTC} Free space: #{freeSpaceString}, required minimum: #{freeSpaceMinimumString}"
+		infoString = "#{Time.now.utc} Free space: #{freeSpaceString}, required minimum: #{freeSpaceMinimumString}"
 		if freeSpace > @freeSpaceMinimum
 			puts "#{infoString} - no action required"
 			return false

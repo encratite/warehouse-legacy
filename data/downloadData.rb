@@ -6,7 +6,7 @@ require 'HTTPHandler'
 require 'Configuration'
 
 def getHTTPHandler(configuration)
-	http = HTTPHandler.new(configuration::Cookie::UId, configuration::Cookie::Pass)
+	http = HTTPHandler.new(configuration::SceneAccess::Cookie::UId, configuration::SceneAccess::Cookie::Pass)
 	return http
 end
 

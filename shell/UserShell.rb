@@ -32,7 +32,6 @@ class UserShell
 		@filterCountMaximum = configuration::Shell::FilterCountMaximum
 		@searchResultMaximum = configuration::Shell::SearchResultMaximum
 		@sshKeyMaximum = configuration::Shell::SSHKeyMaximum
-		@group = configuration::Shell::Group
 		@releaseSizeLimit = configuration::Torrent::SizeLimit
 		@database = database
 		@user = user

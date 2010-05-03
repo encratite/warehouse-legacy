@@ -33,11 +33,15 @@ module Configuration
 	module Torrent
 		TorrentPath =
 			Nil.getOS === :windows ?
-			'G:\\Torrent' :
+			'G:\Torrent' :
 			'/home/void/torrent/torrent'
 			
+		DownloadPath =
+			Nil.getOS == :windows ?
+			'G:\BTTemp' :
+			'/home/void/torrent/complete'
+			
 		SizeLimit = 25 * (2**30)
-		#SizeLimit = 2**10
 	end
 	
 	module Shell
@@ -45,7 +49,6 @@ module Configuration
 		FilterCountMaximum = 500
 		SearchResultMaximum = 100
 		SSHKeyMaximum = 2048
-		Group = 'scene-shell'
 	end
 	
 	module Logging

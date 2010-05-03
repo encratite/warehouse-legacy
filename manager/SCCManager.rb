@@ -9,17 +9,17 @@ class SCCManager
 	def initialize(configuration)
 		@configuration = configuration
 		
-		cookieData = configuration::Cookie
+		cookieData = configuration::SceneAccess::Cookie
 		uId = cookieData::UId
 		pass = cookieData::Pass
 		
 		@http = HTTPHandler.new(uId, pass)
 		
-		ircData = configuration::IRC
+		ircData = configuration::SceneAccess::IRC
 		server = ircData::Server
 		nick = ircData::Nick
 		
-		channelConfiguration = configuration.const_get(:ReleaseChannel)
+		channelConfiguration = configuration::SceneAccess::ReleaseChannel
 		
 		@releaseHandler = ReleaseHandler.new(self, configuration)
 		@irc = IRCHandler.new(channelConfiguration, self, server, nick)

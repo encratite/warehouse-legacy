@@ -338,7 +338,7 @@ class UserShell
 			error "Your SSH data exceeds the maximal length of #{@sshKeyMaximum}."
 			return
 		end
-		if @arguments.size < 2
+		if @arguments.size < 2 || @arguments.index("\n") != nil
 			error "Your SSH data does not fit the following pattern: ssh-(rsa|dsa) data [comment]"
 			return
 		end

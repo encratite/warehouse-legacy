@@ -45,7 +45,12 @@ module Configuration
 			
 		Gigabyte = 2**30
 		SizeLimit = 25 * Gigabyte
-		FreeSpaceMinimum = 10 * Gigabyte
+		
+		module Cleaner
+			FreeSpaceMinimum = 10 * Gigabyte
+			#delay in seconds
+			CheckDelay = 30
+		end
 	end
 	
 	module Shell

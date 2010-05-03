@@ -60,6 +60,7 @@ class ReleaseHandler
 	end
 	
 	def processMessage(release, url)
+		puts "processMessage called with #{release.inspect}, #{url.inspect}"
 		prefix = 'http://'
 		return if url.size <= prefix.size
 		offset = url.index('/', prefix.size)

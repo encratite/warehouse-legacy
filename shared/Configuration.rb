@@ -43,7 +43,9 @@ module Configuration
 			'G:\BTTemp' :
 			'/home/void/torrent/complete'
 			
-		SizeLimit = 25 * (2**30)
+		Gigabyte = 2**30
+		SizeLimit = 25 * Gigabyte
+		FreeSpaceMinimum = 10 * Gigabyte
 	end
 	
 	module Shell

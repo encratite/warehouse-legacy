@@ -1,0 +1,4 @@
+$:.concat ['../shared']
+
+require 'Configuration'
+

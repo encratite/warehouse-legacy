@@ -26,6 +26,7 @@ class ReleaseHandler
 			'~' :
 			'~*'
 		result = @database["select user_data.name as user_name, user_release_filter.filter as user_filter from user_release_filter, user_data where ? #{operator} user_release_filter.filter and user_data.id = user_release_filter.user_id and user_release_filter.is_case_sensitive = ?", release, caseSensitive]
+		puts "SQL: #{result.sql}"
 		matchCount = result.count
 		isOfInterest = matchCount > 0
 		if isOfInterest

@@ -25,7 +25,7 @@ class ReleaseData
 		['Torrent path', /Download \(SSH\).+?href=\"(.+?)\"/, :path]
 	]
 	
-	Debugging = false
+	Debugging = true
 	
 	def initialize(input)
 		processInput(input)

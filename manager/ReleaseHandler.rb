@@ -47,6 +47,7 @@ class ReleaseHandler
 	def insertData(releaseData)
 		begin
 			insertData = releaseData.getData
+			puts "Inserting new data: #{insertData.inspect}"
 			@database[:scene_access_data].insert(insertData)
 		rescue	Sequel::DatabaseError => exception
 			output "DBMS exception: #{exception.message}"

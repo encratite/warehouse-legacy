@@ -20,13 +20,11 @@ class ReleaseHandler
 	end
 	
 	def isReleaseOfInterest(release, caseSensitive)
-		puts "isReleaseOfInterest called with #{release.inspect}, #{caseSensitive.inspect}"
 		operator =
 			caseSensitive ?
 			'~' :
 			'~*'
 		result = @database["select user_data.name as user_name, user_release_filter.filter as user_filter from user_release_filter, user_data where ? #{operator} user_release_filter.filter and user_data.id = user_release_filter.user_id and user_release_filter.is_case_sensitive = ?", release, caseSensitive]
-		puts "SQL: #{result.sql}"
 		matchCount = result.count
 		isOfInterest = matchCount > 0
 		if isOfInterest
@@ -47,7 +45,6 @@ class ReleaseHandler
 	def insertData(releaseData)
 		begin
 			insertData = releaseData.getData
-			puts "Inserting new data: #{insertData.inspect}"
 			@database[:scene_access_data].insert(insertData)
 		rescue	Sequel::DatabaseError => exception
 			output "DBMS exception: #{exception.message}"
@@ -59,7 +56,6 @@ class ReleaseHandler
 	end
 	
 	def processMessage(release, url)
-		puts "processMessage called with #{release.inspect}, #{url.inspect}"
 		prefix = 'http://'
 		return if url.size <= prefix.size
 		offset = url.index('/', prefix.size)

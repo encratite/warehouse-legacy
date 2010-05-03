@@ -10,7 +10,7 @@ class ReleaseData
 	
 	Targets =
 	[
-		['Release', /<h1>(.+?)<\/h1>/, :scene_access_data],
+		['Release', /<h1>(.+?)<\/h1>/, :name],
 		['ID', /Download.+?\?id=(\d+)\"/, :id],
 		['Info hash', /<td valign=\"top\" align=left>(.+?)<\/td>/, :infoHash],
 		['Pre-time', />Pre Time<\/td>.+?>(.+?)<\/td>/, :preTimeString],
@@ -25,7 +25,7 @@ class ReleaseData
 		['Torrent path', /Download \(SSH\).+?href=\"(.+?)\"/, :path]
 	]
 	
-	Debugging = true
+	Debugging = false
 	
 	def initialize(input)
 		processInput(input)

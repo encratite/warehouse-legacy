@@ -1,9 +1,17 @@
-script which cleans up the disk on a regular basis
-add more customisation features to the search results
-add tcng/tcc QoS stuff - requires a newer kernel
+To do:
+
 HTTP URL should be retrieved from details, not from the DB
+add more customisation features to the search results
 implement filter categories with symbolic links
 add NFO filtering
 solve the on-download notification problem
 need status stuff, XMLRPC data from rtorrent
 integrate further sites
+
+Problematic stuff:
+
+add tcng/tcc QoS stuff - requires a newer kernel
+
+Done:
+
+script which cleans up the disk on a regular basis (might not be working though)

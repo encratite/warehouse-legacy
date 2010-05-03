@@ -5,26 +5,32 @@ require 'nil/console'
 require 'fileutils'
 require 'readline'
 
+require 'ReleaseData'
+
+class HTTPError < StandardError
+end
+
 class UserShell
+	CaseSensitiveMarker = '(?c)'
+	
 	Commands =
 	[
 		['?', 'prints this help', :commandHelp],
 		['help', 'prints this help', :commandHelp],
-		['add <regexp>', 'add a new release filter to your account (case insensitive)', :commandAddFilterInsensitive],
-		['add-cs <regexp>', 'the case sensitive version of the add command', :commandAddFilterSensitive],
+		['add <regexp>', 'add a new release filter to your account', :commandAddFilter],
 		['list', 'retrieve a list of your filters', :commandListFilters],
 		['delete <index 1> <...>', 'removes one or several filters which are identified by their numeric index', :commandDeleteFilter],
 		['clear', 'remove all your release filters', :commandClearFilters],
 		['database', 'get statistics on the database', :commandDatabase],
-		['search <regexp>', 'search the database for release names matching the regular expression (case insensitive)', :commandSearchInsensitive],
-		['search-cs <regexp>', 'the case sensitive version of the search command', :commandSearchSensitive],
+		['search <regexp>', 'search the database for release names matching the regular expression', :commandSearch],
 		['download <ID or name>', 'start the download of a release', :commandDownload],
 		['status', 'retrieve the status of downloads in progress', :commandStatus],
 		['cancel', 'cancel a download', :commandCancel],
 		['permissions', 'view your permissions/limits', :commandPermissions],
 		['exit', 'terminate your session', :commandExit],
 		['quit', 'terminate your session', :commandExit],
-		['ssh <SSH key data>', 'set the SSH key in your authorized_keys to authenticate without a password prompt', :commandSSH]
+		['ssh <SSH key data>', 'set the SSH key in your authorized_keys to authenticate without a password prompt', :commandSSH],
+		['regexp-help', 'a short introduction to the regular expressions used by this system', :commandRegexpHelp]
 	]
 	
 	def initialize(configuration, database, user, http)
@@ -35,7 +41,7 @@ class UserShell
 		@releaseSizeLimit = configuration::Torrent::SizeLimit
 		@database = database
 		@user = user
-		@releases = @database[:scene_access_data]
+		@sccReleases = @database[:scene_access_data]
 		@filters = @database[:user_release_filter]
 		@http = http
 		@torrentPath = configuration::Torrent::TorrentPath
@@ -59,7 +65,7 @@ class UserShell
 			begin
 				line = Readline.readline(prefix, true)
 				if line == nil
-					puts Nil.blue('Terminating.')
+					puts Nil.cyan('Terminating.')
 					exit
 				end
 				tokens = line.split(' ')
@@ -88,10 +94,10 @@ class UserShell
 				
 				error('Invalid command.') if !validCommand
 			rescue Interrupt
-				puts Nil.blue('Interrupt.')
+				puts Nil.cyan('Interrupt.')
 				exit
 			rescue EOFError
-				puts Nil.blue('Terminating.')
+				puts Nil.cyan('Terminating.')
 				exit
 			end
 		end
@@ -111,7 +117,7 @@ class UserShell
 		end
 	end
 	
-	def commandAddFilter(caseSensitive)
+	def commandAddFilter
 		if @argument.empty?
 			warning 'Please specify a filter to add.'
 			return
@@ -125,20 +131,12 @@ class UserShell
 			error "You have too many filters already (#{filterCountMaximum})."
 			return
 		end
-		@filters.insert(user_id: @user.id, filter: filter, is_case_sensitive: caseSensitive)
+		@filters.insert(user_id: @user.id, filter: filter)
 		success "Your filter has been added."
 	end
 	
-	def commandAddFilterInsensitive
-		commandAddFilter false
-	end
-	
-	def commandAddFilterSensitive
-		commandAddFilter true
-	end
-	
 	def commandListFilters
-		filters = @filters.where(user_id: @user.id).select(:filter, :is_case_sensitive)
+		filters = @filters.where(user_id: @user.id).select(:filter)
 		if filters.empty?
 			puts 'You currently have no filters.'
 			return
@@ -146,12 +144,7 @@ class UserShell
 		puts Nil.white('This is a list of your filters:')
 		counter = 1
 		filters.each do |filter|
-			info = "#{counter.to_s}. #{filter[:filter]}"
-			if filter[:is_case_sensitive]
-				puts info + ' ' + Nil.darkGrey('[case sensitive]')
-			else
-				puts info
-			end
+			puts "#{counter.to_s}. #{filter[:filter]}"
 			counter += 1
 		end
 	end
@@ -202,12 +195,12 @@ class UserShell
 	end
 	
 	def commandDatabase
-		puts "Number of releases in the database: #{Nil.yellow(@releases.count.to_s)}"
-		sizeString = Nil.getSizeString(@releases.sum(:release_size))
+		puts "Number of releases in the database: #{Nil.yellow(@sccReleases.count.to_s)}"
+		sizeString = Nil.getSizeString(@sccReleases.sum(:release_size))
 		puts "Size of releases available on demand: #{Nil.yellow sizeString}"
 	end
 	
-	def commandSearch(caseSensitive)
+	def commandSearch
 		if @argument.empty?
 			warning "Specify a regular expression to look for."
 			return
@@ -218,12 +211,10 @@ class UserShell
 			return
 		end
 		
-		operator =
-			caseSensitive ?
-			'~' :
-			'~*'
-		
-		results = @database["select site_id, section_name, name, release_date, release_size from scene_access_data where name #{operator} ? order by site_id desc limit ?", @argument, @searchResultMaximum]
+		results = @sccReleases.filter(name: getRegexp(@argument))
+		results = results.select(:site_id, :section_name, :name, :release_date, :release_size)
+		results = results.reverse_order(:site_id)
+		results = results.limit(@searchResultMaximum)
 		
 		if results.empty?
 			warning 'Your search yielded no results.'
@@ -241,29 +232,25 @@ class UserShell
 		end
 	end
 	
-	def commandSearchInsensitive
-		commandSearch(false)
-	end
-	
-	def commandSearchSensitive
-		commandSearch(true)
-	end
-	
-	def commandDownload
-		if @argument.empty?
-			warning "You have not specified a release to download."
-			return
-		end
-		
-		if @argument.isNumber
-			id = @argument.to_i
-			result = @releases.where(site_id: id)
+	def getRegexp(string)
+		if string.index(CaseSensitiveMarker) == nil
+			string = "(?i)#{string}"
 		else
-			result = @releases.filter(name: Regexp.new(@argument))
+			string = string.gsub(CaseSensitiveMarker, '')
 		end
-		result = result.select(:name, :torrent_path, :release_size)
+		return Regexp.new string
+	end
+	
+	def sceneAccessDownload(target)
+		if target.isNumber
+			id = target.to_i
+			result = @sccReleases.where(site_id: id)
+		else
+			result = @sccReleases.filter(name: getRegexp(target))
+		end
+		result = result.select(:name, :site_id, :release_size)
 		if result.empty?
-			puts 'Unable to find the release you have specified.'
+			error 'Unable to find the release you have specified.'
 			return
 		end
 		result = result.first
@@ -273,37 +260,57 @@ class UserShell
 			sizeString = Nil.getSizeString size
 			sizeLimitString = Nil.getSizeString @releaseSizeLimit
 			
-			puts "This release has a size of #{sizeString} which exceeds the current limit of #{sizeLimitString}"
+			error "This release has a size of #{sizeString} which exceeds the current limit of #{sizeLimitString}"
 			return
 		end
 		
 		puts "Attempting to queue release #{result[:name]}"
 		
-		httpPath = result[:torrent_path]
+		administrator = 'please contact the administrator'
 		
-		torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)
-		if torrentMatch == nil
-			error 'Database error: Unable to queue release'
+		begin
+			detailsPath = "/details.php?id=#{result[:site_id]}"
+			data = @http.get detailsPath
+			raise HTTPError.new 'Unable to retrieve details on this release' if data == nil
+			
+			releaseData = ReleaseData.new data
+			httpPath = releaseData.path
+			
+			torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)
+			raise HTTPError.new 'Unable to extract the filename from the details' if torrentMatch == nil
+			torrent = torrentMatch[1]
+			
+			torrentPath = File.expand_path(torrent, @torrentPath)
+			
+			if Nil.readFile(torrentPath) != nil
+				warning 'This release had already been queued, overwriting it'
+				#return
+			end
+			
+			data = @http.get(httpPath)
+			if data == nil
+				error 'HTTP error: Unable to queue release - please contact the administrator'
+				return
+			end
+			
+			Nil.writeFile(torrentPath, data)
+			
+			success 'Success!'
+		rescue HTTPError => exception
+			error "HTTP error: #{exception.message} - #{administrator}"
+		rescue ReleaseData::Error => exception
+			error "An error occured parsing the details: #{exception.message} - #{administrator}"
+		end
+	end
+	
+	def commandDownload
+		if @argument.empty?
+			warning "You have not specified a release to download."
 			return
 		end
-		torrent = torrentMatch[1]
 		
-		torrentPath = File.expand_path(torrent, @torrentPath)
-		
-		if Nil.readFile(torrentPath) != nil
-			warning 'This release had already been queued, overwriting it'
-			#return
-		end
-		
-		data = @http.get(httpPath)
-		if data == nil
-			error 'HTTP error: Unable to queue release - please contact the administrator'
-			return
-		end
-		
-		Nil.writeFile(torrentPath, data)
-		
-		success 'Success!'
+		#right now, there's only SCC
+		sceneAccessDownload @argument
 	end
 	
 	def commandStatus
@@ -360,5 +367,44 @@ class UserShell
 		Nil.writeFile(keysFile, @argument + "\n")
 		FileUtils.chmod(0600, keysFile)
 		success 'Your SSH key has been changed.'
+	end
+	
+	RegexpExamples =
+	[
+		['abc', "matches #{Nil.white 'blahAbc'} and #{Nil.white 'ABC!'}"],
+		['first.*second', "equivalent to the 'wildcard' style notation #{Nil.white 'first*second'}, matches #{Nil.white 'xfirst123second'}"],
+		['release\.name', 'you will need to escape actual dots in scene release names since the dot is a special regexp symbol for "match any character"'],
+		['(a|b)', "matches all names containing an #{Nil.white 'a'} or a #{Nil.white 'b'}"],
+		['^blah', "matches all names starting with #{Nil.white 'blah'}, like #{Nil.white 'blahx'} but not #{Nil.white 'xblah'}"],
+		['blah$', "matches all names ending with #{Nil.white 'blah'}, like #{Nil.white 'xblah'} but not #{Nil.white 'blahx'}"],
+	]
+	
+	def padEntries(input)
+		maximum = 0
+		input.each do |array|
+			size = array[0].size
+			maximum = size if size > maximum
+		end
+		output = input.map do |array|
+			left = array[0]
+			left = left + (' ' * (maximum - left.size))
+			newArray = [left]
+			newArray += array[1..-1]
+			newArray
+		end
+		return output
+	end
+	
+	def commandRegexpHelp
+		puts "Here is a list of examples:"
+		puts ''
+		maximum = 0
+		padEntries(RegexpExamples).each do |example|
+			expression = example[0]
+			description = example[1]
+			puts "#{Nil.white expression} - #{description}"
+		end
+		puts "\nSearches are #{Nil.white 'case insensitive'} by default (unlike real regular expressions)."
+		puts "This system permits you to prefix a regular expression with #{Nil.white '(?c)'} in order to create a case-sensitive expression."
 	end
 end

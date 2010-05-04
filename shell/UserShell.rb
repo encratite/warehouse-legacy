@@ -126,9 +126,11 @@ class UserShell
 			return
 		end
 		if @filters.where(user_id: @user.id).count > @filterCountMaximum
-			error "You have too many filters already (#{filterCountMaximum})."
+			error "You have too many filters (#{filterCountMaximum})."
 			return
 		end
+		#check if it is a valid regular expression first
+		@database["select 1 where '' ~* ?", @argument].all
 		@filters.insert(user_id: @user.id, filter: filter)
 		success "Your filter has been added."
 	end
@@ -209,11 +211,13 @@ class UserShell
 			return
 		end
 		
-		results = @sccReleases.filter(:name.ilike(@argument))
-		results = results.select(:site_id, :section_name, :name, :release_date, :release_size)
-		results = results.reverse_order(:site_id)
-		results = results.limit(@searchResultMaximum)
-		puts results.sql
+		#results = @sccReleases.filter(:name.ilike(@argument))
+		#results = results.select(:site_id, :section_name, :name, :release_date, :release_size)
+		#results = results.reverse_order(:site_id)
+		#results = results.limit(@searchResultMaximum)
+		#puts results.sql
+		
+		results = @database['select site_id, section_name, name, release_date, release_size from scene_access_data where name ~* ? order by site_id desc limit ?', @argument, @searchResultMaximum]
 		
 		if results.empty?
 			warning 'Your search yielded no results.'
@@ -234,11 +238,13 @@ class UserShell
 	def sceneAccessDownload(target)
 		if target.isNumber
 			id = target.to_i
-			result = @sccReleases.where(site_id: id)
+			#result = @sccReleases.where(site_id: id)
+			result = @database['select name, site_id, release_size from scene_access_data where site_id = ?', id]
 		else
-			result = @sccReleases.filter(:name.ilike(target))
+			#result = @sccReleases.filter(:name.ilike(target))
+			result = @database['select name, site_id, release_size from scene_access_data where name ~* ?', target]
 		end
-		result = result.select(:name, :site_id, :release_size)
+		#result = result.select(:name, :site_id, :release_size)
 		if result.empty?
 			error 'Unable to find the release you have specified.'
 			return

@@ -46,7 +46,13 @@ class ReleaseHandler
 	def insertData(releaseData)
 		begin
 			insertData = releaseData.getData
-			@database[:scene_access_data].insert(insertData)
+			dataset = @database[:scene_access_data]
+			result = dataset.where(site_id: insertData[:site_id])
+			if result.count > 0
+				puts 'This entry already exists - overwriting it'
+				dataset.delete
+			end
+			dataset.insert(insertData)
 		rescue	Sequel::DatabaseError => exception
 			output "DBMS exception: #{exception.message}"
 		end

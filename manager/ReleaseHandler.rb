@@ -29,7 +29,7 @@ class ReleaseHandler
 		matchCount = results.count
 		isOfInterest = matchCount > 0
 		if isOfInterest
-			output "Matches with operator #{operator}:"
+			output "Matches"
 			filterDictionary = {}
 			results.each do |row|
 				name = row[:user_name]

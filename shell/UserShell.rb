@@ -11,8 +11,6 @@ class HTTPError < StandardError
 end
 
 class UserShell
-	CaseSensitiveMarker = '(?c)'
-	
 	Commands =
 	[
 		['?', 'prints this help', :commandHelp],
@@ -211,10 +209,11 @@ class UserShell
 			return
 		end
 		
-		results = @sccReleases.filter(name: getRegexp(@argument))
+		results = @sccReleases.filter(:name.ilike(@argument))
 		results = results.select(:site_id, :section_name, :name, :release_date, :release_size)
 		results = results.reverse_order(:site_id)
 		results = results.limit(@searchResultMaximum)
+		puts results.sql
 		
 		if results.empty?
 			warning 'Your search yielded no results.'
@@ -232,21 +231,12 @@ class UserShell
 		end
 	end
 	
-	def getRegexp(string)
-		if string.index(CaseSensitiveMarker) == nil
-			string = "(?i)#{string}"
-		else
-			string = string.gsub(CaseSensitiveMarker, '')
-		end
-		return Regexp.new string
-	end
-	
 	def sceneAccessDownload(target)
 		if target.isNumber
 			id = target.to_i
 			result = @sccReleases.where(site_id: id)
 		else
-			result = @sccReleases.filter(name: getRegexp(target))
+			result = @sccReleases.filter(:name.ilike(target))
 		end
 		result = result.select(:name, :site_id, :release_size)
 		if result.empty?
@@ -404,7 +394,7 @@ class UserShell
 			description = example[1]
 			puts "#{Nil.white expression} - #{description}"
 		end
-		puts "\nSearches are #{Nil.white 'case insensitive'} by default (unlike real regular expressions)."
-		puts "This system permits you to prefix a regular expression with #{Nil.white '(?c)'} in order to create a case-sensitive expression."
+		puts "\nSearches are #{Nil.white 'case insensitive'} by default."
+		puts "This system permits you to create case sensitive expressions using the overriding #{Nil.white '(?c)'} prefix."
 	end
 end

@@ -19,18 +19,19 @@ class ReleaseHandler
 		exit
 	end
 	
-	def isReleaseOfInterest(release, caseSensitive)
-		operator =
-			caseSensitive ?
-			'~' :
-			'~*'
-		result = @database["select user_data.name as user_name, user_release_filter.filter as user_filter from user_release_filter, user_data where ? #{operator} user_release_filter.filter and user_data.id = user_release_filter.user_id and user_release_filter.is_case_sensitive = ?", release, caseSensitive]
-		matchCount = result.count
+	def isReleaseOfInterest(release)	
+		results = @database["select user_data.name as user_name, user_release_filter.filter as user_filter from user_release_filter, user_data where ? ~* user_release_filter.filter and user_data.id = user_release_filter.user_id", release]
+		
+		#results = @database[:user_release_filter].join(:user_data, :id => :user_id)
+		#results = results.select(:user_data__name.as(:user_name), :user_release_filter__filter.as(:user_filter))
+		#results = results.where(release.ilike(:user_release_filter__filter))
+		
+		matchCount = results.count
 		isOfInterest = matchCount > 0
 		if isOfInterest
 			output "Matches with operator #{operator}:"
 			filterDictionary = {}
-			result.each do |row|
+			results.each do |row|
 				name = row[:user_name]
 				filterDictionary[name] = [] if filterDictionary[name] == nil
 				filterDictionary[name] << row[:user_filter]
@@ -70,7 +71,7 @@ class ReleaseHandler
 			isOfInterest = false
 			@database.transaction do
 				insertData(releaseData)
-				isOfInterest = isReleaseOfInterest(release, false) || isReleaseOfInterest(release, true)
+				isOfInterest = isReleaseOfInterest release
 			end
 			if isOfInterest
 				output "Discovered a release of interest: #{release}"

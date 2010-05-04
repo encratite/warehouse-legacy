@@ -29,6 +29,8 @@ create table user_data
 	id serial primary key,
 	name text unique not null,
 	email text default null,
+	--null if the standard search format is used
+	search_format text default null,
 	is_administrator boolean not null default false
 );
 
@@ -40,5 +42,5 @@ create table user_release_filter
 	user_id integer references user_data(id) not null,
 	filter text not null,
 	--may be null if no category is set
-	category text
+	category text default null
 );

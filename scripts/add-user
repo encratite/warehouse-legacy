@@ -12,8 +12,10 @@ LENGTH=20
 PASSWORD_FILE=logins
 USER_HOME=/home/warehouse/user/$LOGIN
 SSH_DIRECTORY=$USER_HOME/.ssh
-SHELL_GROUP = warehouse-shell
-SFTP_GROUP = warehouse-sftp
+ORIGINAL_DOWNLOAD_DIRECTORY=/home/void/torrent/complete
+USER_DOWNLOAD_DIRECTORY=$USER_HOME/all
+SHELL_GROUP=warehouse-shell
+SFTP_GROUP=warehouse-sftp
 
 echo -n $LOGIN":">$PASSWORD_FILE
 ruby password.rb $LENGTH>>$PASSWORD_FILE
@@ -24,6 +26,8 @@ useradd -M -N -g $SFTP_GROUP -s /bin/false -d $USER_HOME $SFTP_LOGIN
 mkdir $USER_HOME
 mkdir $SSH_DIRECTORY
 chown $LOGIN:$SHELL_GROUP $SSH_DIRECTORY
+mkdir $USER_DOWNLOAD_DIRECTORY
+mount --bind $ORIGINAL_DOWNLOAD_DIRECTORY $USER_DOWNLOAD_DIRECTORY
 cat $PASSWORD_FILE
 chpasswd < $PASSWORD_FILE
 rm $PASSWORD_FILE

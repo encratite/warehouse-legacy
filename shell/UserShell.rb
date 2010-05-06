@@ -28,7 +28,8 @@ class UserShell
 		['exit', 'terminate your session', :commandExit],
 		['quit', 'terminate your session', :commandExit],
 		['ssh <SSH key data>', 'set the SSH key in your authorized_keys to authenticate without a password prompt', :commandSSH],
-		['regexp-help', 'a short introduction to the regular expressions used by this system', :commandRegexpHelp]
+		['regexp-help', 'a short introduction to the regular expressions used by this system', :commandRegexpHelp],
+		['category <path> <filter 1> <...>', 'assign a folder to a set of filters', :commandCategory],
 	]
 	
 	def initialize(configuration, database, user, http)
@@ -43,6 +44,8 @@ class UserShell
 		@filters = @database[:user_release_filter]
 		@http = http
 		@torrentPath = configuration::Torrent::Path::Torrent
+		@userPath = configuration::Torrent::Path::User
+		@filteredPath = configuration::Torrent::Path::Filtered
 	end
 	
 	def error(line)
@@ -136,7 +139,7 @@ class UserShell
 	end
 	
 	def commandListFilters
-		filters = @filters.where(user_id: @user.id).select(:filter)
+		filters = @filters.where(user_id: @user.id).select(:filter, :category)
 		if filters.empty?
 			puts 'You currently have no filters.'
 			return
@@ -144,9 +147,42 @@ class UserShell
 		puts Nil.white('This is a list of your filters:')
 		counter = 1
 		filters.each do |filter|
-			puts "#{counter.to_s}. #{filter[:filter]}"
+			info = "#{counter.to_s}. #{filter[:filter]}"
+			category = filter[:category]
+			if category == nil
+				puts info
+			else
+				puts "#{info} #{Nil.lightRed category}"
+			end
 			counter += 1
 		end
+	end
+	
+	def convertFilterIndices(input)
+		input.each do |index|
+			if !index.isNumber
+				error "Invalid argument: #{index}"
+				return
+			end
+		end
+		
+		indices = @arguments.map { |index| index.to_i }
+		ids = []
+		
+		indices.each do |index|
+			if index <= 0
+				error "Index too low: #{index}"
+				return
+			end
+			result = @filters.where(user_id: @user.id).select(:id).limit(1, index - 1)
+			if result.empty?
+				error "Invalid index: #{index}"
+				return
+			end
+			ids << result.first[:id]
+		end
+		
+		return ids
 	end
 	
 	def commandDeleteFilter
@@ -155,29 +191,9 @@ class UserShell
 			return
 		end
 		
-		@arguments.each do |index|
-			if !index.isNumber
-				error "Invalid argument: #{index}"
-				return
-			end
-		end
-		
 		@database.transaction do
-			indices = @arguments.map { |index| index.to_i }
-			ids = []
-			
-			indices.each do |index|
-				if index <= 0
-					error "Index too low: #{index}"
-					return
-				end
-				result = @filters.where(user_id: @user.id).select(:id).limit(1, index - 1)
-				if result.empty?
-					error "Invalid index: #{index}"
-					return
-				end
-				ids << result.first[:id]
-			end
+			ids = convertFilterIndices(@arguments)
+			return if ids == nil
 			
 			ids.each { |id| @filters.where(id: id).delete }
 		end
@@ -211,12 +227,6 @@ class UserShell
 			return
 		end
 		
-		#results = @sccReleases.filter(:name.ilike(@argument))
-		#results = results.select(:site_id, :section_name, :name, :release_date, :release_size)
-		#results = results.reverse_order(:site_id)
-		#results = results.limit(@searchResultMaximum)
-		#puts results.sql
-		
 		results = @database['select site_id, section_name, name, release_date, release_size from scene_access_data where name ~* ? order by site_id desc limit ?', @argument, @searchResultMaximum]
 		
 		if results.empty?
@@ -238,13 +248,10 @@ class UserShell
 	def sceneAccessDownload(target)
 		if target.isNumber
 			id = target.to_i
-			#result = @sccReleases.where(site_id: id)
 			result = @database['select name, site_id, release_size from scene_access_data where site_id = ?', id]
 		else
-			#result = @sccReleases.filter(:name.ilike(target))
 			result = @database['select name, site_id, release_size from scene_access_data where name ~* ?', target]
 		end
-		#result = result.select(:name, :site_id, :release_size)
 		if result.empty?
 			error 'Unable to find the release you have specified.'
 			return
@@ -402,5 +409,32 @@ class UserShell
 		end
 		puts "\nSearches are #{Nil.white 'case insensitive'} by default."
 		puts "This system permits you to create case sensitive expressions using the overriding #{Nil.white '(?c)'} prefix."
+	end
+	
+	def commandCategory
+		if @arguments.size < 2
+			warning 'Invalid argument count - the path and at least one filter index are required.'
+			return
+		end
+		category = @arguments[0]
+		indices = @arguments[1..-1]
+		if category.index '..' != nil
+			error 'You have specified an invalid folder.'
+			return
+		end
+		
+		@database.transaction do		
+			ids = converFilterIndices(indices)
+			return if ids == nil
+			ids.each do |id|
+				@filters.where(id: id).update(category: category)
+			end
+		end
+		
+		if indices.size == 1
+			success "Assigned category #{category} to one filter."
+		else
+			success "Assigned category #{category} to #{indices.size} filters."
+		end
 	end
 end

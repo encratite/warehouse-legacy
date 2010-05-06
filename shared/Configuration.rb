@@ -39,6 +39,8 @@ module Configuration
 		
 		module LinuxPath
 			UserBind = '/all'
+			Filtered = 'filtered'
+			Own = 'own'
 			Torrent = '/home/void/torrent/torrent'
 			Download = '/home/void/torrent/download'
 			DownloadDone = '/home/void/torrent/complete'
@@ -46,7 +48,9 @@ module Configuration
 		end
 		
 		module WindowsPath
-			UserBind = '/all'
+			UserBind = 'all'
+			Filtered = 'filtered'
+			Own = 'own'
 			Torrent = 'G:\Torrent'
 			Download = 'G:\BTTemp'
 			DownloadDone = 'G:\BTTemp'

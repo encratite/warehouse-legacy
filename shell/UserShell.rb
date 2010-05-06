@@ -42,7 +42,7 @@ class UserShell
 		@sccReleases = @database[:scene_access_data]
 		@filters = @database[:user_release_filter]
 		@http = http
-		@torrentPath = configuration::Torrent::TorrentPath
+		@torrentPath = configuration::Torrent::Path::Torrent
 	end
 	
 	def error(line)

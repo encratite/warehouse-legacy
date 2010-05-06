@@ -8,7 +8,7 @@ require 'nil/file'
 class ReleaseHandler
 	def initialize(manager, configuration)
 		@http = manager.http
-		@torrentPath = configuration::Torrent::TorrentPath
+		@torrentPath = configuration::Torrent::Path::Torrent
 		@sizeLimit = configuration::Torrent::SizeLimit
 		@database = getDatabase configuration
 		@manager = manager

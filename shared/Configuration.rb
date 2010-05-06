@@ -33,20 +33,27 @@ module Configuration
 	end
 	
 	module Torrent
-		TorrentPath =
-			Nil.getOS === :windows ?
-			'G:\Torrent' :
-			'/home/void/torrent/torrent'
-			
-		DownloadPath =
-			Nil.getOS == :windows ?
-			'G:\BTTemp' :
-			'/home/void/torrent/download'
-			
-		DownloadDonePath =
-			Nil.getOS == :windows ?
-			'G:\BTTemp' :
-			'/home/void/torrent/complete'
+		def pick(unix, windows)
+			return Nil.getOS == :windows ? windows : unix
+		end
+		
+		module LinuxPath
+			UserBind = '/all'
+			Torrent = '/home/void/torrent/torrent'
+			Download = '/home/void/torrent/download'
+			DownloadDone = '/home/void/torrent/complete'
+			User = '/home/warehouse/user'
+		end
+		
+		module WindowsPath
+			UserBind = '/all'
+			Torrent = 'G:\Torrent'
+			Download = 'G:\BTTemp'
+			DownloadDone = 'G:\BTTemp'
+			User = 'G:\Warehouse'
+		end
+		
+		Path = pick(LinuxPath, WindowsPath)
 			
 		Gigabyte = 2**30
 		SizeLimit = 25 * Gigabyte
@@ -66,6 +73,8 @@ module Configuration
 	end
 	
 	module Logging
-		ManagerLog = '../log/manager.log'
+		Path = '../log/'
+		ManagerLog = Path + 'manager.log'
+		CategoriserLog = Path + 'categoriser.log'
 	end
 end

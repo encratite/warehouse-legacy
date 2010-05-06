@@ -8,9 +8,9 @@ class Cleaner
 	Debugging = false
 	
 	def initialize(configuration)
-		@torrentPath = configuration::Torrent::TorrentPath
-		@downloadPath = configuration::Torrent::DownloadPath
-		@downloadDonePath = configuration::Torrent::DownloadDonePath
+		@torrentPath = configuration::Torrent::Path::Torrent
+		@downloadPath = configuration::Torrent::Path::Download
+		@downloadDonePath = configuration::Torrent::Path::DownloadDone
 		@freeSpaceMinimum = configuration::Torrent::Cleaner::FreeSpaceMinimum
 		@checkDelay = configuration::Torrent::Cleaner::CheckDelay
 	end

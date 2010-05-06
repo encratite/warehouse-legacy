@@ -33,7 +33,7 @@ module Configuration
 	end
 	
 	module Torrent
-		def pick(unix, windows)
+		def self.pick(unix, windows)
 			return Nil.getOS == :windows ? windows : unix
 		end
 		
@@ -57,7 +57,7 @@ module Configuration
 			User = 'G:\Warehouse'
 		end
 		
-		Path = pick(LinuxPath, WindowsPath)
+		Path = self.pick(LinuxPath, WindowsPath)
 			
 		Gigabyte = 2**30
 		SizeLimit = 25 * Gigabyte

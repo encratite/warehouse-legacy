@@ -139,7 +139,7 @@ class UserShell
 	end
 	
 	def commandListFilters
-		filters = @filters.where(user_id: @user.id).select(:filter, :category)
+		filters = @filters.where(user_id: @user.id).order(:id).select(:filter, :category)
 		if filters.empty?
 			puts 'You currently have no filters.'
 			return
@@ -152,7 +152,7 @@ class UserShell
 			if category == nil
 				puts info
 			else
-				puts "#{info} #{Nil.lightRed category}"
+				puts "#{info} #{Nil.lightRed "[#{category}]"}"
 			end
 			counter += 1
 		end
@@ -166,7 +166,7 @@ class UserShell
 			end
 		end
 		
-		indices = @arguments.map { |index| index.to_i }
+		indices = input.map { |index| index.to_i }
 		ids = []
 		
 		indices.each do |index|
@@ -418,13 +418,13 @@ class UserShell
 		end
 		category = @arguments[0]
 		indices = @arguments[1..-1]
-		if category.index '..' != nil
+		if category.index('..') != nil
 			error 'You have specified an invalid folder.'
 			return
 		end
 		
 		@database.transaction do		
-			ids = converFilterIndices(indices)
+			ids = convertFilterIndices(indices)
 			return if ids == nil
 			ids.each do |id|
 				@filters.where(id: id).update(category: category)

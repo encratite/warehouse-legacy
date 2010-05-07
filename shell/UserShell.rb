@@ -221,10 +221,19 @@ class UserShell
 		puts 'All your filters have been removed.'
 	end
 	
+	def printData(data)
+		padEntries(data).each do |description, value|
+			puts "#{description}: #{Nil.yellow value}"
+		end
+	end
+	
 	def commandDatabase
-		puts "Number of releases in the database: #{Nil.yellow(@sccReleases.count.to_s)}"
-		sizeString = Nil.getSizeString(@sccReleases.sum(:release_size))
-		puts "Size of releases available on demand: #{Nil.yellow sizeString}"
+		data =
+		[
+			['Number of releases in the database', @sccReleases.count.to_s],
+			['Size of releases available on demand', Nil.getSizeString(@sccReleases.sum(:release_size))],
+		]
+		printData data
 	end
 	
 	def commandSearch
@@ -340,9 +349,7 @@ class UserShell
 			['Upload', speedString[1]],
 		]
 		
-		padEntries(data).each do |description, value|
-			puts "#{description} #{Nil.yellow value}"
-		end
+		printData data
 	end
 	
 	def commandCancel
@@ -361,10 +368,17 @@ class UserShell
 		else
 			userLevel = 'Regular user'
 		end
-		puts "User level: #{Nil.yellow userLevel}"
+		
 		sizeLimitString = Nil.getSizeString @releaseSizeLimit
-		puts "Size limit per release: #{Nil.yellow sizeLimitString}"
-		puts "Search result limit: #{Nil.yellow(@searchResultMaximum.to_s)}"
+		
+		data =
+		[
+			['User level', userLevel],
+			['Size limit per release', sizeLimitString],
+			['Search result limit', @searchResultMaximum.to_s],
+		]
+		
+		printData data
 	end
 	
 	def commandSSH

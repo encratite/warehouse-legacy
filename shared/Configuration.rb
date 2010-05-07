@@ -74,6 +74,8 @@ module Configuration
 			ShellGroup = 'warehouse-shell'
 			SFTPGroup = 'warehouse-sftp'
 		end
+		
+		NIC = 'eth0'
 	end
 	
 	module Shell

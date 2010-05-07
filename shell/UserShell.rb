@@ -1,6 +1,7 @@
 require 'nil/string'
 require 'nil/file'
 require 'nil/console'
+require 'nil/network'
 
 require 'fileutils'
 require 'readline'
@@ -48,6 +49,7 @@ class UserShell
 		@torrentPath = configuration::Torrent::Path::Torrent
 		@userPath = Nil.joinPaths(configuration::Torrent::Path::User, @user.name)
 		@filteredPath = Nil.joinPaths(@userPath, configuration::Torrent::Path::Filtered)
+		@nic = configuration::Torrent::NIC
 	end
 	
 	def error(line)
@@ -326,8 +328,21 @@ class UserShell
 	end
 	
 	def commandStatus
-		puts Nil.pink('STATUS!')
-		puts '... just kidding, not implemented yet.'
+		puts 'Status of the server:'
+		
+		freeSpace = Nil.getSizeString(Nil.getFreeSpace(@torrentPath))
+		speedString = Nil.getDeviceSpeedStrings(@nic)
+		
+		data =
+		[
+			['Free space left on device', freeSpace],
+			['Download', speedString[0]],
+			['Upload', speedString[1]],
+		]
+		
+		padEntries(data).each do |description, value|
+			puts "#{description} #{Nil.yellow value}"
+		end
 	end
 	
 	def commandCancel

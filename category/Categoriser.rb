@@ -22,6 +22,11 @@ class Categoriser
 		@log.puts(line)
 	end
 	
+	def setupPermissions(path)
+		FileUtils.chown(@user, @shellGroup, path)
+		FileUtils.chmod(0775, path)
+	end
+	
 	def processMatch(release, user, category, filter)
 		category = @ownPath if category == nil
 		userPath = Nil.joinPaths(@userPath, user)
@@ -35,6 +40,7 @@ class Categoriser
 				output "Created path #{categoryPath}"
 			rescue Errno::EEXIST
 			end
+			setupPermissions(categoryPath)
 		end
 		symlink = Nil.joinPaths(categoryPath, release)
 		target = Nil.joinPaths(@userBind, release)
@@ -47,8 +53,7 @@ class Categoriser
 			output 'Error: Symlinks not implemented!'
 			return
 		end
-		FileUtils.chown(@user, @shellGroup, symlink)
-		FileUtils.chmod(0775, symlink)
+		setupPermissions(symlink)
 	end
 	
 	def categorise(release)

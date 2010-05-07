@@ -222,8 +222,9 @@ class UserShell
 	end
 	
 	def printData(data)
+		data = data.map { |description, value| [description + ':', value] }
 		padEntries(data).each do |description, value|
-			puts "#{description}: #{Nil.yellow value}"
+			puts "#{description} #{Nil.yellow value}"
 		end
 	end
 	

@@ -346,8 +346,8 @@ class UserShell
 		data =
 		[
 			['Free space left on device', freeSpace],
-			['Download', speedString[0]],
-			['Upload', speedString[1]],
+			['Download speed', speedString[0]],
+			['Upload speed', speedString[1]],
 		]
 		
 		printData data

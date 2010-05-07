@@ -174,7 +174,7 @@ class UserShell
 				error "Index too low: #{index}"
 				return
 			end
-			result = @filters.where(user_id: @user.id).select(:id).limit(1, index - 1)
+			result = @filters.where(user_id: @user.id).order(:id).select(:id).limit(1, index - 1)
 			if result.empty?
 				error "Invalid index: #{index}"
 				return

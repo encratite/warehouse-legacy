@@ -1,6 +1,6 @@
 To do:
 
-implement filter categories with symbolic links
+the categoriser should check what user issued a download, creating a symlink in "manual" and "own" or whatever
 add more customisation features to the search results
 add NFO filtering
 solve the on-download notification problem
@@ -13,5 +13,6 @@ add tcng/tcc QoS stuff - requires a newer kernel
 
 Done:
 
+implement filter categories with symbolic links
 HTTP URL should be retrieved from details, not from the DB
 script which cleans up the disk on a regular basis (might not be working though)

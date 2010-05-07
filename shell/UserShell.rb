@@ -30,6 +30,7 @@ class UserShell
 		['ssh <SSH key data>', 'set the SSH key in your authorized_keys to authenticate without a password prompt', :commandSSH],
 		['regexp-help', 'a short introduction to the regular expressions used by this system', :commandRegexpHelp],
 		['category <path> <filter 1> <...>', 'assign a folder to a set of filters', :commandCategory],
+		['delete-category <path>', 'get rid of a symlinks folder', :commandDeleteCategory],
 	]
 	
 	def initialize(configuration, database, user, http)
@@ -44,8 +45,8 @@ class UserShell
 		@filters = @database[:user_release_filter]
 		@http = http
 		@torrentPath = configuration::Torrent::Path::Torrent
-		@userPath = configuration::Torrent::Path::User
-		@filteredPath = configuration::Torrent::Path::Filtered
+		@userPath = Nil.joinPaths(configuration::Torrent::Path::User, @user.name)
+		@filteredPath = Nil.joinPaths(@userPath, configuration::Torrent::Path::Filtered)
 	end
 	
 	def error(line)
@@ -436,5 +437,28 @@ class UserShell
 		else
 			success "Assigned category #{category} to #{indices.size} filters."
 		end
+	end
+	
+	def commandDeleteCategory
+		if @arguments.size != 1
+			warning 'Invalid argument count - you need to specify the path to a category to remove.'
+			return
+		end
+		
+		category = @argument
+		
+		if category.index('..') != nil
+			error 'You have specified an invalid path.'
+			return
+		end
+		
+		path = Nil.joinPaths(@filteredPath, category)
+		begin
+			FileUtils.rm_r(category)
+		rescue Errno::ENOENT
+			error 'No such category found in your folder.'
+		end
+		
+		success "Removed category \"#{category}\""
 	end
 end

@@ -50,7 +50,7 @@ class Categoriser
 			user = result[:user_name]
 			category = result[:category]
 			filter = result[:filter]
-			output result.inspect
+			#output result.inspect
 			[@ownPath, category].compact.each do |currentCategory|
 				processMatch(release, user, currentCategory, filter)
 			end

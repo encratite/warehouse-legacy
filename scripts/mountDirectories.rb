@@ -8,4 +8,5 @@ Dir.foreach target do |user|
 	current = target + user + '/' + directory
 	`mkdir #{current}`
 	`mount --bind #{source} #{current}`
+	`mount -o remount,ro #{current}`
 end

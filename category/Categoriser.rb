@@ -38,9 +38,9 @@ class Categoriser
 		begin
 			Nil.symbolicLink(target, symlink)
 		rescue Errno::EEXIST
-			puts 'Warning: Link already exists'
+			output 'Warning: Link already exists'
 		rescue NotImplementedError
-			puts 'Error: Symlinks not implemented!'
+			output 'Error: Symlinks not implemented!'
 		end
 	end
 	
@@ -50,6 +50,7 @@ class Categoriser
 			user = result[:user_name]
 			category = result[:category]
 			filter = result[:filter]
+			output result.inspect
 			[@ownPath, category].compact.each do |currentCategory|
 				processMatch(release, user, currentCategory, filter)
 			end

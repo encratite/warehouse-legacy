@@ -1,7 +1,8 @@
 require 'HTTPHandler'
-require 'IRCHandler'
+require 'SCCIRCHandler'
 require 'ConsoleHandler'
 require 'ReleaseHandler'
+require 'SCCReleaseData'
 
 class SCCManager
 	attr_reader :http, :irc, :console, :releaseHandler, :configuration
@@ -21,8 +22,8 @@ class SCCManager
 		
 		channelConfiguration = configuration::SceneAccess::ReleaseChannel
 		
-		@releaseHandler = ReleaseHandler.new(self, configuration)
-		@irc = IRCHandler.new(channelConfiguration, self, server, nick)
+		@releaseHandler = ReleaseHandler.new(self, configuration, :scene_access_data, SCCReleaseData)
+		@irc = SCCIRCHandler.new(channelConfiguration, self, server, nick)
 		@console = ConsoleHandler.new(self)
 		@irc.postConsoleInitialisation(self)
 	end

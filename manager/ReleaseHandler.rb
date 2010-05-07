@@ -1,17 +1,19 @@
 require 'sequel'
 require 'pg'
-require 'SCCReleaseData'
 require 'database'
 
 require 'nil/file'
 
 class ReleaseHandler
-	def initialize(manager, configuration)
+	def initialize(manager, configuration, releaseTableSymbol, releaseDataClass)
 		@http = manager.http
 		@torrentPath = configuration::Torrent::Path::Torrent
 		@sizeLimit = configuration::Torrent::SizeLimit
 		@database = getDatabase configuration
 		@manager = manager
+		
+		@releaseDataClass = releaseDataClass
+		@releaseTableSymbol = releaseTableSymbol
 	end
 	
 	def databaseDown(exception)
@@ -20,7 +22,11 @@ class ReleaseHandler
 	end
 	
 	def isReleaseOfInterest(release, nfo)
-		results = @database["select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.is_nfo_filter as is_nfo_filter from user_release_filter, user_data where ((user_release_filter.is_nfo_filter = false and ? ~* user_release_filter.filter) or (user_release_filter.is_nfo_filter = true and ? ~* user_release_filter.filter)) and user_data.id = user_release_filter.user_id", release, nfo]
+		if nfo == nil
+			results = @database["select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.is_nfo_filter as is_nfo_filter from user_release_filter, user_data where (user_release_filter.is_nfo_filter = false and ? ~* user_release_filter.filter) and user_data.id = user_release_filter.user_id", release]
+		else
+			results = @database["select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.is_nfo_filter as is_nfo_filter from user_release_filter, user_data where ((user_release_filter.is_nfo_filter = false and ? ~* user_release_filter.filter) or (user_release_filter.is_nfo_filter = true and ? ~* user_release_filter.filter)) and user_data.id = user_release_filter.user_id", release, nfo]
+		end
 		
 		matchCount = results.count
 		isOfInterest = matchCount > 0
@@ -45,7 +51,7 @@ class ReleaseHandler
 	def insertData(releaseData)
 		begin
 			insertData = releaseData.getData
-			dataset = @database[:scene_access_data]
+			dataset = @database[releaseTableSymbol]
 			result = dataset.where(site_id: insertData[:site_id])
 			if result.count > 0
 				puts 'This entry already exists - overwriting it'
@@ -72,7 +78,7 @@ class ReleaseHandler
 			return
 		end
 		begin
-			releaseData = SCCReleaseData.new(data)
+			releaseData = @releaseDataClass.new(data)
 			isOfInterest = false
 			@database.transaction do
 				insertData(releaseData)
@@ -101,7 +107,7 @@ class ReleaseHandler
 			end
 		rescue Sequel::DatabaseConnectionError => exception
 			databaseDown exception
-		rescue SCCReleaseData::Error => exception
+		rescue @releaseTableSymbol::Error => exception
 			output "Error: Unable to parse data from release #{release} at #{url}: #{exception.message}"
 		end
 	end

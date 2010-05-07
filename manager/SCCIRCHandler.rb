@@ -1,6 +1,6 @@
 require 'nil/irc'
 
-class IRCHandler
+class SCCIRCHandler
 	attr_reader :irc
 	
 	def initialize(channel, manager, server, nick)

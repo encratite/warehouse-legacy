@@ -79,7 +79,7 @@ class Categoriser
 		stat = File.stat(torrentPath)
 		user = Etc.getpwuid(stat.uid).name
 		group = Etc.getgrgid(stat.gid).name
-		if group == shellGroup
+		if group == @shellGroup
 			processMatch(release, user, @manualPath, nil)
 		end
 	end

@@ -1,5 +1,7 @@
+$:.concat ['../shared']
+
 require 'nil/file'
-require '../manager/SCCReleaseData'
+require 'SCCReleaseData'
 
 def processFile(path)
 	input = Nil.readFile(path)
@@ -9,7 +11,8 @@ end
 begin
 	[
 		'data/input.html',
-		'data/input2.html'
+		'data/input2.html',
+		'data/input3.html',
 	].each do |path|
 		processFile(path)
 	end

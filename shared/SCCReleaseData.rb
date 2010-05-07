@@ -25,7 +25,7 @@ class SCCReleaseData
 		['Seeders', />(\d+) seeder\(s\)/, :seeders],
 		['Leechers', /, (\d+) leecher\(s\)/, :leechers],
 		['Torrent path', /Download \(SSH\).+?href=\"(.+?)\"/, :path],
-		['NFO', /<div id=\"ka3\".+?\/>(.+?)<\/div>/, :nfo],
+		['NFO', /<div id="ka3".+?\/>([\s\S]+?)<\/div>/, :nfo],
 	]
 	
 	Debugging = false
@@ -69,14 +69,16 @@ class SCCReleaseData
 		
 		@path = "/#{@path}" if !@path.empty? && @path[0] != '/'
 		
+		@nfo = @nfo.gsub('<br>', '')
+		@nfo = @nfo.gsub('&nbsp;', ' ')
+		@nfo = CGI::unescapeHTML(@nfo)
+		@nfo = removeHTMLLinks(@nfo)
+		
 		if Debugging
 			puts "Size: #{@size}"
 			puts "Pre-time in seconds: #{@preTime.inspect}"
+			puts "NFO: #{@nfo}"
 		end
-		
-		@nfo = @nfo.gsub('<br>', "\n")
-		@nfo = CGI::unescapeHTML(@nfo)
-		@nfo = removeHTMLLinks(@nfo)
 	end
 	
 	def getData

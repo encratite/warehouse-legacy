@@ -1,6 +1,6 @@
 require 'sequel'
 require 'pg'
-require 'ReleaseData'
+require 'SCCReleaseData'
 require 'database'
 
 require 'nil/file'
@@ -73,7 +73,7 @@ class ReleaseHandler
 			return
 		end
 		begin
-			releaseData = ReleaseData.new(data)
+			releaseData = SCCReleaseData.new(data)
 			isOfInterest = false
 			@database.transaction do
 				insertData(releaseData)
@@ -102,7 +102,7 @@ class ReleaseHandler
 			end
 		rescue Sequel::DatabaseConnectionError => exception
 			databaseDown exception
-		rescue ReleaseData::Error => exception
+		rescue SCCReleaseData::Error => exception
 			output "Error: Unable to parse data from release #{release} at #{url}: #{exception.message}"
 		end
 	end

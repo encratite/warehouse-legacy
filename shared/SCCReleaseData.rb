@@ -2,11 +2,13 @@ require 'nil/string'
 
 require 'preTime'
 
-class ReleaseData
+require 'cgi'
+
+class SCCReleaseData
 	class Error < StandardError
 	end
 	
-	attr_reader :path, :size
+	attr_reader :path, :size, :nfo
 	
 	Targets =
 	[
@@ -22,13 +24,19 @@ class ReleaseData
 		['Files', />Num files<.+?>(\d+) file/, :files],
 		['Seeders', />(\d+) seeder\(s\)/, :seeders],
 		['Leechers', /, (\d+) leecher\(s\)/, :leechers],
-		['Torrent path', /Download \(SSH\).+?href=\"(.+?)\"/, :path]
+		['Torrent path', /Download \(SSH\).+?href=\"(.+?)\"/, :path],
+		['NFO', /<div id=\"ka3\".+?\/>(.+?)<\/div>/, :nfo],
 	]
 	
 	Debugging = false
 	
 	def initialize(input)
 		processInput(input)
+	end
+	
+	def removeHTMLLinks(input)
+		output = input.gsub(/<a .+?>(.+?)<\/a>/) { |match| $1 }
+		return output
 	end
 	
 	def processInput(input)
@@ -65,6 +73,10 @@ class ReleaseData
 			puts "Size: #{@size}"
 			puts "Pre-time in seconds: #{@preTime.inspect}"
 		end
+		
+		@nfo = @nfo.gsub('<br>', "\n")
+		@nfo = CGI::unescapeHTML(@nfo)
+		@nfo = removeHTMLLinks(@nfo)
 	end
 	
 	def getData

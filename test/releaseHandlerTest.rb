@@ -1,9 +1,9 @@
 require 'nil/file'
-require '../manager/ReleaseData'
+require '../manager/SCCReleaseData'
 
 def processFile(path)
 	input = Nil.readFile(path)
-	data = ReleaseData.new(input)
+	data = SCCReleaseData.new(input)
 end
 
 begin

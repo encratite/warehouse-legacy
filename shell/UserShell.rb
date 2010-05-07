@@ -5,7 +5,7 @@ require 'nil/console'
 require 'fileutils'
 require 'readline'
 
-require 'ReleaseData'
+require 'SCCReleaseData'
 
 class HTTPError < StandardError
 end
@@ -277,7 +277,7 @@ class UserShell
 			data = @http.get detailsPath
 			raise HTTPError.new 'Unable to retrieve details on this release' if data == nil
 			
-			releaseData = ReleaseData.new data
+			releaseData = SCCReleaseData.new data
 			httpPath = releaseData.path
 			
 			torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)
@@ -302,7 +302,7 @@ class UserShell
 			success 'Success!'
 		rescue HTTPError => exception
 			error "HTTP error: #{exception.message} - #{administrator}"
-		rescue ReleaseData::Error => exception
+		rescue SCCReleaseData::Error => exception
 			error "An error occured parsing the details: #{exception.message} - #{administrator}"
 		end
 	end

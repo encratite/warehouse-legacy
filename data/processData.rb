@@ -5,7 +5,7 @@ require 'preTime'
 require 'Configuration'
 require 'database'
 
-class ReleaseData
+class SCCReleaseData
 	attr_reader :name, :id
 	
 	Symbols =
@@ -118,7 +118,7 @@ class DataExtractor
 		results.each do |array|
 			#puts array.inspect
 			#next
-			release = ReleaseData.new array
+			release = SCCReleaseData.new array
 			data = release.getData
 			@dataset.filter(site_id: release.id).delete
 			@dataset.insert(data)

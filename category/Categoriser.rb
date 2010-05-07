@@ -37,6 +37,8 @@ class Categoriser
 		output "Creating symlink #{symlink} to release #{target} because of the filter \"#{filter}\" of user #{user}"
 		begin
 			Nil.symbolicLink(target, symlink)
+		rescue Errno::EEXIST
+			puts 'Warning: Link already exists'
 		rescue NotImplementedError
 			puts 'Error: Symlinks not implemented!'
 		end

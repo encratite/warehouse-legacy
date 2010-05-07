@@ -48,7 +48,7 @@ module Configuration
 		end
 		
 		module WindowsPath
-			UserBind = 'all'
+			UserBind = 'G:\Warehouse\void\all'
 			Filtered = 'filtered'
 			Own = 'own'
 			Torrent = 'G:\Torrent'

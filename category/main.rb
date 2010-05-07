@@ -1,5 +1,6 @@
-base = File.expand_path(__FILE__) + '/..'
-$:.concat [base, "#{base}/shared"]
+base = File.expand_path(File.dirname(__FILE__))
+Dir.chdir base
+$:.concat ["../shared"]
 
 require 'Configuration'
 require 'database'
@@ -11,7 +12,7 @@ if ARGV.size != 1
 	exit
 end
 
-release = Dir.basename(ARGV[0])
+release = File.basename(ARGV[0])
 database = getDatabase(Configuration)
-categoriser = Categoriser.new(configuration, database)
+categoriser = Categoriser.new(Configuration, database)
 categoriser.categorise(release)

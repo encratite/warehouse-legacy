@@ -18,7 +18,7 @@ class Categoriser
 		@log.puts(line)
 	end
 	
-	def processMatch(user, category, filter)
+	def processMatch(release, user, category, filter)
 		category = @ownPath if category == nil
 		userPath = Nil.joinPaths(@userPath, user)
 		filterPath = Nil.joinPaths(userPath, @filteredPath)
@@ -33,8 +33,8 @@ class Categoriser
 			end
 		end
 		symlink = Nil.joinPaths(categoryPath, release)
-		target = "#{@userBind}/release"
-		output "Creating symlink #{symlink} because of the following filter: #{fo;ter}"
+		target = Nil.joinPaths(@userBind, release)
+		output "Creating symlink #{symlink} to release #{target} because of the filter \"#{filter}\" of user #{user}"
 		begin
 			Nil.symbolicLink(target, symlink)
 		rescue NotImplementedError
@@ -48,8 +48,9 @@ class Categoriser
 			user = result[:user_name]
 			category = result[:category]
 			filter = result[:filter]
-			processMatch(user, @ownPath, filter)
-			processMatch(user, category, filter) if category != nil			
+			[@ownPath, category].compact.each do |currentCategory|
+				processMatch(release, user, currentCategory, filter)
+			end
 		end
 	end
 end

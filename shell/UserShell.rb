@@ -454,11 +454,10 @@ class UserShell
 		
 		path = Nil.joinPaths(@filteredPath, category)
 		begin
-			FileUtils.rm_r(category)
+			FileUtils.rm_r(path)
 			success "Removed category \"#{category}\""
 		rescue Errno::ENOENT
-			error 'No such category found in your folder.'
-			puts path
+			error "Unable to find category \"#{category}\" in your folder."
 		end
 	end
 end

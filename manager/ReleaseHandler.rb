@@ -19,12 +19,8 @@ class ReleaseHandler
 		exit
 	end
 	
-	def isReleaseOfInterest(release)	
-		results = @database["select user_data.name as user_name, user_release_filter.filter as user_filter from user_release_filter, user_data where ? ~* user_release_filter.filter and user_data.id = user_release_filter.user_id", release]
-		
-		#results = @database[:user_release_filter].join(:user_data, :id => :user_id)
-		#results = results.select(:user_data__name.as(:user_name), :user_release_filter__filter.as(:user_filter))
-		#results = results.where(release.ilike(:user_release_filter__filter))
+	def isReleaseOfInterest(release, nfo)
+		results = @database["select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.is_nfo_filter as is_nfo_filter from user_release_filter, user_data where ((user_release_filter.is_nfo_filter = false and ? ~* user_release_filter.filter) or (user_release_filter.is_nfo_filter = true and ? ~* user_release_filter.filter)) and user_data.id = user_release_filter.user_id", release, nfo]
 		
 		matchCount = results.count
 		isOfInterest = matchCount > 0
@@ -33,8 +29,11 @@ class ReleaseHandler
 			filterDictionary = {}
 			results.each do |row|
 				name = row[:user_name]
+				filter = row[:filter]
+				isNfo = row[:is_nfo_filter]
 				filterDictionary[name] = [] if filterDictionary[name] == nil
-				filterDictionary[name] << row[:user_filter]
+				filter += ' (NFO)' if isNfo
+				filterDictionary[name] << filter
 			end
 			filterDictionary.each do |name, filters|
 				output "#{name}: #{filters.inspect}"
@@ -77,7 +76,7 @@ class ReleaseHandler
 			isOfInterest = false
 			@database.transaction do
 				insertData(releaseData)
-				isOfInterest = isReleaseOfInterest release
+				isOfInterest = isReleaseOfInterest(release, releaseData.nfo)
 			end
 			if isOfInterest
 				output "Discovered a release of interest: #{release}"

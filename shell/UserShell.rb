@@ -15,10 +15,11 @@ class UserShell
 	[
 		['?', 'prints this help', :commandHelp],
 		['help', 'prints this help', :commandHelp],
-		['add <regexp>', 'add a new release filter to your account', :commandAddFilter],
-		['list', 'retrieve a list of your filters', :commandListFilters],
-		['delete <index 1> <...>', 'removes one or several filters which are identified by their numeric index', :commandDeleteFilter],
-		['clear', 'remove all your release filters', :commandClearFilters],
+		['add-name-filter <regexp>', 'add a new release name filter to your account to have new releases downloaded automatically in future', :commandAddNameFilter],
+		['add-nfo-filter <regexp>', 'add a new NFO content filter to your account to have new releases downloaded automatically in future, based on their NFOs', :commandAddNFOFilter],
+		['list-filters', 'retrieve a list of your filters', :commandListFilters],
+		['delete-filter <index 1> <...>', 'removes one or several filters which are identified by their numeric index', :commandDeleteFilter],
+		['clear-filters', 'remove all your release filters', :commandClearFilters],
 		['database', 'get statistics on the database', :commandDatabase],
 		['search <regexp>', 'search the database for release names matching the regular expression', :commandSearch],
 		['download <ID or name>', 'start the download of a release', :commandDownload],
@@ -119,7 +120,7 @@ class UserShell
 		end
 	end
 	
-	def commandAddFilter
+	def commandAddFilter(isNfoFilter)
 		if @argument.empty?
 			warning 'Please specify a filter to add.'
 			return
@@ -135,12 +136,20 @@ class UserShell
 		end
 		#check if it is a valid regular expression first
 		@database["select 1 where '' ~* ?", @argument].all
-		@filters.insert(user_id: @user.id, filter: filter)
+		@filters.insert(user_id: @user.id, filter: filter, is_nfo_filter: isNfoFilter)
 		success "Your filter has been added."
 	end
 	
+	def commandAddNameFilter
+		commandAddFilter(false)
+	end
+	
+	def commandAddNFOFilter
+		commandAddFilter(true)
+	end
+	
 	def commandListFilters
-		filters = @filters.where(user_id: @user.id).order(:id).select(:filter, :category)
+		filters = @filters.where(user_id: @user.id).order(:id).select(:filter, :category, :is_nfo_filter)
 		if filters.empty?
 			puts 'You currently have no filters.'
 			return
@@ -148,13 +157,12 @@ class UserShell
 		puts Nil.white('This is a list of your filters:')
 		counter = 1
 		filters.each do |filter|
-			info = "#{counter.to_s}. #{filter[:filter]}"
 			category = filter[:category]
-			if category == nil
-				puts info
-			else
-				puts "#{info} #{Nil.lightRed "[#{category}]"}"
-			end
+			isNfo = filter[:is_nfo_filter]
+			info = "#{counter.to_s}. #{filter[:filter]}"
+			info += " #{Nil.lightGreen "[nfo]"}" if isNfo
+			info += " #{Nil.lightRed "[#{category}]"}" if category != nil
+			puts info
 			counter += 1
 		end
 	end

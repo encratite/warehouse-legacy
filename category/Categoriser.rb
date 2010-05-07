@@ -3,6 +3,7 @@ require 'nil/file'
 require 'nil/environment'
 
 require 'fileutils'
+require 'etc'
 
 class Categoriser
 	def initialize(configuration, database)
@@ -14,6 +15,8 @@ class Categoriser
 		@log = File.open(configuration::Logging::CategoriserLog, 'ab')
 		@shellGroup = configuration::Torrent::User::ShellGroup
 		@user = Nil.getUser
+		@torrentPath = configuration::Torrent::Path::Torrent
+		@manualPath = configuration::Torrent::Path::Manual
 	end
 	
 	def output(line)
@@ -44,7 +47,11 @@ class Categoriser
 		end
 		symlink = Nil.joinPaths(categoryPath, release)
 		target = Nil.joinPaths(@userBind, release)
-		output "Creating symlink #{symlink} to release #{target} because of the filter \"#{filter}\" of user #{user}"
+		if filter == nil
+			output "Creating symlink #{symlink} to release #{target} because user #{user} manually downloaded this release"
+		else
+			output "Creating symlink #{symlink} to release #{target} because of the filter \"#{filter}\" of user #{user}"
+		end
 		begin
 			Nil.symbolicLink(target, symlink)
 		rescue Errno::EEXIST
@@ -62,10 +69,18 @@ class Categoriser
 			user = result[:user_name]
 			category = result[:category]
 			filter = result[:filter]
-			#output result.inspect
 			[@ownPath, category].compact.each do |currentCategory|
 				processMatch(release, user, currentCategory, filter)
 			end
+		end
+		
+		torrentName = "#{release}.torrent"
+		torrentPath = Nil.joinPaths(@torrentPath, torrentName)
+		stat = File.stat(torrentPath)
+		user = Etc.getpwuid(stat.uid).name
+		group = Etc.getgrgid(stat.gid).name
+		if group == shellGroup
+			processMatch(release, user, @manualPath, nil)
 		end
 	end
 end

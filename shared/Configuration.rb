@@ -67,6 +67,11 @@ module Configuration
 			#delay in seconds
 			CheckDelay = 30
 		end
+		
+		module User
+			ShellGroup = 'warehouse-shell'
+			SFTPGroup = 'warehouse-sftp'
+		end
 	end
 	
 	module Shell

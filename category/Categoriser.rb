@@ -1,5 +1,7 @@
 require 'nil/time'
 require 'nil/file'
+require 'nil/environment'
+
 require 'fileutils'
 
 class Categoriser
@@ -10,6 +12,8 @@ class Categoriser
 		@userPath = configuration::Torrent::Path::User
 		@database = database
 		@log = File.open(configuration::Logging::CategoriserLog, 'ab')
+		@shellGroup = configuration::Torrent::User::ShellGroup
+		@user = Nil.getUser
 	end
 	
 	def output(line)
@@ -41,7 +45,10 @@ class Categoriser
 			output 'Warning: Link already exists'
 		rescue NotImplementedError
 			output 'Error: Symlinks not implemented!'
+			return
 		end
+		FileUtils.chown(@user, @shellGroup, symlink)
+		FileUtils.chmod(0775, symlink)
 	end
 	
 	def categorise(release)

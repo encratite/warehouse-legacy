@@ -1,15 +1,11 @@
 require 'nil/string'
 
 require 'preTime'
+require 'ReleaseData'
 
 require 'cgi'
 
-class SCCReleaseData
-	class Error < StandardError
-	end
-	
-	attr_reader :path, :size, :nfo
-	
+class SCCReleaseData < ReleaseData
 	Targets =
 	[
 		['Release', /<h1>(.+?)<\/h1>/, :release],
@@ -30,28 +26,12 @@ class SCCReleaseData
 	
 	Debugging = false
 	
-	def initialize(input)
-		processInput(input)
-	end
-	
 	def removeHTMLLinks(input)
 		output = input.gsub(/<a .+?>(.+?)<\/a>/) { |match| $1 }
 		return output
 	end
 	
-	def processInput(input)
-		Targets.each do |name, pattern, symbol|
-			match = pattern.match(input)
-			if match == nil
-				errorMessage = "#{name} match failed"
-				raise Error.new(errorMessage)
-			end
-			data = match[1]
-			puts "#{name}: \"#{data}\" (#{match.size} match(es))" if Debugging
-			symbol = ('@' + symbol.to_s).to_sym
-			instance_variable_set(symbol, data)
-		end
-		
+	def postProcessing(input)
 		@preTime = parsePreTimeString @preTimeString
 		
 		size = @sizeString.gsub(',', '')

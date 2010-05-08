@@ -1,6 +1,7 @@
 require 'sequel'
 require 'pg'
 require 'database'
+require 'ReleaseData'
 
 require 'nil/file'
 
@@ -107,7 +108,7 @@ class ReleaseHandler
 			end
 		rescue Sequel::DatabaseConnectionError => exception
 			databaseDown exception
-		rescue @releaseDataClass::Error => exception
+		rescue ReleaseData::Error => exception
 			output "Error: Unable to parse data from release #{release} at #{url}: #{exception.message}"
 		end
 	end

@@ -1,9 +1,11 @@
 def parsePreTimeString(input)
 	preTimePatterns =
 	[
-		[/(\d+) second/, 1],
-		[/(\d+) minute/, 60],
-		[/(\d+) hour/, 60]
+		[/(\d+) sec/, 1],
+		[/(\d+) min/, 60],
+		[/(\d+) hour/, 60],
+		[/(\d+) day/, 24],
+		[/(\d+) week/, 7]
 	]
 	
 	factor = 1

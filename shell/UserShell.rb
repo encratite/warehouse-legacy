@@ -6,6 +6,7 @@ require 'nil/network'
 require 'fileutils'
 require 'readline'
 
+require 'ReleaseData'
 require 'SCCReleaseData'
 
 class HTTPError < StandardError
@@ -322,7 +323,7 @@ class UserShell
 			success 'Success!'
 		rescue HTTPError => exception
 			error "HTTP error: #{exception.message} - #{administrator}"
-		rescue SCCReleaseData::Error => exception
+		rescue ReleaseData::Error => exception
 			error "An error occured parsing the details: #{exception.message} - #{administrator}"
 		end
 	end

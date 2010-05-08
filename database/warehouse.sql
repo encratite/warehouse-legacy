@@ -58,7 +58,7 @@ create table torrentvault_data
 	pre_time integer,
 	--genre is null for non-MP3 releases
 	genre text not null,
-	file_count integer not null,
+	release_date timestamp not null,
 	release_size bigint not null,
 	download_count integer not null,
 	seeder_count integer not null,

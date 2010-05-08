@@ -30,12 +30,43 @@ module Configuration
 			end
 			
 			module Regexp
-				Release = /\-\> ([^ ]+) \(Uploaded/
-				URL = /(http\:\/\/[^\)]+)\)/
+				Release = /-> ([^ ]+) \(Uploaded/
+				URL = /(http:\/\/[^\)]+)\)/
 			end
 		end
 		
 		Log = 'scene-access.log'
+	end
+	
+	module TorrentVault
+		module HTTP
+			Server = 'torrentvault.org'
+			Cookies =
+			{
+				'name' => 'test',
+				'name' => 'test'
+			}
+		end
+		
+		module IRC
+			Server = 'irc.torrentvault.org'
+			Nick = 'assunamal'
+			Channels = ['#tv', '#tv-spam']
+			InviteBot = 'TorrentVault'
+			InviteCode = 'a506b1d15d1dd487f68065318ff95f0f'
+			
+			module Bot
+				Nick = 'InfoVault'
+				Host = 'services.torrentvault]'
+			end
+			
+			module Regexp
+				Release = /-> (.+) by [^ ]+ \[/
+				URL = /(https:\/\/.+?) \]/
+			end
+		end
+		
+		Log = 'torrentvault.log'
 	end
 	
 	module Torrent

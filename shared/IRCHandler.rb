@@ -1,6 +1,8 @@
 class IRCHandler
 	attr_reader :irc
 	
+	Debugging = false
+	
 	def initialize(data, releaseHandler)
 		@releaseHandler = releaseHandler
 		
@@ -40,9 +42,11 @@ class IRCHandler
 			user.nick == @botNick &&
 			user.host == @botHost
 			
-		puts "@releaseChannels.include?(channel): #{@releaseChannels.inspect}.include?(#{channel.inspect})"
-		puts "user.nick == @botNick: #{user.nick.inspect} == #{@botNick.inspect}"
-		puts "user.host == @botHost: #{user.host.inspect} == #{@botHost.inspect}"
+		if Debugging
+			puts "@releaseChannels.include?(channel): #{@releaseChannels.inspect}.include?(#{channel.inspect})"
+			puts "user.nick == @botNick: #{user.nick.inspect} == #{@botNick.inspect}"
+			puts "user.host == @botHost: #{user.host.inspect} == #{@botHost.inspect}"
+		end
 			
 		if isBotMessage
 			message = Nil::IRCClient::stripTags(message)

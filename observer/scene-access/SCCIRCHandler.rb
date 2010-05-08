@@ -10,8 +10,7 @@ class SCCIRCHandler < IRCHandler
 			'announce' => 'yes',
 			'invite' => 'invite'
 		}
-		@http.post('/irc.php', data)
-		
 		@console.output 'Trying to enter the announce channel'
+		@http.post('/irc.php', data)
 	end
 end

@@ -51,7 +51,7 @@ class ReleaseHandler
 	def insertData(releaseData)
 		begin
 			insertData = releaseData.getData
-			dataset = @database[releaseTableSymbol]
+			dataset = @database[@releaseTableSymbol]
 			result = dataset.where(site_id: insertData[:site_id])
 			if result.count > 0
 				puts 'This entry already exists - overwriting it'
@@ -107,7 +107,7 @@ class ReleaseHandler
 			end
 		rescue Sequel::DatabaseConnectionError => exception
 			databaseDown exception
-		rescue @releaseTableSymbol::Error => exception
+		rescue @releaseDataClass::Error => exception
 			output "Error: Unable to parse data from release #{release} at #{url}: #{exception.message}"
 		end
 	end

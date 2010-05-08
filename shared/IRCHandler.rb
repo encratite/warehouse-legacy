@@ -39,6 +39,11 @@ class IRCHandler
 			@releaseChannels.include?(channel) &&
 			user.nick == @botNick &&
 			user.host == @botHost
+			
+		puts "@releaseChannels.include?(channel): #{@releaseChannels.inspect}.include?(#{channel.inspect})"
+		puts "user.nick == @botNick: #{user.nick.inspect} == #{@botNick.inspect}"
+		puts "user.host == @botHost: #{user.host.inspect} == #{@botHost.inspect}"
+			
 		if isBotMessage
 			message = Nil::IRCClient::stripTags(message)
 			releaseMatch = @releasePattern.match(message)

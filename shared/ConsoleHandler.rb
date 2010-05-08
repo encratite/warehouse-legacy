@@ -6,6 +6,7 @@ class ConsoleHandler
 		{
 			'help' => [:commandHelp, 'print help'],
 			'quit' => [:commandQuit, 'quit the program'],
+			'exit' => [:commandQuit, 'exit the program'],
 		}
 		
 		@irc = irc.irc

@@ -1,11 +1,13 @@
-$:.concat ['../shared', '../observer']
+$:.concat ['../shared', '../observer/scene-access']
 
 require 'nil/file'
 
 require 'SCCObserver'
 require 'Configuration'
 
-lines = Nil.readLines('data/scc.log')
+Dir.chdir '../observer/scene-access'
+
+lines = Nil.readLines('../../test/data/scc.log')
 observer = SCCObserver.new(Configuration)
 lines.each do |line|
 	next if line.empty?

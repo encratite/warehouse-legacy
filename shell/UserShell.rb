@@ -25,7 +25,7 @@ class UserShell
 		['search <regexp>', 'search the database for release names matching the regular expression', :commandSearch],
 		['download <ID or name>', 'start the download of a release', :commandDownload],
 		['status', 'retrieve the status of downloads in progress', :commandStatus],
-		['cancel', 'cancel a download', :commandCancel],
+		#['cancel', 'cancel a download', :commandCancel],
 		['permissions', 'view your permissions/limits', :commandPermissions],
 		['exit', 'terminate your session', :commandExit],
 		['quit', 'terminate your session', :commandExit],

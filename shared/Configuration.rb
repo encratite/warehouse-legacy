@@ -10,20 +10,24 @@ module Configuration
 	end
 	
 	module SceneAccess
-		module Cookie
-			UId = '953675'
-			Pass = 'ab31c2bdf48e5e9d60d19b7f40cf0de0'
+		module HTTP
+			Server = 'sceneaccess.org'
+			Cookies =
+			[
+				'uid' => '953675',
+				'pass' => 'ab31c2bdf48e5e9d60d19b7f40cf0de0'
+			]
 		end
 		
 		module IRC
 			Server = 'irc.sceneaccess.org'
 			Nick = 'malleruet'
-		end
-		
-		module ReleaseChannel
-			Channel = '#scc-announce'
-			Nick = 'SCC'
-			Host = 'csops.sceneaccess.org'
+			Channels = ['#scc-announce']
+			
+			module Bot
+				Nick = 'SCC'
+				Host = 'csops.sceneaccess.org'
+			end
 			
 			module Regexp
 				Release = /\-\> ([^ ]+) \(Uploaded/

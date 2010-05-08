@@ -1,8 +1,15 @@
 require 'net/http'
 
 class HTTPHandler
-	def initialize(uid, pass)
-		@http = Net::HTTP.new('sceneaccess.org')
+	def initialize(server, cookies)
+		@http = Net::HTTP.new(server)
+		
+		cookies = cookies.map do |key, value|
+			"#{key}=#{value}"
+		end
+		
+		cookies = cookies.join('; ')
+		puts "Cookies: #{cookies}"
 		
 		@headers =
 		{
@@ -11,7 +18,7 @@ class HTTPHandler
 			'Accept-Language' => 'en-us,en;q=0.5',
 			#'Accept-Encoding' => 'gzip,deflate',
 			'Accept-Charset' => 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
-			'Cookie' => "uid=#{uid}; pass=#{pass}"
+			'Cookie' => cookies
 		}
 	end
 	
@@ -31,7 +38,6 @@ class HTTPHandler
 	def post(path, input)
 		data = input.map { |key, value| "#{key}=#{value}" }
 		postData = data.join '&'
-		#puts "Post data: #{postData}"
 		begin
 			@http.request_post(path, postData, @headers) do |response|
 				response.value

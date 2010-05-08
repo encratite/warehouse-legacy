@@ -1,4 +1,4 @@
-$:.concat ['../shared', '../manager']
+$:.concat ['../shared', '../observer']
 
 require 'nil/file'
 require 'database'

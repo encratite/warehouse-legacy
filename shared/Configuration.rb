@@ -91,7 +91,7 @@ module Configuration
 	
 	module Logging
 		Path = '../log/'
-		ManagerLog = Path + 'manager.log'
+		ObserverLog = Path + 'observer.log'
 		CategoriserLog = Path + 'categoriser.log'
 	end
 end

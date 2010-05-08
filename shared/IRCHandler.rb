@@ -2,8 +2,8 @@ class IRCHandler
 	attr_reader :irc
 	
 	def initialize(data)
-		@http = manager.http
-		@releaseHandler = manager.releaseHandler
+		@http = observer.http
+		@releaseHandler = observer.releaseHandler
 		
 		nick = data::Nick
 		user = nick
@@ -25,8 +25,8 @@ class IRCHandler
 		@urlPattern = regexp::URL
 	end
 	
-	def postConsoleInitialisation(manager)
-		@console = manager.console
+	def postConsoleInitialisation(observer)
+		@console = observer.console
 		@irc.onLine = @console.method(:onLine)
 		@irc.onSendLine = @console.method(:onSendLine)
 	end

@@ -4,7 +4,7 @@ require 'ConsoleHandler'
 require 'ReleaseHandler'
 require 'SCCReleaseData'
 
-class SCCManager
+class SCCObserver
 	attr_reader :http, :irc, :console, :releaseHandler, :configuration
 	
 	def initialize(configuration)

@@ -5,12 +5,12 @@ require 'database'
 require 'nil/file'
 
 class ReleaseHandler
-	def initialize(manager, configuration, releaseTableSymbol, releaseDataClass)
-		@http = manager.http
+	def initialize(observer, configuration, releaseTableSymbol, releaseDataClass)
+		@http = observer.http
 		@torrentPath = configuration::Torrent::Path::Torrent
 		@sizeLimit = configuration::Torrent::SizeLimit
 		@database = getDatabase configuration
-		@manager = manager
+		@observer = observer
 		
 		@releaseDataClass = releaseDataClass
 		@releaseTableSymbol = releaseTableSymbol
@@ -64,7 +64,7 @@ class ReleaseHandler
 	end
 	
 	def output(line)
-		@manager.console.output(line)
+		@observer.console.output(line)
 	end
 	
 	def processMessage(release, url)

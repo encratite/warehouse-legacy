@@ -1,13 +1,13 @@
-$:.concat ['../shared', '../manager']
+$:.concat ['../shared', '../observer']
 
 require 'nil/file'
 
-require 'SCCManager'
+require 'SCCObserver'
 require 'Configuration'
 
 lines = Nil.readLines('data/scc.log')
-manager = SCCManager.new(Configuration)
+observer = SCCObserver.new(Configuration)
 lines.each do |line|
 	next if line.empty?
-	manager.irc.irc.processLine(line)
+	observer.irc.irc.processLine(line)
 end

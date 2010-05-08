@@ -24,8 +24,6 @@ class SCCReleaseData < ReleaseData
 		['NFO', /<div id="ka3".+?\/>([\s\S]+?)<\/div>/, :nfo],
 	]
 	
-	Debugging = false
-	
 	def removeHTMLLinks(input)
 		output = input.gsub(/<a .+?>(.+?)<\/a>/) { |match| $1 }
 		return output
@@ -54,11 +52,19 @@ class SCCReleaseData < ReleaseData
 		@nfo = CGI::unescapeHTML(@nfo)
 		@nfo = removeHTMLLinks(@nfo)
 		
-		if Debugging
+		if debugging
 			puts "Size: #{@size}"
 			puts "Pre-time in seconds: #{@preTime.inspect}"
 			puts "NFO: #{@nfo}"
 		end
+	end
+	
+	def debugging
+		false
+	end
+	
+	def getTargets
+		Targets
 	end
 	
 	def getData

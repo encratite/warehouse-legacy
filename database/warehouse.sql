@@ -52,6 +52,7 @@ create table torrentvault_data
 (
 	id serial primary key,
 	site_id integer unique not null,
+	torrent_path text not null,
 	section_name text not null,
 	name text not null,
 	--may be null if no pre-time is available

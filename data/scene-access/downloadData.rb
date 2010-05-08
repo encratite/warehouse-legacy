@@ -1,4 +1,4 @@
-$:.concat ['../shared', '../observer']
+$:.concat ['../../shared', '../../observer']
 
 require 'nil/file'
 require 'database'
@@ -6,7 +6,8 @@ require 'HTTPHandler'
 require 'Configuration'
 
 def getHTTPHandler(configuration)
-	http = HTTPHandler.new(configuration::SceneAccess::Cookie::UId, configuration::SceneAccess::Cookie::Pass)
+	data = configuration::SceneAccess::HTTP
+	http = HTTPHandler.new(data::Server, data::Cookies)
 	return http
 end
 

@@ -1,4 +1,4 @@
-$:.concat ['../shared']
+$:.concat ['../../shared']
 
 require 'nil/file'
 require 'preTime'

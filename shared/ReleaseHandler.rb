@@ -102,10 +102,14 @@ class ReleaseHandler
 				path = releaseData.path
 				torrentMatch = /\/([^\/]+\.torrent)/.match(path)
 				if torrentMatch == nil
-					output "Failed to retrieve the torrent name from the torrent path: #{path}"
+					torrent = "#{release}.torrent"
+				else
+					torrent = torrentMatch[1]
+				end
+				if torrent.index('/') != nil
+					output "Invalid torrent name: #{torrent}"
 					return
 				end
-				torrent = torrentMatch[1]
 				output "Downloading #{path}"
 				torrentData = @http.get(path)
 				torrentPath = File.expand_path(torrent, @torrentPath)

@@ -2,6 +2,8 @@ require 'ReleaseData'
 require 'sizeString'
 require 'preTime'
 
+require 'cgi'
+
 class TVReleaseData < ReleaseData
 	Targets =
 	[
@@ -18,9 +20,8 @@ class TVReleaseData < ReleaseData
 		['Release date', /First Added: .+?>(.+?)<\//, :releaseDate],
 		#annoying format
 		['Size', /<td class="nobr">(.+?)<\/td>/, :sizeString],
+		['Torrent path', /"(torrents\.php\?action=download.+?)"/, :path],
 	]
-	
-	Debugging = true
 	
 	def postProcessing(input)
 		genreMatch = /<li>Genre: .+?>(.+?)<\//.match(input)
@@ -43,12 +44,23 @@ class TVReleaseData < ReleaseData
 		rescue RuntimeError => error
 			raise ReleaseData::Error.new(error.message)
 		end
+		
+		@path = '/' + CGI::unescapeHTML(@path)
+	end
+	
+	def debugging
+		true
+	end
+	
+	def getTargets
+		Targets
 	end
 	
 	def getData
 		return {
 			site_id: @id,
 			section_name: @sectionName,
+			torrent_path: @path,
 			name: @name,
 			pre_time: @preTime,
 			genre: @genre,

@@ -1,17 +1,15 @@
 require 'nil/irc'
 
 class ConsoleHandler
-	def initialize(observer)
-		@observer = observer
-		
+	def initialize(irc, log)
 		@commands =
 		{
 			'help' => [:commandHelp, 'print help'],
 			'quit' => [:commandQuit, 'quit the program'],
 		}
 		
-		@irc = @observer.irc.irc
-		@log = File.open(observer.configuration::Logging::ObserverLog, 'ab')
+		@irc = irc.irc
+		@log = File.open(log, 'ab')
 	end
 	
 	def getTimestamp

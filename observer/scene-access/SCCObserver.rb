@@ -1,26 +1,13 @@
 require 'HTTPHandler'
-require 'SCCIRCHandler'
 require 'ConsoleHandler'
 require 'ReleaseHandler'
+require 'ReleaseObserver'
+
+require 'SCCIRCHandler'
 require 'SCCReleaseData'
 
-class SCCObserver
-	attr_reader :http, :irc, :console, :releaseHandler, :configuration
-	
-	def initialize(configuration)
-		@configuration = configuration
-		
-		scc = configuration::SceneAcces
-		http = scc::HTTP
-		@http = HTTPHandler.new(http::Server, http::Cookies)
-		@releaseHandler = ReleaseHandler.new(self, configuration, :scene_access_data, SCCReleaseData)
-		@irc = SCCIRCHandler.new(scc::IRC)
-		@console = ConsoleHandler.new(self)
-		@irc.postConsoleInitialisation(self)
-	end
-	
-	def run
-		@irc.run
-		@console.run
+class SCCObserver < ReleaseObserver
+	def siteInitialisation
+		createObjects(@configuration::SceneAccess, :scene_access_data, SCCReleaseData)
 	end
 end

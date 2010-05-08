@@ -34,6 +34,8 @@ module Configuration
 				URL = /(http\:\/\/[^\)]+)\)/
 			end
 		end
+		
+		Log = 'scene-access.log'
 	end
 	
 	module Torrent
@@ -91,7 +93,7 @@ module Configuration
 	
 	module Logging
 		Path = '../log/'
-		ObserverLog = Path + 'observer.log'
 		CategoriserLog = Path + 'categoriser.log'
+		SitePath = '../../log/'
 	end
 end

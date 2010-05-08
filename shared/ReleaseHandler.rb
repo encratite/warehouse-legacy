@@ -12,8 +12,8 @@ class ReleaseHandler
 		@database = getDatabase configuration
 		@observer = observer
 		
-		@releaseDataClass = releaseDataClass
 		@releaseTableSymbol = releaseTableSymbol
+		@releaseDataClass = releaseDataClass
 	end
 	
 	def databaseDown(exception)

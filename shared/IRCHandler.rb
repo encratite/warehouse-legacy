@@ -12,7 +12,7 @@ class IRCHandler
 		realName = nick
 		
 		@irc = Nil::IRCClient.new
-		@irc.setServer(data::Server)
+		@irc.setServer(data::Server, data::Port)
 		@irc.setUser(nick, user, localHost, realName)
 		@irc.onEntry = method(:onEntry)
 		@irc.onChannelMessage = method(:onChannelMessage)

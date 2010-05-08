@@ -48,7 +48,8 @@ def getUser(database)
 end
 
 def getHTTPHandler(configuration)
-	http = HTTPHandler.new(configuration::SceneAccess::Cookie::UId, configuration::SceneAccess::Cookie::Pass)
+	sccData = configuration::SceneAccess::HTTP
+	http = HTTPHandler.new(sccData::Server, sccData::Cookies)
 	return http
 end
 

@@ -21,6 +21,7 @@ module Configuration
 		
 		module IRC
 			Server = 'irc.sceneaccess.org'
+			Port = 6667
 			Nick = 'malleruet'
 			Channels = ['#scc-announce']
 			
@@ -50,6 +51,7 @@ module Configuration
 		
 		module IRC
 			Server = 'irc.torrentvault.org'
+			Port = 9011
 			Nick = 'assunamal'
 			Channels = ['#tv', '#tv-spam']
 			InviteBot = 'TorrentVault'
@@ -57,7 +59,7 @@ module Configuration
 			
 			module Bot
 				Nick = 'InfoVault'
-				Host = 'services.torrentvault]'
+				Host = 'services.torrentvault'
 			end
 			
 			module Regexp

@@ -69,10 +69,18 @@ class ReleaseHandler
 	end
 	
 	def processMessage(release, url)
-		prefix = 'http://'
-		return if url.size <= prefix.size
-		offset = url.index('/', prefix.size)
-		path = url[offset..-1]
+		tokens = url.split('://')
+		if tokens.size != 2
+			output "Invalid URL: #{url}"
+			return
+		end
+		
+		#unused as of now, ignore https
+		protocol = tokens[0]
+		identifier = tokens[1]
+		
+		offset = identifier.index('/')
+		path = identifier[offset..-1]
 		data = @http.get(path)
 		if data == nil
 			output "Error: Failed to retrieve URL #{url} (path: #{path}, release; #{release})"

@@ -58,8 +58,11 @@ create table torrentvault_data
 	--may be null if no pre-time is available
 	pre_time integer,
 	--genre is null for non-MP3 releases
-	genre text not null,
-	release_date timestamp not null,
+	genre text,
+	--unluckily the release date is not always available - use the added/release_date_offset fields otherwise
+	release_date timestamp,
+	added timestamp default now(),
+	release_date_offset integer,
 	release_size bigint not null,
 	download_count integer not null,
 	seeder_count integer not null,

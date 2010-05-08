@@ -10,6 +10,7 @@ def convertSizeString(input)
 		
 	units =
 	[
+		'B',
 		'KB',
 		'MB',
 		'GB'
@@ -20,6 +21,6 @@ def convertSizeString(input)
 	unitOffset = units.index(unit)
 	raise "Invalid unit in size string: #{unit}" if unitOffset == nil
 	
-	size = (value * (factor ** (unitOffset + 1))).to_i
+	size = (value * (factor ** unitOffset)).to_i
 	return size
 end

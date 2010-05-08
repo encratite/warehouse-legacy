@@ -110,9 +110,13 @@ class ReleaseHandler
 					output "Invalid torrent name: #{torrent}"
 					return
 				end
+				torrentPath = File.expand_path(torrent, @torrentPath)
+				if Nil.readFile(torrentPath) != nil
+					output "Collision detected - aborting, #{torrentPath} already exists!"
+					return
+				end
 				output "Downloading #{path}"
 				torrentData = @http.get(path)
-				torrentPath = File.expand_path(torrent, @torrentPath)
 				Nil.writeFile(torrentPath, torrentData)
 				output "Downloaded #{path} to #{torrentPath}"
 			else

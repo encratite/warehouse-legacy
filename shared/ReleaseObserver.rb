@@ -8,11 +8,11 @@ class ReleaseObserver
 		siteInitialisation
 	end
 	
-	def createObjects(siteConfiguration, releaseTableSymbol, releaseDataClass)
+	def createObjects(siteConfiguration, releaseTableSymbol, releaseDataClass, ircHandlerClass)
 		http = siteConfiguration::HTTP
 		@http = HTTPHandler.new(http::Server, http::Cookies)
 		@releaseHandler = ReleaseHandler.new(self, @configuration, releaseTableSymbol, releaseDataClass)
-		@irc = SCCIRCHandler.new(siteConfiguration::IRC)
+		@irc = ircHandlerClass.new(siteConfiguration::IRC, @releaseHandler)
 		logPath = Nil.joinPaths(@configuration::Logging::SitePath, siteConfiguration::Log)
 		@console = ConsoleHandler.new(@irc, logPath)
 		@irc.postConsoleInitialisation(self)

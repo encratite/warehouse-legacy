@@ -2,6 +2,8 @@ require 'nil/irc'
 require 'IRCHandler'
 
 class SCCIRCHandler < IRCHandler
+	attr_writer :http
+	
 	def onEntry
 		data =
 		{
@@ -10,6 +12,6 @@ class SCCIRCHandler < IRCHandler
 		}
 		@http.post('/irc.php', data)
 		
-		@console.onEntry
+		@console.output 'Trying to enter the announce channel'
 	end
 end

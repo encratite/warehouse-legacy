@@ -43,10 +43,6 @@ class ConsoleHandler
 		output "#{getTimestamp} | > #{line}"
 	end
 	
-	def onEntry
-		output 'Trying to enter the announce channel'
-	end
-	
 	def onChannelMessage(channel, user, message)
 		message = Nil::IRCClient.stripTags(message)
 		output "\##{channel} <#{user.nick}> #{message}"

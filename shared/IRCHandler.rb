@@ -1,9 +1,8 @@
 class IRCHandler
 	attr_reader :irc
 	
-	def initialize(data)
-		@http = observer.http
-		@releaseHandler = observer.releaseHandler
+	def initialize(data, releaseHandler)
+		@releaseHandler = releaseHandler
 		
 		nick = data::Nick
 		user = nick

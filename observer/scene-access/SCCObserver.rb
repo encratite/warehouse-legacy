@@ -8,6 +8,7 @@ require 'SCCReleaseData'
 
 class SCCObserver < ReleaseObserver
 	def siteInitialisation
-		createObjects(@configuration::SceneAccess, :scene_access_data, SCCReleaseData)
+		createObjects(@configuration::SceneAccess, :scene_access_data, SCCReleaseData, SCCIRCHandler)
+		@irc.http = @http
 	end
 end

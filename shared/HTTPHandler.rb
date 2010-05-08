@@ -1,15 +1,15 @@
 require 'net/http'
 
 class HTTPHandler
-	def initialize(server, cookies)
+	def initialize(server, cookieHash)
 		@http = Net::HTTP.new(server)
 		
-		cookies = cookies.map do |key, value|
-			"#{key}=#{value}"
+		cookies = []
+		cookieHash.each do |key, value|
+			cookies << "#{key}=#{value}"
 		end
 		
 		cookies = cookies.join('; ')
-		puts "Cookies: #{cookies}"
 		
 		@headers =
 		{

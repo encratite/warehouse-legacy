@@ -13,10 +13,10 @@ module Configuration
 		module HTTP
 			Server = 'sceneaccess.org'
 			Cookies =
-			[
+			{
 				'uid' => '953675',
 				'pass' => 'ab31c2bdf48e5e9d60d19b7f40cf0de0'
-			]
+			}
 		end
 		
 		module IRC

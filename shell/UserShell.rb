@@ -325,6 +325,8 @@ class UserShell
 			error "HTTP error: #{exception.message} - #{administrator}"
 		rescue ReleaseData::Error => exception
 			error "An error occured parsing the details: #{exception.message} - #{administrator}"
+		rescue Errno::EACCESS
+			error 'Failed to overwrite file - access denied'
 		end
 	end
 	

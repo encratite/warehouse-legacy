@@ -1,14 +1,12 @@
 require 'site/torrentvault/TorrentVaultReleaseData'
 require 'site/torrentvault/TorrentVaultIRCHandler'
 
+require 'secret/TorrentVault'
+
 module TorrentVault
 	module HTTP
 		Server = 'torrentvault.org'
-		Cookies =
-		{
-			'name' => 'test',
-			'name' => 'test'
-		}
+		#Cookies are secret
 	end
 	
 	module IRC
@@ -22,7 +20,7 @@ module TorrentVault
 		]
 		
 		InviteBot = 'TorrentVault'
-		InviteCode = 'a506b1d15d1dd487f68065318ff95f0f'
+		#InviteCode is secret
 		
 		module Regexp
 			Release = /NEW.+-> (.+) by [^ ]+ \[/

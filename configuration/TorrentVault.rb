@@ -1,5 +1,5 @@
-require 'site/torrentvault/TVReleaseData'
-require 'site/torrentvault/TVIRCHandler'
+require 'site/torrentvault/TorrentVaultReleaseData'
+require 'site/torrentvault/TorrentVaultIRCHandler'
 
 module TorrentVault
 	module HTTP
@@ -35,6 +35,6 @@ module TorrentVault
 	Name = 'TorrentVault'
 	Abbreviation = 'TV'
 	
-	ReleaseDataClass = TVReleaseData
-	IRCHandlerClass = TVIRCHandler
+	ReleaseDataClass = TorrentVaultReleaseData
+	IRCHandlerClass = TorrentVaultIRCHandler
 end

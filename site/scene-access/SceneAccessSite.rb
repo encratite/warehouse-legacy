@@ -1,9 +1,9 @@
 require 'shared/ReleaseSite'
 
-require 'SCCIRCHandler'
-require 'SCCReleaseData'
+require 'SceneAccessIRCHandler'
+require 'shared/SceneAccessReleaseData'
 
-class SCCSite < ReleaseSite
+class SceneAccessSite < ReleaseSite
 	def initialise(siteData, torrentData)
 		super(siteData, torrentData)
 		@irc.httpHandler = @httpHandler

@@ -1,7 +1,7 @@
 require 'nil/irc'
 require 'IRCHandler'
 
-class SCCIRCHandler < IRCHandler
+class SceneAccessIRCHandler < IRCHandler
 	attr_writer :http
 	
 	def onEntry

@@ -1,5 +1,5 @@
-require 'site/scene-access/SCCReleaseData'
-require 'site/scene-access/SCCIRCHandler'
+require 'site/scene-access/SceneAccessReleaseData'
+require 'site/scene-access/SceneAccessIRCHandler'
 
 module SceneAccessConfiguration
 	module HTTP
@@ -32,6 +32,6 @@ module SceneAccessConfiguration
 	Name = 'SceneAccess'
 	Abbreviation = 'SCC'
 	
-	ReleaseDataClass = SCCReleaseData
-	IRCHandlerClass = SCCIRCHandler
+	ReleaseDataClass = SceneAccessReleaseData
+	IRCHandlerClass = SceneAccessIRCHandler
 end

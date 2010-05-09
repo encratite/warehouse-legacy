@@ -1,9 +1,9 @@
 require 'nil/file'
-require 'SCCReleaseData'
+require 'shared/SceneAccessReleaseData'
 
 def processFile(path)
 	input = Nil.readFile(path)
-	data = SCCReleaseData.new(input)
+	data = SceneAccessReleaseData.new(input)
 end
 
 begin

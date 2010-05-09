@@ -5,7 +5,7 @@ require 'shared/sizeString'
 require 'shared/database'
 require 'configuration/Configuration'
 
-class TVReleaseData
+class TorrentVaultReleaseData
 	attr_reader :id
 	
 	Symbols =
@@ -100,7 +100,7 @@ def processData(configuration)
 		end
 		results.each do |match|
 			array = match.to_a
-			release = TVReleaseData.new(array)
+			release = TorrentVaultReleaseData.new(array)
 			dataset.where(site_id: release.id).delete
 			dataset.insert(release.getData)
 		end
@@ -109,7 +109,7 @@ def processData(configuration)
 
 end
 
-#TVReleaseData.new('output/13')
+#TorrentVaultReleaseData.new('output/13')
 #exit
 
 processData Configuration

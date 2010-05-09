@@ -3,12 +3,12 @@ require 'shared/ConsoleHandler'
 require 'shared/ReleaseHandler'
 require 'ReleaseObserver'
 
-require 'TVIRCHandler'
-require 'TVReleaseData'
+require 'TorrentVaultIRCHandler'
+require 'shared/TorrentVaultReleaseData'
 
-class TVObserver < ReleaseObserver
+class TorrentVaultObserver < ReleaseObserver
 	def siteInitialisation
-		createObjects(@configuration::TorrentVault, TVReleaseData, TVIRCHandler)
+		createObjects(@configuration::TorrentVault, TorrentVaultReleaseData, TorrentVaultIRCHandler)
 		ircData = @configuration::TorrentVault::IRC
 		@irc.inviteBot = ircData::InviteBot
 		@irc.inviteCode = ircData::InviteCode

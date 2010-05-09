@@ -5,7 +5,7 @@ require 'shared/ReleaseData'
 
 require 'cgi'
 
-class SCCReleaseData < ReleaseData
+class SceneAccessReleaseData < ReleaseData
 	Targets =
 	[
 		['Release', /<h1>(.+?)<\/h1>/, :release],

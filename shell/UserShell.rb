@@ -7,8 +7,8 @@ require 'fileutils'
 require 'readline'
 
 require 'shared/ReleaseData'
-require 'SCCReleaseData'
-require 'TVReleaseData'
+require 'shared/SceneAccessReleaseData'
+require 'shared/TorrentVaultReleaseData'
 
 require 'Timer'
 require 'SearchResult'
@@ -366,7 +366,7 @@ class UserShell
 				data = @http.get detailsPath
 				raise HTTPError.new 'Unable to retrieve details on this release' if data == nil
 				
-				releaseData = SCCReleaseData.new data
+				releaseData = SceneAccessReleaseData.new data
 				httpPath = releaseData.path
 				
 				torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)

@@ -4,7 +4,7 @@ require 'shared/preTime'
 
 require 'cgi'
 
-class TVReleaseData < ReleaseData
+class TorrentVaultReleaseData < ReleaseData
 	Targets =
 	[
 		['ID', /groupid=(\d+)"/, :id],

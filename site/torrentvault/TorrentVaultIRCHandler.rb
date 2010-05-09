@@ -1,7 +1,7 @@
 require 'nil/irc'
 require 'IRCHandler'
 
-class TVIRCHandler < IRCHandler
+class TorrentVaultIRCHandler < IRCHandler
 	attr_writer :inviteBot, :inviteCode
 	
 	def initialize(data, releaseHandler)

@@ -1,5 +1,5 @@
-require 'TVObserver'
+require 'TorrentVaultObserver'
 require 'configuration/Configuration'
 
-observer = TVObserver.new(Configuration)
+observer = TorrentVaultObserver.new(Configuration)
 observer.run

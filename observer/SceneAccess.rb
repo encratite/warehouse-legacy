@@ -1,6 +1,6 @@
-require 'site/scene-access/SCCSite'
+require 'site/scene-access/SceneAccessSite'
 require 'configuration/SceneAccess'
 require 'configuration/Configuration'
 
-site = SCCSite.new(SceneAccessConfiguration, Configuration::Torrent)
+site = SceneAccessSite.new(SceneAccessConfiguration, Configuration::Torrent)
 site.run

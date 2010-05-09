@@ -37,6 +37,8 @@ module Configuration
 		end
 		
 		Log = 'scene-access.log'
+		Table = :scene_access_data
+		Abbreviation = 'SCC'
 	end
 	
 	module TorrentVault
@@ -63,12 +65,14 @@ module Configuration
 			end
 			
 			module Regexp
-				Release = /-> (.+) by [^ ]+ \[/
+				Release = /NEW.+-> (.+) by [^ ]+ \[/
 				URL = /(https:\/\/.+?) \]/
 			end
 		end
 		
 		Log = 'torrentvault.log'
+		Table = :torrentvault_data
+		Abbreviation = 'TV'
 	end
 	
 	module Torrent

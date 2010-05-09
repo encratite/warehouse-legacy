@@ -7,7 +7,11 @@ require 'fileutils'
 require 'readline'
 
 require 'ReleaseData'
+
 require 'SCCReleaseData'
+require 'TVReleaseData'
+
+require 'Timer'
 
 class HTTPError < StandardError
 end
@@ -37,20 +41,29 @@ class UserShell
 	]
 	
 	def initialize(configuration, database, user, http)
+		@configuration = configuration
+		
 		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
 		@filterCountMaximum = configuration::Shell::FilterCountMaximum
 		@searchResultMaximum = configuration::Shell::SearchResultMaximum
+		
 		@sshKeyMaximum = configuration::Shell::SSHKeyMaximum
+		
 		@releaseSizeLimit = configuration::Torrent::SizeLimit
+		
 		@database = database
 		@user = user
-		@sccReleases = @database[:scene_access_data]
-		@filters = @database[:user_release_filter]
+		
 		@http = http
 		@torrentPath = configuration::Torrent::Path::Torrent
 		@userPath = Nil.joinPaths(configuration::Torrent::Path::User, @user.name)
 		@filteredPath = Nil.joinPaths(@userPath, configuration::Torrent::Path::Filtered)
 		@nic = configuration::Torrent::NIC
+		
+		@sccReleases = @database[configuration::SceneAccess::Table]
+		@tvReleases = @database[configuration::TorrentVault::Table]
+		
+		@filters = @database[:user_release_filter]
 	end
 	
 	def error(line)
@@ -249,21 +262,61 @@ class UserShell
 			return
 		end
 		
-		results = @database['select site_id, section_name, name, release_date, release_size from scene_access_data where name ~* ? order by site_id desc limit ?', @argument, @searchResultMaximum]
+		sites =
+		[
+			:SceneAccess,
+			:TorrentVault
+		]
 		
-		if results.empty?
+		timer = Timer.new
+		
+		siteResults = {}
+		count = 0
+		sites.each do |site, abbreviation|
+			configuration = @configuration.const_get(site)
+			table = configuration::Table.to_s
+			abbreviation = configuration::Abbreviation
+			results = @database["select site_id, section_name, name, release_date, release_size from #{table} where name ~* ? order by site_id desc limit ?", @argument, @searchResultMaximum]
+			siteResults[site] = results
+			count += results.size
+		end
+		
+		delay = timer.stop
+		
+		if count == 0
 			warning 'Your search yielded no results.'
 			return
 		end
 		
-		results.each do |result|
-			sizeString = Nil.getSizeString(result[:release_size])
-			timestamp = result[:release_date].utc.to_s
-			puts "[#{result[:site_id]}] [#{result[:section_name]}] #{result[:name]} (#{sizeString}, #{timestamp})"
+		searchResults = {}
+		sites.each do |site|
+			configuration = @configuration.const_get(site)
+			abbreviation = configuration::Abbreviation
+			
+			results = siteResults[site]
+			results.each do |result|
+				name = result[:name]
+				if searchResults[name] == nil
+					searchResults[name] = SearchResult.new(abbreviation, result)
+				else
+					searchResults[name].processData(abbreviation, result)
+				end
+			end
 		end
 		
-		if results.count > 5
-			success "Found #{results.count} results."
+		resultArray = searchResults.values
+		resultArray.sort do |x, y|
+			x.id <=> y.id
+		end
+		
+		resultArray.each do |result|
+			puts result.getString
+		end
+		
+		if count == 1
+			success "Found one result in #{delay} ms."
+		else
+			success "Found #{count} results in #{delay} ms."
 		end
 	end
 	
@@ -379,7 +432,7 @@ class UserShell
 		[
 			['User level', userLevel],
 			['Size limit per release', sizeLimitString],
-			['Search result limit', @searchResultMaximum.to_s],
+			['Search result limit per site', @searchResultMaximum.to_s],
 		]
 		
 		printData data

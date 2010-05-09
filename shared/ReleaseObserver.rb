@@ -8,7 +8,8 @@ class ReleaseObserver
 		siteInitialisation
 	end
 	
-	def createObjects(siteConfiguration, releaseTableSymbol, releaseDataClass, ircHandlerClass)
+	def createObjects(siteConfiguration, releaseDataClass, ircHandlerClass)
+		releaseTableSymbol = siteConfiguration::Table
 		http = siteConfiguration::HTTP
 		@http = HTTPHandler.new(http::Server, http::Cookies)
 		@releaseHandler = ReleaseHandler.new(self, @configuration, releaseTableSymbol, releaseDataClass)

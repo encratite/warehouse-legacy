@@ -49,7 +49,7 @@ class TVReleaseData < ReleaseData
 	end
 	
 	def debugging
-		true
+		false
 	end
 	
 	def getTargets

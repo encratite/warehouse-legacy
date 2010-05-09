@@ -46,6 +46,8 @@ create table scene_access_data
 	leecher_count integer not null
 );
 
+create index scene_access_data_name_index on scene_access_data(name);
+
 drop table if exists torrentvault_data;
 
 create table torrentvault_data
@@ -70,3 +72,5 @@ create table torrentvault_data
 	--may be null if the uploader is unknown
 	uploader text
 );
+
+create index torrentvault_name_index on torrentvault_data(name);

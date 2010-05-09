@@ -64,6 +64,12 @@ class UserShell
 		@sites = getReleaseSites
 	end
 	
+	def debug(line)
+		if @user.isAdministrator
+			puts "#{Nil.white 'DEBUG'}: line"
+		end
+	end
+	
 	def error(line)
 		puts Nil.red(line)
 	end
@@ -332,7 +338,12 @@ class UserShell
 		else
 			result = @database["#{select} name ~* ?", target]
 		end
-		return false if result.empty?
+		if result.empty?
+			debug "Tried site #{site.name}, no hits. Table is #{table}."
+			return false
+		else
+			debug "Tried site #{site.name}, got a hit"
+		end
 		result = result.first
 		
 		size = result[:release_size]

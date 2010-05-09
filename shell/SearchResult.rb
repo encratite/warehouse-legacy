@@ -8,7 +8,7 @@ class SearchResult
 		@name = data[:name]
 		@section = data[:section_name]
 		@size = Nil.getSizeString(data[:release_size])
-		@date = data[:release_date].utc.to_s
+		@date = data[:release_date]
 		@descriptions = []
 		@id = data[:site_id]
 		processData(source, data)
@@ -26,7 +26,7 @@ class SearchResult
 		date =
 			@date == nil ?
 			'' :
-			", #{@date}"
+			", #{@date.utc.to_s}"
 		descriptions = @descriptions.join(', ')
 		output = "[#{section}] #{@name} [#{@size}#{date}] [#{descriptions}]"
 		return output

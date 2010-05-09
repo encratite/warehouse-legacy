@@ -1,23 +1,24 @@
 require 'zlib'
 require 'nil/console'
+require 'nil/environment'
 
 def stringColour(input)
-	include Nil.Console
+	return input if Nil.getOS == :windows
 	
-	Colours =
+	colours =
 	[
-		LightRed,
-		LightBlue,
-		LightGreen,
-		LightCyan,
-		Red,
-		Green,
-		Cyan,
-		Yellow,
-		Pink
+		:LightRed,
+		:LightBlue,
+		:LightGreen,
+		:LightCyan,
+		:Red,
+		:Green,
+		:Cyan,
+		:Yellow,
+		:Pink
 	]
 	
 	hash = Zlib.crc32(input)
-	colour = Colours[hash % Colours.size]
-	return colour + input + Normal
+	colour = Nil::Console.const_get(colours[hash % colours.size])
+	return colour + input + Nil::Console::Normal
 end

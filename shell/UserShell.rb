@@ -7,11 +7,11 @@ require 'fileutils'
 require 'readline'
 
 require 'ReleaseData'
-
 require 'SCCReleaseData'
 require 'TVReleaseData'
 
 require 'Timer'
+require 'SearchResult'
 
 class HTTPError < StandardError
 end
@@ -276,7 +276,7 @@ class UserShell
 			configuration = @configuration.const_get(site)
 			table = configuration::Table.to_s
 			abbreviation = configuration::Abbreviation
-			results = @database["select site_id, section_name, name, release_date, release_size from #{table} where name ~* ? order by site_id desc limit ?", @argument, @searchResultMaximum]
+			results = @database["select site_id, section_name, name, release_date, release_size from #{table} where name ~* ? order by site_id desc limit ?", @argument, @searchResultMaximum].all
 			siteResults[site] = results
 			count += results.size
 		end

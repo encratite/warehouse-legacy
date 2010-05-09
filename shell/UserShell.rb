@@ -10,7 +10,8 @@ require 'configuration/Configuration'
 
 require 'shell/Timer'
 require 'shell/SearchResult'
-require 'shell/sites'
+
+require 'shared/sites'
 
 class HTTPError < StandardError
 end

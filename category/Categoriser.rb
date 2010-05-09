@@ -1,9 +1,11 @@
+require 'fileutils'
+require 'etc'
+
 require 'nil/time'
 require 'nil/file'
 require 'nil/environment'
 
-require 'fileutils'
-require 'etc'
+require 'shared/sites'
 
 class Categoriser
 	def initialize(configuration, database)
@@ -17,6 +19,7 @@ class Categoriser
 		@user = Nil.getUser
 		@torrentPath = configuration::Torrent::Path::Torrent
 		@manualPath = configuration::Torrent::Path::Manual
+		@sites = getReleaseSites
 	end
 	
 	def output(line)
@@ -30,7 +33,7 @@ class Categoriser
 		FileUtils.chmod(0775, path)
 	end
 	
-	def processMatch(release, user, category, filter)
+	def processMatch(release, user, category, filter, isNFO = false)
 		category = @ownPath if category == nil
 		userPath = Nil.joinPaths(@userPath, user)
 		filterPath = Nil.joinPaths(userPath, @filteredPath)
@@ -50,7 +53,8 @@ class Categoriser
 		if filter == nil
 			output "Creating symlink #{symlink} to release #{target} because user #{user} manually downloaded this release"
 		else
-			output "Creating symlink #{symlink} to release #{target} because of the filter \"#{filter}\" of user #{user}"
+			filterName = isNFO ? 'NFO filter' : 'name filter'
+			output "Creating symlink #{symlink} to release #{target} because of the #{filterName} \"#{filter}\" of user #{user}"
 		end
 		begin
 			Nil.symbolicLink(target, symlink)
@@ -63,17 +67,45 @@ class Categoriser
 		setupPermissions(symlink)
 	end
 	
-	def categorise(release)
-		results = @database['select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.category as category from user_data inner join user_release_filter on (user_data.id = user_release_filter.user_id) where ? ~* user_release_filter.filter', release]
+	def getNFO(release)
+		@sites.each do |site|
+			table = sites.table
+			result = @database[table].where(name: release).select(:nfo)
+			next if result.empty?
+			nfo = result.first[:nfo]
+			next if nfo == nil
+		end
+		return
+	end
+	
+	def processResults(results, isNFO = false)
 		results.each do |result|
 			user = result[:user_name]
 			category = result[:category]
 			filter = result[:filter]
 			[@ownPath, category].compact.each do |currentCategory|
-				processMatch(release, user, currentCategory, filter)
+				processMatch(release, user, currentCategory, filter, isNFO)
 			end
 		end
+	end
+	
+	def categorise(release)
+		query = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.category as category from user_data inner join user_release_filter on (user_data.id = user_release_filter.user_id) where ? ~* user_release_filter.filter'
+		#process filter matches by name
+		results = @database["#{query} and user_release_filter.is_nfo_filter = false", release]
+		processResults(results)
 		
+		#process filter matches by NFO content
+		nfo = getNFO(release)
+		if nfo != nil
+			output "Found an NFO of #{nfo.size} bytes in size for release #{release}"
+			results = @database["#{query} and user_release_filter.is_nfo_filter = true", nfo]
+			processResults(results, true)
+		else
+			output "Found no NFO for release #{release}"
+		end
+		
+		#always create a symlink for manually queued releases
 		begin
 			torrentName = "#{release}.torrent"
 			torrentPath = Nil.joinPaths(@torrentPath, torrentName)

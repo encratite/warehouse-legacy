@@ -33,6 +33,8 @@ create table scene_access_data
 	torrent_path text not null,
 	section_name text not null,
 	name text not null,
+	--may be null if no NFO was available
+	nfo text default null,
 	--may be null because it cannot be extracted from the pages
 	info_hash text,
 	--may be null if no pre-time is available
@@ -57,6 +59,8 @@ create table torrentvault_data
 	torrent_path text not null,
 	section_name text not null,
 	name text not null,
+	--NFOs are not available on TorrentVault - always null for now, this just means less work for the categoriser
+	nfo text default null,
 	--may be null if no pre-time is available
 	pre_time integer,
 	--genre is null for non-MP3 releases

@@ -73,6 +73,7 @@ class SceneAccessReleaseData < ReleaseData
 			torrent_path: @path,
 			section_name: @section,
 			name: @release,
+			nfo: @nfo,
 			info_hash: @infoHash,
 			pre_time: @preTime,
 			file_count: @files,

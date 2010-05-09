@@ -1,13 +1,13 @@
-require 'HTTPHandler'
-require 'IRCHandler'
-require 'ReleaseHandler'
-require 'OutputHandler'
-require 'ConsoleHandler'
+require 'shared/HTTPHandler'
+require 'shared/IRCHandler'
+require 'shared/ReleaseHandler'
+require 'shared/OutputHandler'
+require 'shared/ConsoleHandler'
 
-require 'IRCData'
+require 'shared/IRCData'
 
-require 'database'
-require 'logging'
+require 'shared/database'
+require 'shared/logging'
 
 class ReleaseSite
 	attr_reader :log, :table, :name, :abbreviation, :database
@@ -39,6 +39,7 @@ class ReleaseSite
 		@releaseSizeLimit = torrentData::SizeLimit
 		
 		@releaseDataClass = siteData::ReleaseDataClass
+		@ircHandlerClass = siteData::IRCHandlerClass
 		
 		ircData = siteData::IRC
 		regexpData = ircData::Regexp
@@ -56,7 +57,12 @@ class ReleaseSite
 		@httpHandler = HTTPHandler.new(http::Server, http::Cookies)
 		@outputHandler = OutputHandler.new(@log)
 		@releaseHandler = ReleaseHandler.new(self)
-		@ircHandler = IRCHandler(self)
+		@ircHandler = @ircHandlerClass.new(self)
 		@consoleHandler = ConsoleHandler.new(@ircHandler)
+	end
+	
+	def run
+		@ircHandler.run
+		@consoleHandler.run
 	end
 end

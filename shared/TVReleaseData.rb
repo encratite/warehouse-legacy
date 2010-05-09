@@ -1,6 +1,6 @@
-require 'ReleaseData'
-require 'sizeString'
-require 'preTime'
+require 'shared/ReleaseData'
+require 'shared/sizeString'
+require 'shared/preTime'
 
 require 'cgi'
 

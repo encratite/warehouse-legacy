@@ -1,7 +1,6 @@
-$: += ['shared', 'site/scene-access']
+require 'site/scene-access/SCCSite'
+require 'configuration/SceneAccess'
+require 'configuration/Configuration'
 
-require 'SCCObserver'
-require 'Configuration'
-
-observer = SCCObserver.new(Configuration)
-observer.run
+site = SCCSite.new(SceneAccessConfiguration, Configuration::Torrent)
+site.run

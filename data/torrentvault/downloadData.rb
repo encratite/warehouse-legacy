@@ -1,9 +1,7 @@
-$: += ['shared', 'site']
-
 require 'nil/file'
-require 'database'
-require 'HTTPHandler'
-require 'Configuration'
+require 'shared/database'
+require 'shared/HTTPHandler'
+require 'configuration/Configuration'
 
 def getHTTPHandler(configuration)
 	data = configuration::TorrentVault::HTTP

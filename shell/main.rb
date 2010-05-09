@@ -1,13 +1,11 @@
-$: += ['shared', 'site/scene-access', 'site/torrentvault']
-
 require 'sequel'
 
 require 'nil/environment'
 require 'nil/console'
 
-require 'database'
-require 'HTTPHandler'
-require 'Configuration'
+require 'shared/database'
+require 'shared/HTTPHandler'
+require 'configuration/Configuration'
 
 require 'UserShell'
 require 'User'

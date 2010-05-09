@@ -3,8 +3,8 @@ require 'pg'
 
 require 'nil/file'
 
-require 'database'
-require 'ReleaseData'
+require 'shared/database'
+require 'shared/ReleaseData'
 
 class ReleaseHandler
 	def initialize(site)

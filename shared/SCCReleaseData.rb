@@ -1,7 +1,7 @@
 require 'nil/string'
 
-require 'preTime'
-require 'ReleaseData'
+require 'shared/preTime'
+require 'shared/ReleaseData'
 
 require 'cgi'
 

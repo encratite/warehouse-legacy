@@ -6,7 +6,7 @@ require 'nil/network'
 require 'fileutils'
 require 'readline'
 
-require 'ReleaseData'
+require 'shared/ReleaseData'
 require 'SCCReleaseData'
 require 'TVReleaseData'
 

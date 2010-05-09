@@ -1,6 +1,6 @@
-require 'HTTPHandler'
-require 'ConsoleHandler'
-require 'ReleaseHandler'
+require 'shared/HTTPHandler'
+require 'shared/ConsoleHandler'
+require 'shared/ReleaseHandler'
 require 'ReleaseObserver'
 
 require 'TVIRCHandler'

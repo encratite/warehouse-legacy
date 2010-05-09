@@ -1,9 +1,8 @@
 base = File.expand_path(File.dirname(__FILE__))
 Dir.chdir base
-$: << 'shared'
 
-require 'Configuration'
-require 'database'
+require 'configuration/Configuration'
+require 'shared/database'
 
 require 'Categoriser'
 

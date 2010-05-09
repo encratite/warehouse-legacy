@@ -1,11 +1,9 @@
-$: << 'shared'
-
 require 'nil/file'
 
-require 'preTime'
-require 'sizeString'
-require 'database'
-require 'Configuration'
+require 'shared/preTime'
+require 'shared/sizeString'
+require 'shared/database'
+require 'configuration/Configuration'
 
 class TVReleaseData
 	attr_reader :id

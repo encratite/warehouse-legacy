@@ -1,9 +1,7 @@
-$: += ['shared', 'site/scene-access'
-
 require 'nil/file'
 
 require 'SCCObserver'
-require 'Configuration'
+require 'configuration/Configuration'
 
 Dir.chdir '../observer/scene-access'
 

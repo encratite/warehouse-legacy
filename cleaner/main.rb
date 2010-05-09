@@ -1,6 +1,4 @@
-$: << 'shared'
-
-require 'Configuration'
+require 'configuration/Configuration'
 require 'Cleaner'
 
 cleaner = Cleaner.new Configuration

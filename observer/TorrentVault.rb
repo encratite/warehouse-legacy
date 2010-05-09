@@ -1,7 +1,5 @@
-$: += ['shared', 'site/torrentvault']
-
 require 'TVObserver'
-require 'Configuration'
+require 'configuration/Configuration'
 
 observer = TVObserver.new(Configuration)
 observer.run

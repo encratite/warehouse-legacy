@@ -1,7 +1,5 @@
-$:.concat += ['shared', 'category']
-
-require 'Configuration'
-require 'database'
+require 'configuration/Configuration'
+require 'shared/database'
 
 require 'Categoriser'
 

@@ -1,9 +1,7 @@
-$: << 'shared'
-
 require 'nil/file'
-require 'preTime'
-require 'Configuration'
-require 'database'
+require 'shared/preTime'
+require 'configuration/Configuration'
+require 'shared/database'
 
 class SCCReleaseData
 	attr_reader :name, :id

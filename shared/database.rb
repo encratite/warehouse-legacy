@@ -1,6 +1,6 @@
 require 'sequel'
 
-require 'Configuration'
+require 'configuration/Configuration'
 
 def getDatabase(data = Configuration::Database)
 	begin

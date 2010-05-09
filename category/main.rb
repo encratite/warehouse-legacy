@@ -13,6 +13,6 @@ if ARGV.size != 1
 end
 
 release = File.basename(ARGV[0])
-database = getDatabase(Configuration)
+database = getDatabase
 categoriser = Categoriser.new(Configuration, database)
 categoriser.categorise(release)

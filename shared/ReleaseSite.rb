@@ -1,52 +1,50 @@
-module SceneAccess
-	module HTTP
-		Server = 'sceneaccess.org'
-		Cookies =
-		{
-			'uid' => '953675',
-			'pass' => 'ab31c2bdf48e5e9d60d19b7f40cf0de0'
-		}
-	end
-	
-	module IRC
-		Server = 'irc.sceneaccess.org'
-		Port = 6667
-		Nick = 'malleruet'
-		Channels = ['#scc-announce']
-		
-		module Bot
-			Nick = 'SCC'
-			Host = 'csops.sceneaccess.org'
-		end
-		
-		module Regexp
-			Release = /-> ([^ ]+) \(Uploaded/
-			URL = /(http:\/\/[^\)]+)\)/
-		end
-	end
-	
-	Log = 'scene-access.log'
-	Table = :scene_access_data
-	Name = 'SceneAccess'
-	Abbreviation = 'SCC'
-end
+require 'HTTPHandler'
+require 'IRCHandler'
+require 'ReleaseHandler'
+require 'OutputHandler'
+require 'ConsoleHandler'
 
-require 'shared/HTTPHandler'
-require 'shared/IRCData'
-require 'shared/IRCBot'
-require 'shared/IRCRegexp'
+require 'IRCData'
+
+require 'database'
+require 'logging'
 
 class ReleaseSite
-	attr_reader :http, :irc
-	attr_reader :log, :table, :name, :abbreviation
+	attr_reader :log, :table, :name, :abbreviation, :database
+	attr_reader :httpHandler, :outputHandler, :releaseHandler, :ircHandler
 	
-	def initialize(configuration)
-		http = configuration::HTTP
-		@http = HTTPHandler.new(http::Server, http::Cookies)
+	def initialize(siteData)
+		"""
+		Dependencies:
+		HTTPHandler: None
+		OutputHandler: None
+		ReleaseHandler: HTTPHandler, OutputHandler
+		IRCHandler: OutputHandler, ReleaseHandler
+		ConsoleHandler: IRCHandler
+		"""
+
+		@log = getSiteLogPath(siteData::Log)
+		@table = siteData::Table
+		@name = siteData::Name
+		@abbreviation = siteData::Abreviation
+		@database = getDatabase
 		
-		@log = configuration::Log
-		@table = configuration::Table
-		@name = configuration::Name
-		@abbreviation = configuration::Abreviation
+		ircData = siteData::IRC
+		regexpData = ircData::Regexp
+		@ircData = IRCData.new(
+			ircData::Server,
+			ircData::Port,
+			ircData::Nick,
+			ircData::Channels,
+			ircData::Bots,
+			regexpData::Release,
+			regexpData::URL
+		)
+		
+		http = siteData::HTTP
+		@httpHandler = HTTPHandler.new(http::Server, http::Cookies)
+		@outputHandler = OutputHandler.new(@log)
+		@releaseHandler = ReleaseHandler.new(self)
+		@ircHandler = IRCHandler
 	end
 end

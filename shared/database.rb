@@ -1,9 +1,9 @@
 require 'sequel'
 
-def getDatabase(configuration)
+require 'Configuration'
+
+def getDatabase(data = Configuration::Database)
 	begin
-		data = configuration::Database
-		
 		database =
 			Sequel.connect(
 				adapter: data::Adapter,
@@ -14,7 +14,7 @@ def getDatabase(configuration)
 			)
 	
 		#run an early test to see if the DBMS is accessible
-		database[:user_data].where(name: '').all
+		database['select 1 where true'].all
 		return database
 	rescue Sequel::DatabaseConnectionError => exception
 		puts "DBMS inaccessible: #{exception.message}"

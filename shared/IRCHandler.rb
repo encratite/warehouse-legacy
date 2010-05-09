@@ -3,7 +3,7 @@ class IRCHandler
 	
 	Debugging = false
 	
-	def initialize(data, releaseHandler)
+	def initialize(ircData, botData)
 		@releaseHandler = releaseHandler
 		
 		nick = data::Nick

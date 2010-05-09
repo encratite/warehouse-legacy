@@ -1,20 +1,23 @@
 require 'sequel'
 require 'pg'
-require 'database'
-require 'ReleaseData'
 
 require 'nil/file'
 
+require 'database'
+require 'ReleaseData'
+
 class ReleaseHandler
-	def initialize(observer, configuration, releaseTableSymbol, releaseDataClass)
-		@http = observer.http
-		@torrentPath = configuration::Torrent::Path::Torrent
-		@sizeLimit = configuration::Torrent::SizeLimit
-		@database = getDatabase configuration
-		@observer = observer
+	def initialize(site)
+		@httpHandler = site.httpHandler
+		@outputHandler = site.outputHandler
 		
-		@releaseTableSymbol = releaseTableSymbol
-		@releaseDataClass = releaseDataClass
+		@database = site.database
+		
+		@torrentPath = site.torrentPath
+		@sizeLimit = site.releaseSizeLimit
+		
+		@releaseTableSymbol = site.releaseTableSymbol
+		@releaseDataClass = site.releaseDataClass
 	end
 	
 	def databaseDown(exception)
@@ -23,10 +26,14 @@ class ReleaseHandler
 	end
 	
 	def isReleaseOfInterest(release, nfo)
+		select = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.is_nfo_filter as is_nfo_filter from user_release_filter, user_data where'
+		nameCondition = '(user_release_filter.is_nfo_filter = false and ? ~* user_release_filter.filter)'
+		nfoCondition = '(user_release_filter.is_nfo_filter = true and ? ~* user_release_filter.filter)'
+		idCondition = 'user_data.id = user_release_filter.user_id'
 		if nfo == nil
-			results = @database["select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.is_nfo_filter as is_nfo_filter from user_release_filter, user_data where (user_release_filter.is_nfo_filter = false and ? ~* user_release_filter.filter) and user_data.id = user_release_filter.user_id", release]
+			results = @database["#{select} #{nameCondition} and #{idCondition}", release]
 		else
-			results = @database["select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.is_nfo_filter as is_nfo_filter from user_release_filter, user_data where ((user_release_filter.is_nfo_filter = false and ? ~* user_release_filter.filter) or (user_release_filter.is_nfo_filter = true and ? ~* user_release_filter.filter)) and user_data.id = user_release_filter.user_id", release, nfo]
+			results = @database["#{select} (#{nameCondition} or #{nfoCondition}) and #{idCondition}", release, nfo]
 		end
 		
 		matchCount = results.count
@@ -81,7 +88,7 @@ class ReleaseHandler
 		
 		offset = identifier.index('/')
 		path = identifier[offset..-1]
-		data = @http.get(path)
+		data = @httpHandler.get(path)
 		if data == nil
 			output "Error: Failed to retrieve URL #{url} (path: #{path}, release; #{release})"
 			return
@@ -116,7 +123,7 @@ class ReleaseHandler
 					return
 				end
 				output "Downloading #{path}"
-				torrentData = @http.get(path)
+				torrentData = @httpHandler.get(path)
 				Nil.writeFile(torrentPath, torrentData)
 				output "Downloaded #{path} to #{torrentPath}"
 			else

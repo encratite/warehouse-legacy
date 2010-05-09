@@ -1,5 +1,8 @@
 require 'nil/environment'
 
+require 'shared/SCCReleaseData'
+require 'shared/TVReleaseData'
+
 module Configuration
 	module Database
 		Adapter = 'postgres'
@@ -24,11 +27,10 @@ module Configuration
 			Port = 6667
 			Nick = 'malleruet'
 			Channels = ['#scc-announce']
-			
-			module Bot
-				Nick = 'SCC'
-				Host = 'csops.sceneaccess.org'
-			end
+			Bots =
+			[
+				{nick: 'SCC', host: 'csops.sceneaccess.org'}
+			]
 			
 			module Regexp
 				Release = /-> ([^ ]+) \(Uploaded/
@@ -40,6 +42,7 @@ module Configuration
 		Table = :scene_access_data
 		Name = 'SceneAccess'
 		Abbreviation = 'SCC'
+		ReleaseDataClass = SCCReleaseData
 	end
 	
 	module TorrentVault
@@ -57,13 +60,13 @@ module Configuration
 			Port = 9011
 			Nick = 'assunamal'
 			Channels = ['#tv', '#tv-spam']
+			Bots =
+			[
+				{nick: 'InfoVault', host: 'services.torrentvault'}
+			]
+			
 			InviteBot = 'TorrentVault'
 			InviteCode = 'a506b1d15d1dd487f68065318ff95f0f'
-			
-			module Bot
-				Nick = 'InfoVault'
-				Host = 'services.torrentvault'
-			end
 			
 			module Regexp
 				Release = /NEW.+-> (.+) by [^ ]+ \[/
@@ -75,6 +78,7 @@ module Configuration
 		Table = :torrentvault_data
 		Name = 'TorrentVault'
 		Abbreviation = 'TV'
+		ReleaseDataClass = TVReleaseData
 	end
 	
 	module Torrent

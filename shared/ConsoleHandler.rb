@@ -1,7 +1,5 @@
-require 'nil/irc'
-
 class ConsoleHandler
-	def initialize(irc, log)
+	def initialize(irc)
 		@commands =
 		{
 			'help' => [:commandHelp, 'print help'],
@@ -9,14 +7,7 @@ class ConsoleHandler
 			'exit' => [:commandQuit, 'exit the program'],
 		}
 		
-		@irc = irc.irc
-		@log = nil
-	end
-	
-	def getTimestamp
-		output = Time.now.utc.to_s
-		output = output.split(' ')[0..-2].join(' ')
-		return output
+		@irc = irc
 	end
 	
 	def commandHelp(arguments)
@@ -32,26 +23,6 @@ class ConsoleHandler
 		@irc.quit('Shutdown')
 		puts 'Quitting'
 		exit
-	end
-	
-	def output(line)
-		@log = File.open(log, 'ab') if @log == nil
-		puts line
-		@log.puts line
-		@log.flush
-	end
-	
-	def onLine(line)
-		output "#{getTimestamp} | > #{line}"
-	end
-	
-	def onChannelMessage(channel, user, message)
-		message = Nil::IRCClient.stripTags(message)
-		output "\##{channel} <#{user.nick}> #{message}"
-	end
-	
-	def onSendLine(line)
-		output "#{getTimestamp} | < #{line}"
 	end
 	
 	def terminate

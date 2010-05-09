@@ -53,7 +53,7 @@ def getHTTPHandler(configuration)
 	return http
 end
 
-database = getDatabase Configuration
+database = getDatabase
 http = getHTTPHandler Configuration
 user = getUser database
 shell = UserShell.new(Configuration, database, user, http)

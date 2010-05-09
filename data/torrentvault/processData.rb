@@ -82,7 +82,7 @@ end
 def processData(configuration)
 	pattern = /switch_row_. torrent.+?title="(.+?)".+?"(torrents\.php\?.+?)".+?<strong>.+?torrents\.php\?id=(\d+).+?title="(.+?)".+?Pre: (.+?)<.+?<td class="nobr">(.+?)<.+?<td class="center">(\d+)<.+?<td class="nobr">(.+?)<.+?<td class="center">(\d+)<.+?<td class="center">(\d+)<.+?<td class="center">(\d+)<.+?<td class="center">(.+?)</
 	
-	database = getDatabase(configuration)
+	database = getDatabase
 	dataset = database[:torrentvault_data]
 
 	counter = 1

@@ -1,35 +1,31 @@
 class IRCHandler
 	attr_reader :irc
 	
-	Debugging = false
-	
-	def initialize(ircData, botData)
-		@releaseHandler = releaseHandler
+	def initialize(site)
+		@releaseHandler = site.releaseHandler
 		
-		nick = data::Nick
+		ircData = site.ircData
+		nick = ircData.nick
 		user = nick
 		localHost = nick
 		realName = nick
 		
 		@irc = Nil::IRCClient.new
-		@irc.setServer(data::Server, data::Port)
+		@irc.setServer(ircData.server, ircData.port)
 		@irc.setUser(nick, user, localHost, realName)
 		@irc.onEntry = method(:onEntry)
 		@irc.onChannelMessage = method(:onChannelMessage)
 		
-		@releaseChannels = data::Channels
-		@botNick = data::Bot::Nick
-		@botHost = data::Bot::Host
+		@releaseChannels = ircData.channels
+		@bots = ircData.bots
 		
-		regexp = data::Regexp
-		@releasePattern = regexp::Release
-		@urlPattern = regexp::URL
-	end
-	
-	def postConsoleInitialisation(observer)
-		@console = observer.console
-		@irc.onLine = @console.method(:onLine)
-		@irc.onSendLine = @console.method(:onSendLine)
+		regexp = ircData.regexp
+		@releasePattern = regexp.release
+		@urlPattern = regexp.url
+		
+		outputHandler = site.outputHandler
+		@irc.onLine = outputHandler.method(:onLine)
+		@irc.onSendLine = outputHandler.method(:onSendLine)
 	end
 	
 	def run
@@ -37,17 +33,11 @@ class IRCHandler
 	end
 	
 	def onChannelMessage(channel, user, message)
-		isBotMessage =
-			@releaseChannels.include?(channel) &&
-			user.nick == @botNick &&
-			user.host == @botHost
-			
-		if Debugging
-			puts "@releaseChannels.include?(channel): #{@releaseChannels.inspect}.include?(#{channel.inspect})"
-			puts "user.nick == @botNick: #{user.nick.inspect} == #{@botNick.inspect}"
-			puts "user.host == @botHost: #{user.host.inspect} == #{@botHost.inspect}"
-		end
-			
+		channelMatch = @releaseChannels.include?(channel)
+		identifier = [user.nick, user.host]
+		userMatch = @bots.include?(identifier)
+		isBotMessage = channelMatch && userMatch
+
 		if isBotMessage
 			message = Nil::IRCClient::stripTags(message)
 			releaseMatch = @releasePattern.match(message)

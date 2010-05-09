@@ -1,7 +1,10 @@
 require 'nil/environment'
 
-require 'shared/SCCReleaseData'
-require 'shared/TVReleaseData'
+require 'SCCReleaseData'
+require 'SCCIRCHandler'
+
+require 'TVReleaseData'
+require 'TVIRCHandler'
 
 module Configuration
 	module Database

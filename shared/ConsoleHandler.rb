@@ -1,5 +1,5 @@
 class ConsoleHandler
-	def initialize(irc)
+	def initialize(ircHandler)
 		@commands =
 		{
 			'help' => [:commandHelp, 'print help'],
@@ -7,7 +7,7 @@ class ConsoleHandler
 			'exit' => [:commandQuit, 'exit the program'],
 		}
 		
-		@irc = irc
+		@ircHandler = ircHandler
 	end
 	
 	def commandHelp(arguments)
@@ -20,7 +20,7 @@ class ConsoleHandler
 	
 	def commandQuit(arguments)
 		puts 'Disconnecting from IRC server'
-		@irc.quit('Shutdown')
+		@ircHandler.quit('Shutdown')
 		puts 'Quitting'
 		exit
 	end

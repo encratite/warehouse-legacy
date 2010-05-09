@@ -5,4 +5,9 @@ class IRCBot
 		@nick = nick
 		@host = host
 	end
+	
+	def ==(array)
+		nick, host = array
+		return @nick == nick && @host == host
+	end
 end

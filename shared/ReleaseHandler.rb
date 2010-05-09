@@ -16,7 +16,7 @@ class ReleaseHandler
 		@torrentPath = site.torrentPath
 		@sizeLimit = site.releaseSizeLimit
 		
-		@releaseTableSymbol = site.releaseTableSymbol
+		@releaseTableSymbol = site.table
 		@releaseDataClass = site.releaseDataClass
 	end
 	

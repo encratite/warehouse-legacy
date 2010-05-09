@@ -13,7 +13,13 @@ class ReleaseSite
 	attr_reader :log, :table, :name, :abbreviation, :database
 	attr_reader :httpHandler, :outputHandler, :releaseHandler, :ircHandler
 	
-	def initialize(siteData)
+	#Used by ReleaseHandler
+	attr_reader :torrentPath, :releaseSizeLimit, :releaseDataClass
+	
+	#Used by IRCHandler
+	attr_reader :ircData
+	
+	def initialize(siteData, torrentData)
 		"""
 		Dependencies:
 		HTTPHandler: None
@@ -28,6 +34,11 @@ class ReleaseSite
 		@name = siteData::Name
 		@abbreviation = siteData::Abreviation
 		@database = getDatabase
+		
+		@torrentPath = torrentData::Path::Torrent
+		@releaseSizeLimit = torrentData::SizeLimit
+		
+		@releaseDataClass = siteData::ReleaseDataClass
 		
 		ircData = siteData::IRC
 		regexpData = ircData::Regexp
@@ -45,6 +56,7 @@ class ReleaseSite
 		@httpHandler = HTTPHandler.new(http::Server, http::Cookies)
 		@outputHandler = OutputHandler.new(@log)
 		@releaseHandler = ReleaseHandler.new(self)
-		@ircHandler = IRCHandler
+		@ircHandler = IRCHandler(self)
+		@consoleHandler = ConsoleHandler.new(@ircHandler)
 	end
 end

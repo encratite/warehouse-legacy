@@ -38,6 +38,7 @@ module Configuration
 		
 		Log = 'scene-access.log'
 		Table = :scene_access_data
+		Name = 'SceneAccess'
 		Abbreviation = 'SCC'
 	end
 	
@@ -72,6 +73,7 @@ module Configuration
 		
 		Log = 'torrentvault.log'
 		Table = :torrentvault_data
+		Name = 'TorrentVault'
 		Abbreviation = 'TV'
 	end
 	

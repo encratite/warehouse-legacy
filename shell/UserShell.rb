@@ -17,6 +17,12 @@ class HTTPError < StandardError
 end
 
 class UserShell
+	Sites =
+	[
+		:SceneAccess,
+		:TorrentVault
+	]
+	
 	Commands =
 	[
 		['?', 'prints this help', :commandHelp],
@@ -243,12 +249,26 @@ class UserShell
 	end
 	
 	def commandDatabase
-		data =
-		[
-			['Number of releases in the database', @sccReleases.count.to_s],
-			['Size of releases available on demand', Nil.getSizeString(@sccReleases.sum(:release_size))],
-		]
-		printData data
+		timer = Timer.new
+		queryCount = 0
+		Sites.each do |site|
+			data = @configuration.const_get(site)
+			siteName = data::Name
+			table = @database[data::Table]
+			
+			data =
+			[
+				['Number of releases in the database', table.count.to_s],
+				['Size of releases available on demand', Nil.getSizeString(table.sum(:release_size))],
+			]
+			
+			puts "#{stringColour(siteName)}:"
+			printData data
+			print "\n"
+			queryCount += 2
+		end
+		delay = timer.stop
+		success "Executed #{queryCount} queries in #{delay} ms."
 	end
 	
 	def commandSearch
@@ -262,17 +282,11 @@ class UserShell
 			return
 		end
 		
-		sites =
-		[
-			:SceneAccess,
-			:TorrentVault
-		]
-		
 		timer = Timer.new
 		
 		siteResults = {}
 		count = 0
-		sites.each do |site, abbreviation|
+		Sites.each do |site, abbreviation|
 			configuration = @configuration.const_get(site)
 			table = configuration::Table.to_s
 			abbreviation = configuration::Abbreviation
@@ -289,7 +303,7 @@ class UserShell
 		end
 		
 		searchResults = {}
-		sites.each do |site|
+		Sites.each do |site|
 			configuration = @configuration.const_get(site)
 			abbreviation = configuration::Abbreviation
 			

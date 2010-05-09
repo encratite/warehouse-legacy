@@ -69,16 +69,18 @@ class Categoriser
 	
 	def getNFO(release)
 		@sites.each do |site|
-			table = sites.table
+			table = site.table
 			result = @database[table].where(name: release).select(:nfo)
+			#puts result.sql
 			next if result.empty?
 			nfo = result.first[:nfo]
 			next if nfo == nil
+			return nfo
 		end
 		return
 	end
 	
-	def processResults(results, isNFO = false)
+	def processResults(results, release, isNFO = false)
 		results.each do |result|
 			user = result[:user_name]
 			category = result[:category]
@@ -93,14 +95,14 @@ class Categoriser
 		query = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.category as category from user_data inner join user_release_filter on (user_data.id = user_release_filter.user_id) where ? ~* user_release_filter.filter'
 		#process filter matches by name
 		results = @database["#{query} and user_release_filter.is_nfo_filter = false", release]
-		processResults(results)
+		processResults(results, release)
 		
 		#process filter matches by NFO content
 		nfo = getNFO(release)
 		if nfo != nil
 			output "Found an NFO of #{nfo.size} bytes in size for release #{release}"
 			results = @database["#{query} and user_release_filter.is_nfo_filter = true", nfo]
-			processResults(results, true)
+			processResults(results, release, true)
 		else
 			output "Found no NFO for release #{release}"
 		end

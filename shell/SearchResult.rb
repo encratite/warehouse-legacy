@@ -1,5 +1,6 @@
 require 'stringColour'
 require 'nil/string'
+require 'nil/console'
 
 class SearchResult
 	attr_reader :id
@@ -28,7 +29,7 @@ class SearchResult
 			'' :
 			", #{@date.utc.to_s}"
 		descriptions = @descriptions.join(', ')
-		output = "[#{section}] #{@name} [#{@size}#{date}] [#{descriptions}]"
+		output = "[#{section}] #{@name} [#{Nil.white @size}#{date}] [#{descriptions}]"
 		return output
 	end
 end

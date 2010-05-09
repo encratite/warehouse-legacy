@@ -74,13 +74,17 @@ class Categoriser
 			end
 		end
 		
-		torrentName = "#{release}.torrent"
-		torrentPath = Nil.joinPaths(@torrentPath, torrentName)
-		stat = File.stat(torrentPath)
-		user = Etc.getpwuid(stat.uid).name
-		group = Etc.getgrgid(stat.gid).name
-		if group == @shellGroup
-			processMatch(release, user, @manualPath, nil)
+		begin
+			torrentName = "#{release}.torrent"
+			torrentPath = Nil.joinPaths(@torrentPath, torrentName)
+			stat = File.stat(torrentPath)
+			user = Etc.getpwuid(stat.uid).name
+			group = Etc.getgrgid(stat.gid).name
+			if group == @shellGroup
+				processMatch(release, user, @manualPath, nil)
+			end
+		rescue Errno::ENOENT
+			output "No such path: #{torrentPath}"
 		end
 	end
 end

@@ -1,5 +1,5 @@
 require 'configuration/Configuration'
-require 'Cleaner'
+require 'cleaner/Cleaner'
 
 cleaner = Cleaner.new Configuration
 cleaner.run

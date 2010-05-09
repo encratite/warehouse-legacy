@@ -7,8 +7,8 @@ require 'shared/database'
 require 'shared/HTTPHandler'
 require 'configuration/Configuration'
 
-require 'UserShell'
-require 'User'
+require 'shell/UserShell'
+require 'shell/User'
 
 def getUser(database)
 	username = Nil.getUser
@@ -45,14 +45,7 @@ def getUser(database)
 	return user
 end
 
-def getHTTPHandler(configuration)
-	sccData = configuration::SceneAccess::HTTP
-	http = HTTPHandler.new(sccData::Server, sccData::Cookies)
-	return http
-end
-
 database = getDatabase
-http = getHTTPHandler Configuration
 user = getUser database
-shell = UserShell.new(Configuration, database, user, http)
+shell = UserShell.new(Configuration, database, user)
 shell.run

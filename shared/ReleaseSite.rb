@@ -65,4 +65,8 @@ class ReleaseSite
 		@ircHandler.run
 		@consoleHandler.run
 	end
+	
+	def ==(abbreviation)
+		return @abbreviation.downcase == abbreviation.downcase
+	end
 end

@@ -1,10 +1,7 @@
-base = File.expand_path(File.dirname(__FILE__))
-Dir.chdir base
-
 require 'configuration/Configuration'
 require 'shared/database'
 
-require 'Categoriser'
+require 'category/Categoriser'
 
 if ARGV.size != 1
 	puts "ruby #{__FILE__} <release>"

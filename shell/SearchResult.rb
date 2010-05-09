@@ -1,6 +1,7 @@
-require 'stringColour'
 require 'nil/string'
 require 'nil/console'
+
+require 'shell/stringColour'
 
 class SearchResult
 	attr_reader :id

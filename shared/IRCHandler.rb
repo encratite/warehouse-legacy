@@ -48,7 +48,7 @@ class IRCHandler
 				@releaseHandler.processMessage(release, url)
 			end
 		end
-		@console.onChannelMessage(channel, user, message)
+		@outputHandler.onChannelMessage(channel, user, message)
 	end
 	
 	def quit

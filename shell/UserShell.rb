@@ -6,23 +6,16 @@ require 'nil/network'
 require 'fileutils'
 require 'readline'
 
-require 'shared/ReleaseData'
-require 'shared/SceneAccessReleaseData'
-require 'shared/TorrentVaultReleaseData'
+require 'configuration/Configuration'
 
-require 'Timer'
-require 'SearchResult'
+require 'shell/Timer'
+require 'shell/SearchResult'
+require 'shell/sites'
 
 class HTTPError < StandardError
 end
 
 class UserShell
-	Sites =
-	[
-		:SceneAccess,
-		:TorrentVault
-	]
-	
 	Commands =
 	[
 		['?', 'prints this help', :commandHelp],
@@ -47,7 +40,7 @@ class UserShell
 		['delete-category <path>', 'get rid of a symlinks folder', :commandDeleteCategory],
 	]
 	
-	def initialize(configuration, database, user, http)
+	def initialize(configuration, database, user)
 		@configuration = configuration
 		
 		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
@@ -61,16 +54,14 @@ class UserShell
 		@database = database
 		@user = user
 		
-		@http = http
 		@torrentPath = configuration::Torrent::Path::Torrent
 		@userPath = Nil.joinPaths(configuration::Torrent::Path::User, @user.name)
 		@filteredPath = Nil.joinPaths(@userPath, configuration::Torrent::Path::Filtered)
 		@nic = configuration::Torrent::NIC
 		
-		@sccReleases = @database[configuration::SceneAccess::Table]
-		@tvReleases = @database[configuration::TorrentVault::Table]
-		
 		@filters = @database[:user_release_filter]
+		
+		@sites = getReleaseSites
 	end
 	
 	def error(line)
@@ -252,10 +243,9 @@ class UserShell
 	def commandDatabase
 		timer = Timer.new
 		queryCount = 0
-		Sites.each do |site|
-			data = @configuration.const_get(site)
-			siteName = data::Name
-			table = @database[data::Table]
+		@sites.each do |site|
+			siteName = site.name
+			table = @database[site.table]
 			
 			data =
 			[
@@ -287,12 +277,11 @@ class UserShell
 		
 		siteResults = {}
 		count = 0
-		Sites.each do |site, abbreviation|
-			configuration = @configuration.const_get(site)
-			table = configuration::Table.to_s
-			abbreviation = configuration::Abbreviation
+		@sites.each do |site|
+			table = site.table.to_s
+			abbreviation = site.abbreviation
 			results = @database["select site_id, section_name, name, release_date, release_size from #{table} where name ~* ? order by site_id desc limit ?", @argument, @searchResultMaximum].all
-			siteResults[site] = results
+			siteResults[abbreviation] = results
 			count += results.size
 		end
 		
@@ -304,11 +293,10 @@ class UserShell
 		end
 		
 		searchResults = {}
-		Sites.each do |site|
-			configuration = @configuration.const_get(site)
-			abbreviation = configuration::Abbreviation
+		@sites.each do |site|
+			abbreviation = site.abbreviation
 			
-			results = siteResults[site]
+			results = siteResults[abbreviation]
 			results.each do |result|
 				name = result[:name]
 				if searchResults[name] == nil
@@ -337,7 +325,7 @@ class UserShell
 	
 	#returns false if there was no hit, nil on hits with errors, true on hits with successful downloads
 	def downloadTorrent(site, target)
-		table = @configuration.const_get(site)::Table.to_s
+		table = site.table.to_s
 		select = "select name, site_id, release_size, torrent_path from #{table} where"
 		if target.class == Fixnum
 			result = @database["#{select} site_id = ?", target]
@@ -361,9 +349,9 @@ class UserShell
 		administrator = 'please contact the administrator'
 		
 		begin
-			if site == :SceneAccess
+			if site == 'SCC'
 				detailsPath = "/details.php?id=#{result[:site_id]}"
-				data = @http.get detailsPath
+				data = site.httpHandler.get(detailsPath)
 				raise HTTPError.new 'Unable to retrieve details on this release' if data == nil
 				
 				releaseData = SceneAccessReleaseData.new data
@@ -383,7 +371,7 @@ class UserShell
 				#return
 			end
 			
-			data = @http.get(httpPath)
+			data = site.http.get(httpPath)
 			if data == nil
 				error 'HTTP error: Unable to queue release - please contact the administrator'
 				return
@@ -394,21 +382,36 @@ class UserShell
 			success 'Success!'
 		rescue HTTPError => exception
 			error "HTTP error: #{exception.message} - #{administrator}"
+			return
 		rescue ReleaseData::Error => exception
 			error "An error occured parsing the details: #{exception.message} - #{administrator}"
+			return
 		rescue Errno::EACCESS
-			error 'Failed to overwrite file - access denied'
+			error 'Failed to overwrite file - access denied.'
+			return
 		end
+		
+		return true
 	end
 	
 	def commandDownload
-		if @argument.empty?
+		target = @argument
+		
+		if target.empty?
 			warning "You have not specified a release to download."
 			return
 		end
 		
-		#right now, there's only SCC
-		sceneAccessDownload @argument
+		@sites.each do |site|
+			result = downloadTorrent(site, target)
+			case result
+				when false then next
+				when true then return
+				when nil then return
+			end
+		end
+		
+		error "Unable to find release \"#{target}\"."
 	end
 	
 	def commandDownloadByID
@@ -417,9 +420,24 @@ class UserShell
 			return
 		end
 		
-		site = @arguments[0]
+		abbreviation = @arguments[0]
 		id = @arguments[1]
 		if !id.isNumber
+			error 'You have specified an invalid ID.'
+			return
+		end
+		
+		id = id.to_i
+		
+		offset = @sites.index(abbreviation)
+		if offset == nil
+			error "Unable to find site \"#{abbreviation}\"."
+			return
+		end
+		
+		site = @sites[offset]
+		result = downloadTorrent(site, id)
+		if result == false
 			error 'You have specified an invalid ID.'
 			return
 		end

@@ -1,4 +1,5 @@
 require 'nil/environment'
+require 'nil/file'
 
 module Configuration
 	module Database
@@ -63,8 +64,7 @@ module Configuration
 	end
 	
 	module Logging
-		Path = '../log/'
-		CategoriserLog = Path + 'categoriser.log'
-		SitePath = '../../log/'
+		Path = 'log'
+		CategoriserLog = Nil.joinPaths(Path, 'categoriser.log')
 	end
 end

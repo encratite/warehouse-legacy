@@ -1,5 +1,5 @@
 require 'nil/irc'
-require 'IRCHandler'
+require 'shared/IRCHandler'
 
 class SceneAccessIRCHandler < IRCHandler
 	attr_writer :http

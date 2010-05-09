@@ -32,7 +32,7 @@ class ReleaseSite
 		@log = getSiteLogPath(siteData::Log)
 		@table = siteData::Table
 		@name = siteData::Name
-		@abbreviation = siteData::Abreviation
+		@abbreviation = siteData::Abbreviation
 		@database = getDatabase
 		
 		@torrentPath = torrentData::Path::Torrent

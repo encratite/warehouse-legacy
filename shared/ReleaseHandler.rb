@@ -72,7 +72,7 @@ class ReleaseHandler
 	end
 	
 	def output(line)
-		@observer.console.output(line)
+		@outputHandler.output(line)
 	end
 	
 	def processMessage(release, url)

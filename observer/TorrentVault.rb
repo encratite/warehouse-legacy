@@ -1,5 +1,6 @@
-require 'TorrentVaultObserver'
+require 'site/torrentvault/TorrentVaultSite'
+require 'configuration/TorrentVault'
 require 'configuration/Configuration'
 
-observer = TorrentVaultObserver.new(Configuration)
-observer.run
+site = TorrentVaultSite.new(TorrentVaultConfiguration, Configuration::Torrent)
+site.run

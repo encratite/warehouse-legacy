@@ -1,11 +1,12 @@
 require 'nil/irc'
-require 'IRCHandler'
+
+require 'shared/IRCHandler'
 
 class TorrentVaultIRCHandler < IRCHandler
 	attr_writer :inviteBot, :inviteCode
 	
-	def initialize(data, releaseHandler)
-		super(data, releaseHandler)
+	def initialize(site)
+		super(site)
 		@irc.onInvite = method(:onInvite)
 	end
 	
@@ -19,9 +20,5 @@ class TorrentVaultIRCHandler < IRCHandler
 			output "Joining announce channel #{channel}"
 			@irc.joinChannel(channel)
 		end
-	end
-	
-	def output(message)
-		@console.output(message)
 	end
 end

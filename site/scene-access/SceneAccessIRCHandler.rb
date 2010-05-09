@@ -2,7 +2,7 @@ require 'nil/irc'
 require 'shared/IRCHandler'
 
 class SceneAccessIRCHandler < IRCHandler
-	attr_writer :http
+	attr_writer :httpHandler
 	
 	def onEntry
 		data =
@@ -10,7 +10,7 @@ class SceneAccessIRCHandler < IRCHandler
 			'announce' => 'yes',
 			'invite' => 'invite'
 		}
-		@console.output 'Trying to enter the announce channel'
-		@http.post('/irc.php', data)
+		output 'Trying to enter the announce channel'
+		@httpHandler.post('/irc.php', data)
 	end
 end

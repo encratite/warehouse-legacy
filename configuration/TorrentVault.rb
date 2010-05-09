@@ -3,7 +3,7 @@ require 'site/torrentvault/TorrentVaultIRCHandler'
 
 require 'secret/TorrentVault'
 
-module TorrentVault
+module TorrentVaultConfiguration
 	module HTTP
 		Server = 'torrentvault.org'
 		#Cookies are secret

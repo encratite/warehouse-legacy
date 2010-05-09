@@ -23,9 +23,9 @@ class IRCHandler
 		@releasePattern = regexp.release
 		@urlPattern = regexp.url
 		
-		outputHandler = site.outputHandler
-		@irc.onLine = outputHandler.method(:onLine)
-		@irc.onSendLine = outputHandler.method(:onSendLine)
+		@outputHandler = site.outputHandler
+		@irc.onLine = @outputHandler.method(:onLine)
+		@irc.onSendLine = @outputHandler.method(:onSendLine)
 	end
 	
 	def run
@@ -49,5 +49,13 @@ class IRCHandler
 			end
 		end
 		@console.onChannelMessage(channel, user, message)
+	end
+	
+	def quit
+		@irc.quit
+	end
+	
+	def output(message)
+		@outputHandler.output(message)
 	end
 end

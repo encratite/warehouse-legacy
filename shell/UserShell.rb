@@ -336,13 +336,14 @@ class UserShell
 		if target.class == Fixnum
 			result = @database["#{select} site_id = ?", target]
 		else
-			result = @database["#{select} name ~* ?", target]
+			result = @database["#{select} name = ?", target]
 		end
 		if result.empty?
-			debug "Tried site #{site.name}, no hits. Target was #{target}. Table is #{table}."
+			#debug "Tried site #{site.name}, no hits. Target was #{target}. Table is #{table}."
+			#debug "SQL: #{result.sql}"
 			return false
 		else
-			debug "Tried site #{site.name}, got a hit for #{target}."
+			#debug "Tried site #{site.name}, got a hit for #{target}."
 		end
 		result = result.first
 		
@@ -373,6 +374,12 @@ class UserShell
 				torrent = torrentMatch[1]
 			else
 				httpPath = result[:torrent_path]
+				torrent = result[:name] + '.torrent'
+			end
+			
+			if torrent.index('/') != nil
+				error "Invalid torrent name - #{administrator}."
+				return
 			end
 			
 			torrentPath = File.expand_path(torrent, @torrentPath)
@@ -382,9 +389,10 @@ class UserShell
 				#return
 			end
 			
-			data = site.http.get(httpPath)
+			debug "Downloading path #{httpPath} from site #{site.name}"
+			data = site.httpHandler.get(httpPath)
 			if data == nil
-				error 'HTTP error: Unable to queue release - please contact the administrator'
+				error "HTTP error: Unable to queue release - #{administrator}'"
 				return
 			end
 			
@@ -392,12 +400,12 @@ class UserShell
 			
 			success 'Success!'
 		rescue HTTPError => exception
-			error "HTTP error: #{exception.message} - #{administrator}"
+			error "HTTP error: #{exception.message} - #{administrator}."
 			return
 		rescue ReleaseData::Error => exception
-			error "An error occured parsing the details: #{exception.message} - #{administrator}"
+			error "An error occured parsing the details: #{exception.message} - #{administrator}."
 			return
-		rescue Errno::EACCESS
+		rescue Errno::EACCES
 			error 'Failed to overwrite file - access denied.'
 			return
 		end

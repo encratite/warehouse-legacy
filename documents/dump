@@ -1,0 +1,17 @@
+#!/bin/bash
+
+while [ 1 ]
+do
+	pg_dump -f warehouse.dump.original -t scene_access_data -t torrentvault_data warehouse
+	sed -f warehouse.sed < warehouse.dump.original > warehouse.dump
+	rm warehouse.dump.original
+	gzip -1 -f warehouse.dump
+	mv warehouse.dump dump
+	sleep 1800
+done
+
+warehouse.sed:
+
+s/40d5b69470486753f78986717cf55ce7/x/
+s/64708934439b4053a72662ab4925c5a6/x/
+s/64216775f492dfa69b30e07d86cb4b54/x/

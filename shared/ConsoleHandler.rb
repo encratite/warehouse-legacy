@@ -10,7 +10,7 @@ class ConsoleHandler
 		}
 		
 		@irc = irc.irc
-		@log = File.open(log, 'ab')
+		@log = nil
 	end
 	
 	def getTimestamp
@@ -35,6 +35,7 @@ class ConsoleHandler
 	end
 	
 	def output(line)
+		@log = File.open(log, 'ab') if @log == nil
 		puts line
 		@log.puts line
 		@log.flush

@@ -1,5 +1,6 @@
 To do:
 
+find out why the fuck "test-release" has no symlink (urgh I get it)
 symlinks should get updated when you add/remove a filter
 the cleaner should remove symlinks, too
 add more customisation features to the search results

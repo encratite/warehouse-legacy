@@ -34,7 +34,8 @@ class UserShell
 		['clear-filters', 'remove all your release filters', :commandClearFilters],
 		['database', 'get statistics on the database', :commandDatabase],
 		['search <regexp>', 'search the database for release names matching the regular expression', :commandSearch],
-		['download <ID or name>', 'start the download of a release', :commandDownload],
+		['download <name>', 'start the download of a release from the first site that matches the name', :commandDownload],
+		['download-by-id <site> <id>', 'download a release from a specific source (site may be scc or tv, e.g.)', :commandDownloadByID],
 		['status', 'retrieve the status of downloads in progress', :commandStatus],
 		#['cancel', 'cancel a download', :commandCancel],
 		['permissions', 'view your permissions/limits', :commandPermissions],
@@ -334,17 +335,16 @@ class UserShell
 		end
 	end
 	
-	def sceneAccessDownload(target)
-		if target.isNumber
-			id = target.to_i
-			result = @database['select name, site_id, release_size from scene_access_data where site_id = ?', id]
+	#returns false if there was no hit, nil on hits with errors, true on hits with successful downloads
+	def downloadTorrent(site, target)
+		table = @configuration.const_get(site)::Table.to_s
+		select = "select name, site_id, release_size, torrent_path from #{table} where"
+		if target.class == Fixnum
+			result = @database["#{select} site_id = ?", target]
 		else
-			result = @database['select name, site_id, release_size from scene_access_data where name ~* ?', target]
+			result = @database["#{select} name ~* ?", target]
 		end
-		if result.empty?
-			error 'Unable to find the release you have specified.'
-			return
-		end
+		return false if result.empty?
 		result = result.first
 		
 		size = result[:release_size]
@@ -361,16 +361,20 @@ class UserShell
 		administrator = 'please contact the administrator'
 		
 		begin
-			detailsPath = "/details.php?id=#{result[:site_id]}"
-			data = @http.get detailsPath
-			raise HTTPError.new 'Unable to retrieve details on this release' if data == nil
-			
-			releaseData = SCCReleaseData.new data
-			httpPath = releaseData.path
-			
-			torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)
-			raise HTTPError.new 'Unable to extract the filename from the details' if torrentMatch == nil
-			torrent = torrentMatch[1]
+			if site == :SceneAccess
+				detailsPath = "/details.php?id=#{result[:site_id]}"
+				data = @http.get detailsPath
+				raise HTTPError.new 'Unable to retrieve details on this release' if data == nil
+				
+				releaseData = SCCReleaseData.new data
+				httpPath = releaseData.path
+				
+				torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)
+				raise HTTPError.new 'Unable to extract the filename from the details' if torrentMatch == nil
+				torrent = torrentMatch[1]
+			else
+				httpPath = result[:torrent_path]
+			end
 			
 			torrentPath = File.expand_path(torrent, @torrentPath)
 			
@@ -405,6 +409,20 @@ class UserShell
 		
 		#right now, there's only SCC
 		sceneAccessDownload @argument
+	end
+	
+	def commandDownloadByID
+		if @arguments.size != 2
+			warning 'Invalid argument count - you need to specify a site and the ID of the release.'
+			return
+		end
+		
+		site = @arguments[0]
+		id = @arguments[1]
+		if !id.isNumber
+			error 'You have specified an invalid ID.'
+			return
+		end
 	end
 	
 	def commandStatus

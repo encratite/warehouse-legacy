@@ -66,7 +66,7 @@ class UserShell
 	
 	def debug(line)
 		if @user.isAdministrator
-			puts "#{Nil.white 'DEBUG'}: line"
+			puts "#{Nil.white 'DEBUG'}: #{line}"
 		end
 	end
 	
@@ -339,10 +339,10 @@ class UserShell
 			result = @database["#{select} name ~* ?", target]
 		end
 		if result.empty?
-			debug "Tried site #{site.name}, no hits. Table is #{table}."
+			debug "Tried site #{site.name}, no hits. Target was #{target}. Table is #{table}."
 			return false
 		else
-			debug "Tried site #{site.name}, got a hit"
+			debug "Tried site #{site.name}, got a hit for #{target}."
 		end
 		result = result.first
 		

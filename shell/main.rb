@@ -1,4 +1,4 @@
-$:.concat ['../shared']
+$: += ['shared', 'site/scene-access', 'site/torrentvault']
 
 require 'sequel'
 

@@ -1,4 +1,4 @@
-$:.concat ['../../shared']
+$: += ['shared', 'site/scene-access']
 
 require 'SCCObserver'
 require 'Configuration'

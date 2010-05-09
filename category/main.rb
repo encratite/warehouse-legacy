@@ -1,6 +1,6 @@
 base = File.expand_path(File.dirname(__FILE__))
 Dir.chdir base
-$:.concat ["../shared"]
+$: << 'shared'
 
 require 'Configuration'
 require 'database'

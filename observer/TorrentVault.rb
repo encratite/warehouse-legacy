@@ -1,4 +1,4 @@
-$:.concat ['../../shared']
+$: += ['shared', 'site/torrentvault']
 
 require 'TVObserver'
 require 'Configuration'

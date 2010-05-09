@@ -1,4 +1,4 @@
-$:.concat ['../shared']
+$: << 'shared'
 
 require 'nil/file'
 require 'SCCReleaseData'

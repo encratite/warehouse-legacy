@@ -1,4 +1,4 @@
-$:.concat ['../shared', '../observer/scene-access']
+$: += ['shared', 'site/scene-access'
 
 require 'nil/file'
 

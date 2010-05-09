@@ -1,4 +1,4 @@
-$:.concat ['../shared', '../category']
+$:.concat += ['shared', 'category']
 
 require 'Configuration'
 require 'database'

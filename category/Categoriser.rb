@@ -71,7 +71,6 @@ class Categoriser
 		@sites.each do |site|
 			table = site.table
 			result = @database[table].where(name: release).select(:nfo)
-			#puts result.sql
 			next if result.empty?
 			nfo = result.first[:nfo]
 			next if nfo == nil

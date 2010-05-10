@@ -13,6 +13,7 @@ class OutputHandler
 	end
 	
 	def output(line)
+		line = "#{getTimestamp} #{line}"
 		@log = File.open(@logPath, 'ab') if @log == nil
 		puts line
 		@log.puts line
@@ -20,7 +21,7 @@ class OutputHandler
 	end
 	
 	def onLine(line)
-		output "#{getTimestamp} | > #{line}"
+		output "| > #{line}"
 	end
 	
 	def onChannelMessage(channel, user, message)
@@ -29,6 +30,6 @@ class OutputHandler
 	end
 	
 	def onSendLine(line)
-		output "#{getTimestamp} | < #{line}"
+		output "| < #{line}"
 	end
 end

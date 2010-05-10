@@ -1,13 +1,9 @@
 To do:
 
-find out why the fuck "test-release" has no symlink (urgh I get it)
 symlinks should get updated when you add/remove a filter
-the cleaner should remove symlinks, too
 add more customisation features to the search results
-add NFO filtering
 solve the on-download notification problem
 need status stuff, XMLRPC data from rtorrent
-integrate further sites
 
 Problematic stuff:
 
@@ -15,6 +11,10 @@ add tcng/tcc QoS stuff - requires a newer kernel
 
 Done:
 
+the cleaner should remove symlinks, too
+integrate further sites (TorrentVault, oh well)
+add NFO filtering
+find out why the fuck "test-release" has no symlink (urgh I get it)
 the categoriser should check what user issued a download, creating a symlink in "manual" and "own" or whatever
 implement filter categories with symbolic links
 HTTP URL should be retrieved from details, not from the DB

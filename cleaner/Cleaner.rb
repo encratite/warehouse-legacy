@@ -8,11 +8,18 @@ class Cleaner
 	Debugging = false
 	
 	def initialize(configuration)
-		@torrentPath = configuration::Torrent::Path::Torrent
-		@downloadPath = configuration::Torrent::Path::Download
-		@downloadDonePath = configuration::Torrent::Path::DownloadDone
-		@freeSpaceMinimum = configuration::Torrent::Cleaner::FreeSpaceMinimum
-		@checkDelay = configuration::Torrent::Cleaner::CheckDelay
+		torrentData = configuration::Torrent
+		
+		pathData = torrentData::Path
+		@torrentPath = pathData::Torrent
+		@downloadPath = pathData::Download
+		@downloadDonePath = pathData::DownloadDone
+		
+		cleanerData = torrentData::Cleaner
+		@freeSpaceMinimum = cleanerData::FreeSpaceMinimum
+		@checkDelay = cleanerData::CheckDelay
+		
+		@filteredPath = Nil.joinPaths(pathData::User, pathData::Filtered)
 	end
 	
 	def run
@@ -43,10 +50,33 @@ class Cleaner
 		return getSortedFiles @torrentPath
 	end
 	
+	def removeSymlinks(directory, release)
+		data = Nil.readDirectory(directory)
+		if data == nil
+			puts "Unable to process directory #{directory}"
+			return
+		end
+		directories, files = data
+		directories.each do |directory|
+			removeSymlinks(directory.path, release)
+		end
+		
+		files.each do |file|
+			if file.name == release
+				puts "Getting rid of a symlink for the release #{release}"
+				deleteFile(file.path)
+				break
+			end
+		end
+	end
+	
 	def deleteDirectory(path)
 		puts "Deleting directory #{path}"
 		FileUtils.remove_dir(path, true) if !Debugging
-		return nil
+		release = File.basename(path)
+		puts "Commencing symlink removal scan for release #{release} in #{@filteredPath}"
+		removeSymlinks(@filteredPath, release)
+		return
 	end
 	
 	def deleteFile(path)

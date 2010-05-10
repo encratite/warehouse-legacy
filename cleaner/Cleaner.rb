@@ -19,7 +19,8 @@ class Cleaner
 		@freeSpaceMinimum = cleanerData::FreeSpaceMinimum
 		@checkDelay = cleanerData::CheckDelay
 		
-		@filteredPath = Nil.joinPaths(pathData::User, pathData::Filtered)
+		@userPath = pathData::User
+		@filteredPath = pathData::Filtered
 	end
 	
 	def run
@@ -74,14 +75,18 @@ class Cleaner
 		puts "Deleting directory #{path}"
 		FileUtils.remove_dir(path, true) if !Debugging
 		release = File.basename(path)
-		puts "Commencing symlink removal scan for release #{release} in #{@filteredPath}"
-		removeSymlinks(@filteredPath, release)
+		users = Nil.readDirectory(@userPath)
+		users.each do |user|
+			filteredPath = Nil.joinPaths(user.path, @filteredPath)
+			puts "Commencing symlink removal scan for release #{release} in #{@ilteredPath}"
+			removeSymlinks(filteredPath, release)
+		end
 		return
 	end
 	
 	def deleteFile(path)
 		puts "Deleting file #{path}"
-		FileUtil.rm_f path if !Debugging
+		FileUtils.rm_f path if !Debugging
 	end
 	
 	def orphanCheck

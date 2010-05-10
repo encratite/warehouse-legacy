@@ -52,7 +52,7 @@ class Cleaner
 	end
 	
 	def removeSymlinks(directory, release)
-		data = Nil.readDirectory(directory)
+		data = Nil.readDirectory(directory, true)
 		if data == nil
 			puts "Unable to process directory #{directory}"
 			return
@@ -78,7 +78,7 @@ class Cleaner
 		users = Nil.readDirectory(@userPath)
 		users.each do |user|
 			filteredPath = Nil.joinPaths(user.path, @filteredPath)
-			puts "Commencing symlink removal scan for release #{release} in #{@ilteredPath}"
+			puts "Commencing symlink removal scan for release #{release} in #{filteredPath}"
 			removeSymlinks(filteredPath, release)
 		end
 		return

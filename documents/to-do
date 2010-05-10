@@ -1,5 +1,8 @@
 To do:
 
+add genre filters for TorrentVault
+fix the dates in the TV database
+add a seed check for TV downloads?
 symlinks should get updated when you add/remove a filter
 add more customisation features to the search results
 solve the on-download notification problem
@@ -7,14 +10,14 @@ need status stuff, XMLRPC data from rtorrent
 
 Problematic stuff:
 
-add tcng/tcc QoS stuff - requires a newer kernel
+add tcng/tcc QoS stuff - requires a proper kernel
 
 Done:
 
 the cleaner should remove symlinks, too
 integrate further sites (TorrentVault, oh well)
 add NFO filtering
-find out why the fuck "test-release" has no symlink (urgh I get it)
+add symlinks for NFO hits in the categoriser
 the categoriser should check what user issued a download, creating a symlink in "manual" and "own" or whatever
 implement filter categories with symbolic links
 HTTP URL should be retrieved from details, not from the DB

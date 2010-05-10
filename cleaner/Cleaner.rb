@@ -78,7 +78,7 @@ class Cleaner
 		users = Nil.readDirectory(@userPath)
 		users.each do |user|
 			filteredPath = Nil.joinPaths(user.path, @filteredPath)
-			puts "Commencing symlink removal scan for release #{release} in #{filteredPath}"
+			#puts "Commencing symlink removal scan for release #{release} in #{filteredPath}"
 			removeSymlinks(filteredPath, release)
 		end
 		return

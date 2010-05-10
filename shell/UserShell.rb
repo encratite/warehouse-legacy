@@ -148,6 +148,7 @@ class UserShell
 	def run
 		@prefix = @user.shellPrefix
 		Readline.completion_proc = method(:completion)
+		Readline.completion_append_character = ni
 		while true
 			begin
 				line = Readline.readline(@prefix, true)

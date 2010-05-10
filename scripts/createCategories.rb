@@ -1,7 +1,7 @@
 require 'configuration/Configuration'
 require 'shared/database'
 
-require 'Categoriser'
+require 'category/Categoriser'
 
 require 'nil/file'
 

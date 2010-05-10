@@ -51,8 +51,8 @@ class IRCHandler
 		@outputHandler.onChannelMessage(channel, user, message)
 	end
 	
-	def quit
-		@irc.quit
+	def quit(message = nil)
+		@irc.quit(message)
 	end
 	
 	def output(message)

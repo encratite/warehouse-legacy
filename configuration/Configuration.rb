@@ -45,7 +45,7 @@ module Configuration
 		module Cleaner
 			FreeSpaceMinimum = 10 * Gigabyte
 			#delay in seconds
-			CheckDelay = 30
+			CheckDelay = 300
 		end
 		
 		module User

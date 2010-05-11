@@ -29,6 +29,7 @@ class Categoriser
 	end
 	
 	def setupPermissions(path)
+		output "Modifying the permissions of #{path}"
 		FileUtils.chown(@user, @shellGroup, path)
 		FileUtils.chmod(0775, path)
 	end

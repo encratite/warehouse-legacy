@@ -91,33 +91,40 @@ class Categoriser
 	end
 	
 	def categorise(release)
-		query = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.category as category from user_data inner join user_release_filter on (user_data.id = user_release_filter.user_id) where ? ~* user_release_filter.filter'
-		#process filter matches by name
-		results = @database["#{query} and user_release_filter.is_nfo_filter = false", release]
-		processResults(results, release)
-		
-		#process filter matches by NFO content
-		nfo = getNFO(release)
-		if nfo != nil
-			output "Found an NFO of #{nfo.size} bytes in size for release #{release}"
-			results = @database["#{query} and user_release_filter.is_nfo_filter = true", nfo]
-			processResults(results, release, true)
-		else
-			output "Found no NFO for release #{release}"
-		end
-		
-		#always create a symlink for manually queued releases
 		begin
-			torrentName = "#{release}.torrent"
-			torrentPath = Nil.joinPaths(@torrentPath, torrentName)
-			stat = File.stat(torrentPath)
-			user = Etc.getpwuid(stat.uid).name
-			group = Etc.getgrgid(stat.gid).name
-			if group == @shellGroup
-				processMatch(release, user, @manualPath, nil)
+			output "Categorising release #{release}"
+			query = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.category as category from user_data inner join user_release_filter on (user_data.id = user_release_filter.user_id) where ? ~* user_release_filter.filter'
+			#process filter matches by name
+			results = @database["#{query} and user_release_filter.is_nfo_filter = false", release]
+			processResults(results, release)
+			
+			#process filter matches by NFO content
+			nfo = getNFO(release)
+			if nfo != nil
+				output "Found an NFO of #{nfo.size} bytes in size for release #{release}"
+				results = @database["#{query} and user_release_filter.is_nfo_filter = true", nfo]
+				processResults(results, release, true)
+			else
+				output "Found no NFO for release #{release}"
 			end
-		rescue Errno::ENOENT
-			output "No such path: #{torrentPath}"
+			
+			#always create a symlink for manually queued releases
+			begin
+				torrentName = "#{release}.torrent"
+				torrentPath = Nil.joinPaths(@torrentPath, torrentName)
+				stat = File.stat(torrentPath)
+				user = Etc.getpwuid(stat.uid).name
+				group = Etc.getgrgid(stat.gid).name
+				if group == @shellGroup
+					processMatch(release, user, @manualPath, nil)
+				end
+			rescue Errno::ENOENT
+				output "No such path: #{torrentPath}"
+			end
+		rescue => exception
+			message = "An exception of type #{exception.class} occured: #{exception.message}"
+			message += exception.backtrace.join("\n")
+			output message
 		end
 	end
 end

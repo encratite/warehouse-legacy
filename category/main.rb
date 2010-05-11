@@ -1,6 +1,12 @@
+require 'nil/file'
+
+#hack for the rtorrent cwd
+base = File.expand_path(File.dirname(__FILE__))
+target = Nil.joinPaths(base, '..')
+Dir.chdir(target)
+
 require 'configuration/Configuration'
 require 'shared/database'
-
 require 'category/Categoriser'
 
 if ARGV.size != 1

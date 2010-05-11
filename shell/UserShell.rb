@@ -31,7 +31,7 @@ class UserShell
 		['download <name>', 'start the download of a release from the first site that matches the name', :commandDownload],
 		['download-by-id <site> <id>', 'download a release from a specific source (site may be scc or tv, e.g.)', :commandDownloadByID],
 		['status', 'retrieve the status of downloads in progress', :commandStatus],
-		#['cancel', 'cancel a download', :commandCancel],
+		['cancel', 'cancel a download', :commandCancel],
 		['permissions', 'view your permissions/limits', :commandPermissions],
 		['exit', 'terminate your session', :commandExit],
 		['quit', 'terminate your session', :commandExit],
@@ -544,7 +544,33 @@ class UserShell
 	end
 	
 	def commandCancel
-		puts 'Yet to be implemented, sorry.'
+		forbidden = ['..', '/']
+		if @arguments.empty?
+			warning 'You need to specify a release whose download you wish to cancel.'
+			return
+		end
+		filename = @argument + '.torrent'
+		forbidden.each do |illegalString|
+			if filename.index(illegalString) != nil
+				error 'You have specified an invalid release name.'
+				return
+			end
+		end
+		torrent = Nil.joinPaths(@torrentPath, filename)
+		begin
+			stat = File.stat(torrentPath)
+			user = Etc.getpwuid(stat.uid).name
+			if user != @user.name
+				error "#{filename} is owned by another user - ask the administrator for help."
+				return
+			end
+			FileUtils.rm(torrent)
+			success "#{filename} has been removed successfully."
+		rescue Errno::EACCES
+			error "You do not have the permission to remove #{filename}."
+		rescue Errno::ENOENT
+			error "Unable to find #{filename}."
+		end
 	end
 	
 	def commandExit

@@ -29,7 +29,9 @@ class Categoriser
 	end
 	
 	def setupPermissions(path)
-		output "Modifying the permissions of #{path}"
+		output "Modifying the permissions of #{path}: chown #{@user}:#{@shellGroup}"
+		user, group = getUserAndGroup path
+		output "The current user and group of #{path} are #{user}:#{group}"
 		FileUtils.chown(@user, @shellGroup, path)
 		FileUtils.chmod(0775, path)
 	end
@@ -91,6 +93,13 @@ class Categoriser
 		end
 	end
 	
+	def getUserAndGroup(path)
+		stat = File.stat(path)
+		user = Etc.getpwuid(stat.uid).name
+		group = Etc.getgrgid(stat.gid).name
+		return user, group
+	end
+	
 	def categorise(release)
 		begin
 			output "Categorising release #{release}"
@@ -113,9 +122,7 @@ class Categoriser
 			begin
 				torrentName = "#{release}.torrent"
 				torrentPath = Nil.joinPaths(@torrentPath, torrentName)
-				stat = File.stat(torrentPath)
-				user = Etc.getpwuid(stat.uid).name
-				group = Etc.getgrgid(stat.gid).name
+				user, group = getUserAndGroup torrentPath
 				if group == @shellGroup
 					processMatch(release, user, @manualPath, nil)
 				end
@@ -123,7 +130,7 @@ class Categoriser
 				output "No such path: #{torrentPath}"
 			end
 		rescue => exception
-			message = "An exception of type #{exception.class} occured: #{exception.message}"
+			message = "An exception of type #{exception.class} occured: #{exception.message}\n"
 			message += exception.backtrace.join("\n")
 			output message
 		end

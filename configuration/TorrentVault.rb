@@ -12,7 +12,7 @@ module TorrentVaultConfiguration
 	module IRC
 		Server = 'irc.torrentvault.org'
 		Port = 9011
-		Nick = 'assunamal'
+		#Nick is secret
 		Channels = ['#tv', '#tv-spam']
 		Bots =
 		[

@@ -94,7 +94,11 @@ class Categoriser
 	end
 	
 	def getUserAndGroup(path)
-		stat = File.stat(path)
+		if File.symlink?(path)
+			stat = File.lstat(path)
+		else
+			stat = File.stat(path)
+		end
 		user = Etc.getpwuid(stat.uid).name
 		group = Etc.getgrgid(stat.gid).name
 		return user, group

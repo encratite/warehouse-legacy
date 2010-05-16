@@ -10,7 +10,7 @@ class TorrentVaultReleaseData < ReleaseData
 		['ID', /groupid=(\d+)"/, :id],
 		['Release', /<title>(.+?) - TorrentVault/, :name],
 		['Section', /<li>Category: (.+?)<\/li>/, :sectionName],
-		['Uploader', /<li>Uploader: .+?>.+?>(.+?)<\/a>/, :uploader],
+		['Uploader', /<li>Uploader: (.+?)<\/a>/, :uploader],
 		#annoying format
 		['Pre time', /<li>Pre: (.+?)<\//, :preTimeString],
 		['Snatched', /<li>Snatched: (\d+)<\//, :downloads],
@@ -46,6 +46,15 @@ class TorrentVaultReleaseData < ReleaseData
 		end
 		
 		@path = '/' + CGI::unescapeHTML(@path)
+		
+		match = />([^><]+)</.match(@uploader)
+		if match == nil
+			@uploader = nil
+		else
+			@uploader = match[1]
+		end
+		
+		puts "Uploader: #{@uploader.inspect}"
 	end
 	
 	def debugging

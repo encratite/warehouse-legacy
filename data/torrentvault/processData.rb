@@ -36,7 +36,7 @@ class TorrentVaultReleaseData
 			value = array[offset]
 			instance_variable_set(symbol, value)
 			offset += 1
-			#puts "#{symbol}: #{value}"
+			puts "#{symbol}: #{value}"
 		end
 		
 		@id = @id.to_i
@@ -55,6 +55,9 @@ class TorrentVaultReleaseData
 			@uploader = match[1]
 			#puts "Uploader: #{@uploader}"
 		end
+		
+		puts @added
+		exit
 	end
 	
 	def getData
@@ -77,7 +80,7 @@ class TorrentVaultReleaseData
 	end
 end
 
-def processData(configuration)
+def processData(htmlPath, configuration)
 	pattern = /switch_row_. torrent.+?title="(.+?)".+?"(torrents\.php\?.+?)".+?<strong>.+?torrents\.php\?id=(\d+).+?title="(.+?)".+?Pre: (.+?)<.+?<td class="nobr">(.+?)<.+?<td class="center">(\d+)<.+?<td class="nobr">(.+?)<.+?<td class="center">(\d+)<.+?<td class="center">(\d+)<.+?<td class="center">(\d+)<.+?<td class="center">(.+?)</
 	
 	database = getDatabase
@@ -85,11 +88,15 @@ def processData(configuration)
 
 	counter = 1
 	while true
-		path = "output/#{counter}"
-		puts "Processing #{path}"
+		file = counter.to_s
+		path = Nil.joinPaths(htmlPath, file)
 		
 		data = Nil.readFile(path)
-		return if data == nil
+		if data == nil
+			puts "Unable to process #{path}, aborting"
+			return
+		end
+		puts "Processing #{path}"
 		data = data.gsub("\n", '')
 		#puts 'Scanning...'
 		results = data.scan(pattern)
@@ -109,7 +116,5 @@ def processData(configuration)
 
 end
 
-#TorrentVaultReleaseData.new('output/13')
-#exit
-
-processData Configuration
+htmlPath = 'html/torrentvault'
+processData(htmlPath, Configuration)

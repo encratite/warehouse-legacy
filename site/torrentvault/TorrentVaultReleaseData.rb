@@ -1,6 +1,6 @@
 require 'shared/ReleaseData'
 require 'shared/sizeString'
-require 'shared/preTime'
+require 'shared/timeString'
 
 require 'cgi'
 
@@ -33,7 +33,7 @@ class TorrentVaultReleaseData < ReleaseData
 		
 		@id = @id.to_i
 		
-		@preTime = parsePreTimeString(@preTimeString)
+		@preTime = parseTimeString(@preTimeString)
 		
 		@downloads = @downloads.to_i
 		@seeders = @seeders.to_i

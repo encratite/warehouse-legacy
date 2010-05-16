@@ -1,6 +1,6 @@
 require 'nil/file'
 
-require 'shared/preTime'
+require 'shared/timeString'
 require 'shared/sizeString'
 require 'shared/database'
 require 'configuration/Configuration'
@@ -24,7 +24,8 @@ class TorrentVaultReleaseData
 		:uploader
 	]
 	
-	def initialize(array)
+	def initialize(array, fileTimestamp)
+		@fileTimestamp = fileTimestamp
 		if array.size != Symbols.size
 			puts array.inspect
 			puts "Size mismatch: #{array} (#{Symbols.size} symbols vs. #{array.size} matches)"
@@ -36,12 +37,20 @@ class TorrentVaultReleaseData
 			value = array[offset]
 			instance_variable_set(symbol, value)
 			offset += 1
-			puts "#{symbol}: #{value}"
+			#puts "#{symbol}: #{value}"
 		end
 		
 		@id = @id.to_i
-		@preTime = parsePreTimeString(@preTimeString)
-		@added = parsePreTimeString(@addedString)
+		@preTime = parseTimeString(@preTimeString)
+		if @preTime == nil
+			#puts "Failed to parse pre-time string: #{@preTimeString}"
+			#exit
+		end
+		@added = parseTimeString(@addedString)
+		if @added == nil
+			puts "Failed to parse added time string: #{@addedString}"
+			exit
+		end
 		@fileCount = @fileCount.to_i
 		@size = convertSizeString(@sizeString.gsub(',', ''))
 		@downloads = @downloads.to_i
@@ -55,9 +64,6 @@ class TorrentVaultReleaseData
 			@uploader = match[1]
 			#puts "Uploader: #{@uploader}"
 		end
-		
-		puts @added
-		exit
 	end
 	
 	def getData
@@ -68,8 +74,7 @@ class TorrentVaultReleaseData
 			name: @name,
 			pre_time: @preTime,
 			genre: nil,
-			release_date: nil,
-			
+			release_date: "timestamp '#{@fileTimestamp.utc.to_s}' - interval '#{@added} seconds'".lit,
 			release_date_offset: @added,
 			release_size: @size,
 			download_count: @downloads,
@@ -80,23 +85,19 @@ class TorrentVaultReleaseData
 	end
 end
 
-def processData(htmlPath, configuration)
+def processData(path, configuration)
 	pattern = /switch_row_. torrent.+?title="(.+?)".+?"(torrents\.php\?.+?)".+?<strong>.+?torrents\.php\?id=(\d+).+?title="(.+?)".+?Pre: (.+?)<.+?<td class="nobr">(.+?)<.+?<td class="center">(\d+)<.+?<td class="nobr">(.+?)<.+?<td class="center">(\d+)<.+?<td class="center">(\d+)<.+?<td class="center">(\d+)<.+?<td class="center">(.+?)</
 	
 	database = getDatabase
 	dataset = database[:torrentvault_data]
 
-	counter = 1
-	while true
-		file = counter.to_s
-		path = Nil.joinPaths(htmlPath, file)
-		
+	files = Nil.readDirectory(path)
+	counter = 0
+	files.each do |file|
+		progress = Float(counter) / files.size * 100
+		path = file.path
 		data = Nil.readFile(path)
-		if data == nil
-			puts "Unable to process #{path}, aborting"
-			return
-		end
-		puts "Processing #{path}"
+		printf("%s (%.2f%%)\n", file.name, progress)
 		data = data.gsub("\n", '')
 		#puts 'Scanning...'
 		results = data.scan(pattern)
@@ -107,9 +108,19 @@ def processData(htmlPath, configuration)
 		end
 		results.each do |match|
 			array = match.to_a
-			release = TorrentVaultReleaseData.new(array)
-			dataset.where(site_id: release.id).delete
-			dataset.insert(release.getData)
+			release = TorrentVaultReleaseData.new(array, file.timeModified)
+			data = dataset.where(site_id: release.id).select(:release_date, :release_date_offset)
+			if data.empty?
+				dataset.insert(release.getData)
+			else
+				#The release is already in the database, check it it's broken
+				data = data.first
+				if data[:release_date] == nil
+					#It is broken, get rid of it and replace it
+					dataset.where(site_id: release.id).delete
+					dataset.insert(release.getData)
+				end
+			end
 		end
 		counter += 1
 	end

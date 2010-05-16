@@ -1,5 +1,5 @@
 require 'nil/file'
-require 'shared/preTime'
+require 'shared/timeString'
 require 'configuration/Configuration'
 require 'shared/database'
 
@@ -56,7 +56,7 @@ class SceneAccessReleaseData
 		size *= factor**(unitOffset + 1)
 		@size = size.to_i
 		
-		@preTime = parsePreTimeString @preTime
+		@preTime = parseTimeString @preTime
 		
 		@id = @id.to_i
 		@files = @files.to_i

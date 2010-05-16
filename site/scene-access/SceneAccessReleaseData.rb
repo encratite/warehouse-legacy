@@ -1,6 +1,6 @@
 require 'nil/string'
 
-require 'shared/preTime'
+require 'shared/timeString'
 require 'shared/ReleaseData'
 
 require 'cgi'
@@ -30,7 +30,7 @@ class SceneAccessReleaseData < ReleaseData
 	end
 	
 	def postProcessing(input)
-		@preTime = parsePreTimeString @preTimeString
+		@preTime = parseTimeString @preTimeString
 		
 		size = @sizeString.gsub(',', '')
 		if !size.isNumber

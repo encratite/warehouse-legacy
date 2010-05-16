@@ -1,4 +1,4 @@
-def parsePreTimeString(input)
+def parseTimeString(input)
 	preTimePatterns =
 	[
 		[/(\d+) sec/, 1],
@@ -13,7 +13,7 @@ def parsePreTimeString(input)
 	preTimePatterns.each do |pattern, currentFactor|
 		factor *= currentFactor
 		match = pattern.match(input)
-		break if match == nil
+		next if match == nil
 		data = match[1]
 		preTime += data.to_i * factor
 	end

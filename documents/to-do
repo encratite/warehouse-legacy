@@ -1,7 +1,6 @@
 To do:
 
 add genre filters for TorrentVault
-fix the dates in the TV database
 add a seed check for TV downloads?
 symlinks should get updated when you add/remove a filter
 add more customisation features to the search results
@@ -14,6 +13,7 @@ add tcng/tcc QoS stuff - requires a proper kernel
 
 Done:
 
+fix the dates in the TV database
 the cleaner should remove symlinks, too
 integrate further sites (TorrentVault, oh well)
 add NFO filtering

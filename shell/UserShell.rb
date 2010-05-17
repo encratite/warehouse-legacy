@@ -240,7 +240,13 @@ class UserShell
 	end
 	
 	def commandListFilters
-		filters = @filters.where(user_id: @user.id).order(:id).select(:filter, :category, :is_nfo_filter)
+		filterTypeDescriptions =
+		{
+			'name' => nil,
+			'nfo' => [:lightGreen, 'NFO filter'],
+			'genre' => [:pink, 'MP3 genre filter'],
+		}
+		filters = @filters.where(user_id: @user.id).order(:id).select(:filter, :category, :release_filter_type)
 		if filters.empty?
 			puts 'You currently have no filters.'
 			return
@@ -249,9 +255,14 @@ class UserShell
 		counter = 1
 		filters.each do |filter|
 			category = filter[:category]
-			isNfo = filter[:is_nfo_filter]
+			type = filter[:release_filter_type]
 			info = "#{counter.to_s}. #{filter[:filter]}"
 			info += " #{Nil.lightGreen "[nfo]"}" if isNfo
+			filterTypeDescription = filterTypeDescriptions[type]
+			if filterTypeDescription != nil
+				colourSymbol, description = filterTypeDescription
+				info += " #{Nil.method(colourSymbol).call("[#{description}]")}"
+			end
 			info += " #{Nil.lightRed "[#{category}]"}" if category != nil
 			puts info
 			counter += 1

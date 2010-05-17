@@ -36,7 +36,7 @@ class Categoriser
 		FileUtils.chmod(0775, path)
 	end
 	
-	def processMatch(release, user, category, filter, type)
+	def processMatch(release, user, category, filter, type = nil)
 		category = @ownPath if category == nil
 		userPath = Nil.joinPaths(@userPath, user)
 		filterPath = Nil.joinPaths(userPath, @filteredPath)
@@ -72,15 +72,22 @@ class Categoriser
 	def getSpecificReleaseInformation(release)
 		targets =
 		[
-			:nfo,
-			:genre
+			:nfo
 		]
 		output = {}
 		@sites.each do |site|
 			table = site.table
-			result = @database[table].where(name: release).select(*targets)
-			next if result.empty?
-			targets.each do |target|
+			actualTargets = targets
+			if site.abbreviation == 'TV'
+				#only TorrentVault has genres for MP3 releases right now
+				actualTargets += [:genre]
+			end
+			puts release
+			results = @database[table].where(name: release).select(*actualTargets)
+			results = results.all
+			next if results.empty?
+			result = results[0]
+			actualTargets.each do |target|
 				input = result[target]
 				output[target] = input if input != nil
 			end
@@ -160,6 +167,7 @@ class Categoriser
 			message = "An exception of type #{exception.class} occured: #{exception.message}\n"
 			message += exception.backtrace.join("\n")
 			output message
+			exit
 		end
 	end
 end

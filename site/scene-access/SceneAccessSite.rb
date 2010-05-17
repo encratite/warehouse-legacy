@@ -1,6 +1,6 @@
-require 'shared/ReleaseSite'
+require 'shared/IRCReleaseSite'
 
-class SceneAccessSite < ReleaseSite
+class SceneAccessSite < IRCReleaseSite
 	def initialize(siteData, torrentData)
 		super(siteData, torrentData)
 		@ircHandler.httpHandler = @httpHandler

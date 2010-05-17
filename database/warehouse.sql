@@ -27,6 +27,16 @@ create table user_release_filter
 	category text default null
 );
 
+drop table if exists user_command_log;
+
+create table user_command_log
+(
+	id serial primary key,
+	user_id integer references user_data(id) not null,
+	command_time timestamp default now() not null,
+	command text not null
+);
+
 drop table if exists scene_access_data cascade;
 
 create table scene_access_data
@@ -82,12 +92,23 @@ create table torrentvault_data
 
 create index torrentvault_name_index on torrentvault_data(name);
 
-drop table if exists user_command_log;
-
-create table user_command_log
+create table torrentleech_data
 (
 	id serial primary key,
-	user_id integer references user_data(id) not null,
-	command_time timestamp default now() not null,
-	command text not null
+	site_id integer unique not null,
+	torrent_path text not null,
+	--may be null if it was from the index/archive
+	info_hash text,
+	section_name text not null,
+	name text not null,
+	--may be null if the NFO isn't available because the data was retrieved from the index/archive
+	nfo text,
+	release_date timestamp not null,
+	release_size bigint not null,
+	download_count integer not null,
+	seeder_count integer not null,
+	leecher_count integer not null,
+	uploader text not null
 );
+
+create index torrentleech_name_index on torrentleech_data(name);

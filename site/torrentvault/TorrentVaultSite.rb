@@ -1,7 +1,7 @@
-require 'shared/ReleaseSite'
+require 'shared/IRCReleaseSite'
 require 'configuration/TorrentVault'
 
-class TorrentVaultSite < ReleaseSite
+class TorrentVaultSite < IRCReleaseSite
 	def initialize(siteData, torrentData)
 		super(siteData, torrentData)
 		ircData = siteData::IRC

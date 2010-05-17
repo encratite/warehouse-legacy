@@ -78,7 +78,7 @@ class Categoriser
 		@sites.each do |site|
 			table = site.table
 			actualTargets = targets
-			if site.abbreviation == 'TV'
+			if site == 'TV'
 				#only TorrentVault has genres for MP3/TV releases right now
 				actualTargets += [:genre]
 			end

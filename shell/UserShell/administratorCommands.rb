@@ -1,8 +1,16 @@
 class UserShell
+	def isAdminCommand(data)
+		return data[-1].class == TrueClass
+	end
+	
+	def hasAccess(command)
+		return !isAdminCommand(command) || @user.isAdmin
+	end
+	
 	def commandReadCommandLogs
 		data = @logs.join(:user_data, id: :user_id)
 		data = data.filter{|x| x.id != @user.id}
-		data = data.select(:user_command_log__command_time.as(:time), :user_data__name.as(:name), :user_command_log__command).as(:command))
+		data = data.select(:user_command_log__command_time.as(:time), :user_data__name.as(:name), :user_command_log__command.as(:command))
 		data = data.order(:time)
 		data = data.limit(@commandLogCountMaximum)
 		data = data.all

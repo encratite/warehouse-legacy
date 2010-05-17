@@ -26,12 +26,9 @@ class UserShell
 				@logs.insert(user_id: @user.id, command: line)
 				
 				begin
-					Commands.each do |data|
-						arguments, description, symbol = data
-						isAdminCommand = data[-1].class == TrueClass
-						if isAdminCommand && !@user.isAdmin
-							break
-						end
+					Commands.each do |command|
+						arguments, description, symbol = command
+						next if !hasAccess(command)
 						commandNames = arguments.split(' ')[0].split('/')
 						next if !commandNames.include?(command)
 						method(symbol).call

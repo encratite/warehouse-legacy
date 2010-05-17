@@ -16,7 +16,9 @@ class UserShell
 		names.each do |names|
 			maximum = names.size if names.size > maximum
 		end
-		sortedCommands.each do |name, description, symbol|
+		sortedCommands.each do |command|
+			name, description, symbol = command
+			next if !hasAccess(command)
 			name += ' ' * (maximum - name.size)
 			puts "#{Nil.white name} - #{description}"
 		end

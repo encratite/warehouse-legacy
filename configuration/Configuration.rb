@@ -53,6 +53,11 @@ module Configuration
 			SFTPGroup = 'warehouse-sftp'
 		end
 		
+		module HTTP
+			BrowseDelay = 15 * 60
+			DownloadDelay = 6
+		end
+		
 		NIC = 'eth0'
 	end
 	

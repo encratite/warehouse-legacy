@@ -21,7 +21,7 @@ class SceneAccessReleaseData < ReleaseData
 		['Seeders', />(\d+) seeder\(s\)/, :seeders],
 		['Leechers', /, (\d+) leecher\(s\)/, :leechers],
 		['Torrent path', /Download \(SSH\).+?href=\"(.+?)\"/, :path],
-		['NFO', /<div id="ka3".+?\/>([\s\S]+?)<\/div>/, :nfo],
+		['NFO', /<div id="ka3".+?\/>([\s\S]+?)<\/div>/, :nfo, false],
 	]
 	
 	def removeHTMLLinks(input)

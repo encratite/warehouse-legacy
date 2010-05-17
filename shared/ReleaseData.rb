@@ -9,9 +9,17 @@ class ReleaseData
 	end
 	
 	def processInput(input)
-		getTargets.each do |name, pattern, symbol|
+		requiredFlagOffset = 3
+		getTargets.each do |data|
+			name, pattern, symbol = data
+			if data.size > requiredFlagOffset
+				isRequired = data[requiredFlagOffset]
+			else
+				isRequired = true
+			end
 			match = pattern.match(input)
 			if match == nil
+				next if !isRequired
 				errorMessage = "#{name} match failed"
 				raise Error.new(errorMessage)
 			end

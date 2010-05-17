@@ -22,7 +22,7 @@ create table user_release_filter
 	id serial primary key,
 	user_id integer references user_data(id) not null,
 	filter text not null,
-	release_filter_type filter_type not null;
+	release_filter_type filter_type not null,
 	--may be null if no category is set
 	category text default null
 );

@@ -5,13 +5,14 @@ require 'shell/SearchResult'
 require 'shared/sites'
 
 [
-	'commandDescriptions'
-	'commands'
-	'download'
-	'regexp'
-	'completion'
-	'reader'
-	'output'
+	'commandDescriptions',
+	'commands',
+	'download',
+	'regexp',
+	'completion',
+	'reader',
+	'output',
+	'administratorCommands',
 ].each { |x| require "shell/UserShell/#{x}" }
 
 class HTTPError < StandardError
@@ -24,6 +25,7 @@ class UserShell
 		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
 		@filterCountMaximum = configuration::Shell::FilterCountMaximum
 		@searchResultMaximum = configuration::Shell::SearchResultMaximum
+		@commandLogCountMaximum = configuration::Shell::CommandLogCountMaximum
 		
 		@sshKeyMaximum = configuration::Shell::SSHKeyMaximum
 		
@@ -38,6 +40,7 @@ class UserShell
 		@nic = configuration::Torrent::NIC
 		
 		@filters = @database[:user_release_filter]
+		@logs = @database[:user_command_log]
 		
 		@sites = getReleaseSites
 		

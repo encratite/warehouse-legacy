@@ -64,7 +64,7 @@ class UserShell
 			debug "Downloading path #{httpPath} from site #{site.name}"
 			data = site.httpHandler.get(httpPath)
 			if data == nil
-				error "HTTP error: Unable to queue release - #{administrator}'"
+				error "HTTP error: Unable to queue release - #{administrator}"
 				return
 			end
 			

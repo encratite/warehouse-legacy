@@ -22,6 +22,9 @@ class UserShell
 				
 				validCommand = false
 				
+				#it's 1984 all over again
+				@logs.insert(user_id: @user.id, command: line)
+				
 				begin
 					Commands.each do |arguments, description, symbol|
 						commandNames = arguments.split(' ')[0].split('/')

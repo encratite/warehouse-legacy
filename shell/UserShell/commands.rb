@@ -331,7 +331,7 @@ class UserShell
 			FileUtils.mkdir(sshDirectory)
 		rescue Errno::EEXIST
 		rescue Errno::ENOENT
-			error 'Unable to create the directory - please contract the administrator'
+			error 'Unable to create the directory - please contact the administrator'
 			return
 		end
 		FileUtils.chmod(0700, sshDirectory)

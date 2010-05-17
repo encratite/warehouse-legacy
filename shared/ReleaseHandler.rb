@@ -37,9 +37,9 @@ class ReleaseHandler
 		regexpCondition = '? ~* user_release_filter.filter'
 		filterCondition = "user_release_filter.release_filter_type = ?"
 		idCondition = 'user_data.id = user_release_filter.user_id'
-		
-		target = releaseData.instance_variable_get(type)
-		results = @database["#{select} where #{regexpCondition} and #{filterCondition} and #{idCondition}", typeString, target]
+	
+		target = releaseData.instance_variable_get("@#{type.to_s}".to_sym)
+		results = @database["#{select} where #{regexpCondition} and #{filterCondition} and #{idCondition}", target, typeString]
 		
 		matchCount = results.count
 		isOfInterest = matchCount > 0

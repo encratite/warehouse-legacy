@@ -257,7 +257,6 @@ class UserShell
 			category = filter[:category]
 			type = filter[:release_filter_type]
 			info = "#{counter.to_s}. #{filter[:filter]}"
-			info += " #{Nil.lightGreen "[nfo]"}" if isNfo
 			filterTypeDescription = filterTypeDescriptions[type]
 			if filterTypeDescription != nil
 				colourSymbol, description = filterTypeDescription

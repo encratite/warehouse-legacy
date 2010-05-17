@@ -79,7 +79,7 @@ class Categoriser
 			table = site.table
 			actualTargets = targets
 			if site.abbreviation == 'TV'
-				#only TorrentVault has genres for MP3 releases right now
+				#only TorrentVault has genres for MP3/TV releases right now
 				actualTargets += [:genre]
 			end
 			puts release
@@ -146,7 +146,7 @@ class Categoriser
 			
 			genre = infoHash[:genre]
 			if genre != nil
-				output "#{release} appears to be an MP3 release of genre #{genre}"
+				output "#{release} appears to be a release of genre #{genre}"
 				performQuery(release, 'genre', genre)
 			else
 				output "No genre was specified for release #{release}"

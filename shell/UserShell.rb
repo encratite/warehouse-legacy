@@ -23,7 +23,7 @@ class UserShell
 		['help', 'prints this help', :commandHelp],
 		['add-name-filter <regexp>', 'add a new release name filter to your account to have new releases downloaded automatically in future', :commandAddNameFilter],
 		['add-nfo-filter <regexp>', 'add a new NFO content filter to your account to have new releases downloaded automatically in future, based on their NFOs', :commandAddNFOFilter],
-		['add-genre-filter <regexp>', 'add a new MP3 genre content filter to your account to have new MP3 releases from TorrentVault downloaded automatically in future, based on the genre stated on the site', :commandAddGenreFilter],
+		['add-genre-filter <regexp>', 'add a new MP3 genre content filter to your account to have new MP3/video releases from TorrentVault downloaded automatically in future, based on the genre stated on the site', :commandAddGenreFilter],
 		['list-filters', 'retrieve a list of your filters', :commandListFilters],
 		['delete-filter <index 1> <...>', 'removes one or several filters which are identified by their numeric index', :commandDeleteFilter],
 		['clear-filters', 'remove all your release filters', :commandClearFilters],

@@ -14,12 +14,15 @@ create table user_data
 
 drop table if exists user_release_filter cascade;
 
+drop type if exists filter_type;
+create type filter_type as enum ('name', 'nfo', 'genre');
+
 create table user_release_filter
 (
 	id serial primary key,
 	user_id integer references user_data(id) not null,
 	filter text not null,
-	is_nfo_filter boolean not null default false,
+	release_filter_type filter_type not null default;
 	--may be null if no category is set
 	category text default null
 );

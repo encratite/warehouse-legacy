@@ -23,6 +23,7 @@ class UserShell
 		['help', 'prints this help', :commandHelp],
 		['add-name-filter <regexp>', 'add a new release name filter to your account to have new releases downloaded automatically in future', :commandAddNameFilter],
 		['add-nfo-filter <regexp>', 'add a new NFO content filter to your account to have new releases downloaded automatically in future, based on their NFOs', :commandAddNFOFilter],
+		['add-genre-filter <regexp>', 'add a new MP3 genre content filter to your account to have new MP3 releases from TorrentVault downloaded automatically in future, based on the genre stated on the site', :commandAddGenreFilter],
 		['list-filters', 'retrieve a list of your filters', :commandListFilters],
 		['delete-filter <index 1> <...>', 'removes one or several filters which are identified by their numeric index', :commandDeleteFilter],
 		['clear-filters', 'remove all your release filters', :commandClearFilters],
@@ -205,7 +206,7 @@ class UserShell
 		end
 	end
 	
-	def commandAddFilter(isNfoFilter)
+	def commandAddFilter(type)
 		if @argument.empty?
 			warning 'Please specify a filter to add.'
 			return
@@ -219,18 +220,23 @@ class UserShell
 			error "You have too many filters (#{filterCountMaximum})."
 			return
 		end
+		
 		#check if it is a valid regular expression first
 		@database["select 1 where '' ~* ?", @argument].all
-		@filters.insert(user_id: @user.id, filter: filter, is_nfo_filter: isNfoFilter)
+		@filters.insert(user_id: @user.id, filter: filter, release_filter_type: type.to_s)
 		success "Your filter has been added."
 	end
 	
 	def commandAddNameFilter
-		commandAddFilter(false)
+		commandAddFilter(:name)
 	end
 	
 	def commandAddNFOFilter
-		commandAddFilter(true)
+		commandAddFilter(:nfo)
+	end
+	
+	def commandAddGenreFilter
+		commandAddFilter(:genre)
 	end
 	
 	def commandListFilters

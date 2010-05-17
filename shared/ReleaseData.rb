@@ -1,5 +1,5 @@
 class ReleaseData
-	attr_reader :path, :size, :nfo
+	attr_reader :name, :path, :size, :nfo, :genre
 	
 	class Error < StandardError
 	end

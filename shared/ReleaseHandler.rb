@@ -25,34 +25,54 @@ class ReleaseHandler
 		exit
 	end
 	
-	def isReleaseOfInterest(release, nfo)
-		select = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.is_nfo_filter as is_nfo_filter from user_release_filter, user_data where'
-		nameCondition = '(user_release_filter.is_nfo_filter = false and ? ~* user_release_filter.filter)'
-		nfoCondition = '(user_release_filter.is_nfo_filter = true and ? ~* user_release_filter.filter)'
+	#type is :name, :nfo or :genre
+	def isReleaseOfInterestType(releaseData, type)
+		release = releaseData.name
+		
+		select = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.release_filter_type as release_filter_type from user_release_filter, user_data'
+		regexp = '? ~* user_release_filter.filter'
+		
+		typeString = type.to_s
+		
+		regexpCondition = '? ~* user_release_filter.filter'
+		filterCondition = "user_release_filter.release_filter_type = ?"
 		idCondition = 'user_data.id = user_release_filter.user_id'
-		if nfo == nil
-			results = @database["#{select} #{nameCondition} and #{idCondition}", release]
-		else
-			results = @database["#{select} (#{nameCondition} or #{nfoCondition}) and #{idCondition}", release, nfo]
-		end
+		
+		target = releaseData.instance_variable_get(type)
+		results = @database["#{select} where #{regexpCondition} and #{filterCondition} and #{idCondition}", typeString, target]
 		
 		matchCount = results.count
 		isOfInterest = matchCount > 0
 		if isOfInterest
-			output "Matches"
+			output "Matches for release #{release}: #{matchCount}"
 			filterDictionary = {}
 			results.each do |row|
 				name = row[:user_name]
 				filter = row[:filter]
 				isNfo = row[:is_nfo_filter]
 				filterDictionary[name] = [] if filterDictionary[name] == nil
-				filter += ' (NFO)' if isNfo
-				filterDictionary[name] << filter
+				filterDictionary[name] << "#{filter} (#{typeString})"
 			end
 			filterDictionary.each do |name, filters|
 				output "#{name}: #{filters.inspect}"
 			end
 		end
+		return isOfInterest
+	end
+	
+	def isReleaseOfInterest(releaseData)
+		types =
+		[
+			:name,
+			:nfo,
+			:genre
+		]
+		
+		isOfInterest = false
+		types.each do |type|
+			isOfInterest = isReleaseOfInterestType(releaseData, type) || isOfInterest
+		end
+		
 		return isOfInterest
 	end
 	
@@ -98,7 +118,7 @@ class ReleaseHandler
 			isOfInterest = false
 			@database.transaction do
 				insertData(releaseData)
-				isOfInterest = isReleaseOfInterest(release, releaseData.nfo)
+				isOfInterest = isReleaseOfInterest(releaseData)
 			end
 			if isOfInterest
 				output "Discovered a release of interest: #{release}"

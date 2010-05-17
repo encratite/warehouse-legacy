@@ -18,7 +18,7 @@ class UserShell
 		data = data.select(:user_command_log__command_time.as(:time), :user_data__name.as(:name), :user_command_log__command.as(:command))
 		if @arguments.empty?
 			#don't show the commands of the current user
-			data = data.filter{|x| x.user_data__id != @user.id}
+			data = data.filter("user_data.id != #{@user.id}")
 		else
 			#filter out the users specified
 			data = data.where('name in ?', @arguments)

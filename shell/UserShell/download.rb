@@ -1,3 +1,5 @@
+require 'nil/file'
+
 class UserShell
 	#returns false if there was no hit, nil on hits with errors, true on hits with successful downloads
 	def downloadTorrent(site, target)

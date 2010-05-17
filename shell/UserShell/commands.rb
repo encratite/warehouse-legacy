@@ -1,3 +1,12 @@
+require 'fileutils'
+
+require 'nil/console'
+require 'nil/string'
+require 'nil/file'
+
+require 'shell/Timer'
+require 'shell/SearchResult'
+
 class UserShell
 	def commandHelp
 		puts 'List of available commands:'

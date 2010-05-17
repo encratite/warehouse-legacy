@@ -28,12 +28,7 @@ class UserShell
 				begin
 					Commands.each do |data|
 						arguments, description, symbol = data
-						if hasAccess(command)
-							#puts "Has access to #{arguments}"
-						else
-							#puts "Doesn't have access to #{arguments}"
-							next
-						end
+						next if !hasAccess(data)
 						commandNames = arguments.split(' ')[0].split('/')
 						next if !commandNames.include?(command)
 						method(symbol).call

@@ -22,5 +22,7 @@ class UserShell
 		['regexp-help', 'a short introduction to the regular expressions used by this system', :commandRegexpHelp],
 		['category <path> <filter 1> <...>', 'assign a folder to a set of filters', :commandCategory],
 		['delete-category <path>', 'get rid of a symlinks folder', :commandDeleteCategory],
+		
+		['read-logs [user]', 'read the commands typed by users or a single user', :commandReadCommandLogs, true],
 	]
 end

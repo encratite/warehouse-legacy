@@ -1,5 +1,5 @@
 class UserShell
-	def commandReadLastLogs
+	def commandReadCommandLogs
 		data = @logs.join(:user_data, id: :user_id)
 		data = data.filter{|x| x.id != @user.id}
 		data = data.select(:user_command_log__command_time.as(:time), :user_data__name.as(:name), :user_command_log__command).as(:command))

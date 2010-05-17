@@ -49,7 +49,6 @@ class ReleaseHandler
 			results.each do |row|
 				name = row[:user_name]
 				filter = row[:filter]
-				isNfo = row[:is_nfo_filter]
 				filterDictionary[name] = [] if filterDictionary[name] == nil
 				filterDictionary[name] << "#{filter} (#{typeString})"
 			end

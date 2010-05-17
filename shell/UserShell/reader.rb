@@ -26,9 +26,14 @@ class UserShell
 				@logs.insert(user_id: @user.id, command: line)
 				
 				begin
-					Commands.each do |command|
-						arguments, description, symbol = command
-						next if !hasAccess(command)
+					Commands.each do |data|
+						arguments, description, symbol = data
+						if hasAccess(command)
+							#puts "Has access to #{arguments}"
+						else
+							#puts "Doesn't have access to #{arguments}"
+							next
+						end
 						commandNames = arguments.split(' ')[0].split('/')
 						next if !commandNames.include?(command)
 						method(symbol).call

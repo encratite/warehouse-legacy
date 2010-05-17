@@ -61,7 +61,7 @@ module Configuration
 		FilterCountMaximum = 500
 		SearchResultMaximum = 100
 		SSHKeyMaximum = 2048
-		CommandLogCountMaximum = 50
+		CommandLogCountMaximum = 100
 	end
 	
 	module Logging

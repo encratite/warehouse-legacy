@@ -81,3 +81,13 @@ create table torrentvault_data
 );
 
 create index torrentvault_name_index on torrentvault_data(name);
+
+drop table if exists user_command_log;
+
+create table user_command_log
+(
+	id serial primary key,
+	user_id integer references user_data(id) not null,
+	command_time timestamp default now() not null,
+	command text not null
+);

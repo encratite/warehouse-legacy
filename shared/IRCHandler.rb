@@ -45,7 +45,7 @@ class IRCHandler
 			if releaseMatch != nil && urlMatch != nil
 				release = releaseMatch[1]
 				url = urlMatch[1]
-				@releaseHandler.processMessage(release, url)
+				@releaseHandler.processReleaseURL(release, url)
 			end
 		end
 		@outputHandler.onChannelMessage(channel, user, message)

@@ -94,7 +94,7 @@ class ReleaseHandler
 		@outputHandler.output(line)
 	end
 	
-	def processMessage(release, url)
+	def processReleaseURL(release, url)
 		tokens = url.split('://')
 		if tokens.size != 2
 			output "Invalid URL: #{url}"
@@ -107,11 +107,19 @@ class ReleaseHandler
 		
 		offset = identifier.index('/')
 		path = identifier[offset..-1]
+		processReleasePath(release, path)
+	end
+	
+	def processReleasePath(release, path)
 		data = @httpHandler.get(path)
 		if data == nil
-			output "Error: Failed to retrieve URL #{url} (path: #{path}, release; #{release})"
+			output "Error: Failed to retrieve path #{path} for release #{release}"
 			return
 		end
+		processReleaseData(release, data)
+	end
+	
+	def processReleaseData(release, data)
 		begin
 			releaseData = @releaseDataClass.new(data)
 			isOfInterest = false

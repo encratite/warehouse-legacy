@@ -41,17 +41,13 @@ class HTTPReleaseSite < ReleaseSite
 	end
 	
 	def processNewRelease(release)
-		output "Discovered a new release: #{release.name}"
+		name = release.name
 		path = "/details.php?id=#{release.siteId}&hit=1"
+
+		output "Discovered a new release: #{name}"
 		#sleep here, in order to enforce a minimal delay between most of the queries to mimic humans
 		sleep @downloadDelay
-		data = @httpHandler.get(path)
-		if data == nil
-			output "Failed to download the details for release #{release.name} from #{path}"
-			return
-		end
-		
-		releaseData = @releaseDataClass.new(data)
+		@releaseHandler.processReleasePath(name, path)
 	end
 	
 	def run

@@ -56,6 +56,7 @@ module Configuration
 		module HTTP
 			BrowseDelay = 15 * 60
 			DownloadDelay = 6
+			ParserTimeout = 10
 		end
 		
 		NIC = 'eth0'

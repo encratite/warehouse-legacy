@@ -1,19 +1,17 @@
 To do:
 
-add genre filters for TorrentVault
+move the type specifications from configuration/ to site/
 add a seed check for TV downloads?
 symlinks should get updated when you add/remove a filter
 add more customisation features to the search results
 solve the on-download notification problem
 need status stuff, XMLRPC data from rtorrent
 
-Problematic stuff:
-
-add tcng/tcc QoS stuff - requires a proper kernel
-
 Done:
 
+add genre filters for TorrentVault
 fix the dates in the TV database
+add tcng/tcc QoS stuff - requires a proper kernel
 the cleaner should remove symlinks, too
 integrate further sites (TorrentVault, oh well)
 add NFO filtering

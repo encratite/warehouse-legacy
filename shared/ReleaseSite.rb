@@ -27,6 +27,7 @@ class ReleaseSite
 		@name = siteData::Name
 		@abbreviation = siteData::Abbreviation
 		@database = getDatabase
+		@dataset = @database[@table]
 		
 		@torrentPath = torrentData::Path::Torrent
 		@releaseSizeLimit = torrentData::SizeLimit

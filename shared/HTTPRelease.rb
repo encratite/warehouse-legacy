@@ -1,7 +1,16 @@
 class HTTPRelease
-	def initialize(data)
-		symbols = getSymbols
-		if data.size != @ymbols.count
+	class Error
+		attr_reader :message
+		
+		def initialize(message)
+			@message = message
+		end
+	end
+	
+	attr_reader :name, :siteId
+	
+	def initialize(data, symbols)
+		if data.size != symbols.count
 			raise "Match size/symbol count mismatch in a #{self.class}: #{match.inspect}"
 		end
 		
@@ -12,9 +21,5 @@ class HTTPRelease
 			instance_variable_set(symbol, value)
 			offset += 1
 		end
-	end
-	
-	def getSymbols
-		return self.class::Symbols
 	end
 end

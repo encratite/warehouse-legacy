@@ -1,4 +1,5 @@
 require 'site/TorrentLeech/TorrentLeechReleaseData'
+require 'site/TorrentLeech/TorrentLeechHTMLParser'
 
 require 'secret/TorrentLeech'
 
@@ -15,4 +16,5 @@ module TorrentLeechConfiguration
 	Abbreviation = 'TL'
 	
 	ReleaseDataClass = TorrentLeechReleaseData
+	HTMLParserClass = TorrentLeechHTMLParser
 end

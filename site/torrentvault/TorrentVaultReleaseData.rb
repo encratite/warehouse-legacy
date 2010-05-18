@@ -5,6 +5,8 @@ require 'shared/timeString'
 require 'cgi'
 
 class TorrentVaultReleaseData < ReleaseData
+	Debugging = false
+	
 	Targets =
 	[
 		['ID', /groupid=(\d+)"/, :id],
@@ -55,14 +57,6 @@ class TorrentVaultReleaseData < ReleaseData
 		end
 		
 		puts "Uploader: #{@uploader.inspect}"
-	end
-	
-	def debugging
-		false
-	end
-	
-	def getTargets
-		Targets
 	end
 	
 	def getData

@@ -6,32 +6,27 @@ require 'shared/ReleaseData'
 require 'cgi'
 
 class TorrentLeechReleaseData < ReleaseData
+	Debugging = false
+	
 	Targets =
 	[
 		['Release', /<h1>(.+?)<\/h1>/, :release],
-		['ID', /Download.+?\?id=(\d+)\"/, :id],
-		['Info hash', /<td valign=\"top\" align=left>(.+?)<\/td>/, :infoHash],
-		['Pre-time', />Pre Time<\/td>.+?>(.+?)<\/td>/, :preTimeString],
-		['Section', />Type<\/td>.+>(.+)<\/td>/, :section],
-		['Size', />Size<\/td>.+?\((.+?) bytes/, :sizeString],
-		['Date', />Added<\/td>.+?>(.+?)</, :date],
-		['Hits', />Hits<\/td>.+?>(\d+)</, :hits],
-		['Downloads', />Snatched<\/td>.+?>(\d+) time\(s\)/, :downloads],
-		['Files', />Num files<.+?>(\d+) file/, :files],
-		['Seeders', />(\d+) seeder\(s\)/, :seeders],
-		['Leechers', /, (\d+) leecher\(s\)/, :leechers],
-		['Torrent path', /Download \(SSH\).+?href=\"(.+?)\"/, :path],
-		['NFO', /<div id="ka3".+?\/>([\s\S]+?)<\/div>/, :nfo, false],
+		['Path', /"(download\.php.+?)"/, :path],
+		['Info hash', /<td valign="top" align=left>(.+?)<\/td>/, :infoHash],
+		['NFO', /<nobr>(.+?)<\/nobr>/, :nfo],
+		['Category', /Type<\/td><td valign="top" align=left>(.+?)<\/td>/, :category],
+		['Size', /Size<\/td><td valign="top" align=left>.+?\((.+?) bytes\)/, :sizeString],
+		['Release date', /Added<\/td><td valign="top" align=left>(.+?)<\/td>/, :releaseDate],
+		['Snatched', /Snatched<\/td><td valign="top" align=left>(\d+) time(s)<\/td>/, :downloads],
+		['Uploader', /Upped by<\/td><td valign="top" align=left><a href=userdetails\.php\?id=\d+><b>(.+?)<\/b>/, :uploader],
+		['Files', /[See full list]<\/a><\/td><td valign="top" align=left>(\d+) files<\/td>/, :fileCount],
+		['Seeders', /<td valign="top" align=left>(\d+) seeder\(s\), /, :seeders],
+		['Leechers', /, (\d+) leecher\(s\) = /, :leechers],
+		
+		['ID', /details\.php\?id=(\d+)&amp;/, :id],
 	]
 	
-	def removeHTMLLinks(input)
-		output = input.gsub(/<a .+?>(.+?)<\/a>/) { |match| $1 }
-		return output
-	end
-	
 	def postProcessing(input)
-		@preTime = parseTimeString @preTimeString
-		
 		size = @sizeString.gsub(',', '')
 		if !size.isNumber
 			errorMessage = "Invalid file size specified: #{@sizeString}"
@@ -47,42 +42,28 @@ class TorrentLeechReleaseData < ReleaseData
 		
 		@path = "/#{@path}" if !@path.empty? && @path[0] != '/'
 		
-		@nfo = @nfo.gsub('<br>', '')
+		@nfo = @nfo.gsub('<br />', '')
 		@nfo = @nfo.gsub('&nbsp;', ' ')
 		@nfo = CGI::unescapeHTML(@nfo)
-		@nfo = removeHTMLLinks(@nfo)
-		
-		if debugging
-			puts "Size: #{@size}"
-			puts "Pre-time in seconds: #{@preTime.inspect}"
-			puts "NFO: #{@nfo}"
-		end
-	end
-	
-	def debugging
-		false
-	end
-	
-	def getTargets
-		Targets
 	end
 	
 	def getData
 		return {
 			site_id: @id,
 			torrent_path: @path,
-			section_name: @section,
+			info_hash: @infoHash,
+			section_name: @category,
 			name: @release,
 			nfo: @nfo,
-			info_hash: @infoHash,
-			pre_time: @preTime,
-			file_count: @files,
-			release_date: @date,
+			release_date: @releaseDate,
 			release_size: @size,
-			hit_count: @hits,
+			file_count: @fileCount,
+			#screw it
+			comment_count: nil,
 			download_count: @downloads,
 			seeder_count: @seeders,
-			leecher_count: @leechers
+			leecher_count: @leechers,
+			uploader: @uploader,
 		}
 	end
 end

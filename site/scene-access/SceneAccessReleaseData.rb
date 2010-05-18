@@ -6,6 +6,8 @@ require 'shared/ReleaseData'
 require 'cgi'
 
 class SceneAccessReleaseData < ReleaseData
+	Debugging = false
+	
 	Targets =
 	[
 		['Release', /<h1>(.+?)<\/h1>/, :release],
@@ -57,14 +59,6 @@ class SceneAccessReleaseData < ReleaseData
 			puts "Pre-time in seconds: #{@preTime.inspect}"
 			puts "NFO: #{@nfo}"
 		end
-	end
-	
-	def debugging
-		false
-	end
-	
-	def getTargets
-		Targets
 	end
 	
 	def getData

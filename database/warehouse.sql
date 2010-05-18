@@ -105,6 +105,7 @@ create table torrentleech_data
 	nfo text,
 	release_date timestamp not null,
 	release_size bigint not null,
+	file_count integer not null,
 	--not a straight forward extraction from single releases
 	comment_count integer,
 	download_count integer not null,

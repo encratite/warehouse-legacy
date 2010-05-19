@@ -43,7 +43,7 @@ class ReleaseHandler
 			raise "Failed to retrieve instance variable of release #{releaseData.inspect} (symbol: #{type})"
 		end
 		results = @database["#{select} where #{regexpCondition} and #{filterCondition} and #{idCondition}", target, typeString]
-		puts results.sql
+		#puts results.sql
 		matchCount = results.count
 		isOfInterest = matchCount > 0
 		if isOfInterest
@@ -87,7 +87,19 @@ class ReleaseHandler
 				puts 'This entry already exists - overwriting it'
 				dataset.delete
 			end
-			dataset.insert(insertData)
+			#dataset.insert(insertData)
+			fields = []
+			values = []
+			insertData.each do |key, value|
+				fields << key.to_s
+				if key == :nfo
+					escapedValue = PGconn.escape_bytea(value)
+					values << "e'#{escapedValue}'"
+				else if value.class == String
+					escapedValue = PGconn.escape_string(value)
+					values << "'#{escapedValue}'"
+				end
+			end
 		rescue	Sequel::DatabaseError => exception
 			output "DBMS exception: #{exception.message}"
 		end

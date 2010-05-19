@@ -4,8 +4,9 @@ class HTTPReleaseSite < ReleaseSite
 	def initialize(siteData, torrentData)
 		super(siteData, torrentData)
 		
+		@browsePath = siteData::HTTP::BrowsePath
+		
 		httpData = torrentData::HTTP
-		@browsePath = httpData::BrowsePath
 		@browseDelay = httpData::BrowseDelay
 		@downloadDelay = httpData::DownloadDelay
 		@parserTimeout = httpData::ParserTimeout
@@ -22,18 +23,20 @@ class HTTPReleaseSite < ReleaseSite
 	def browse
 		data = @httpHandler.get(@browsePath)
 		if data == nil
-			output "Failed to retrieve #{@browsePath}"
+			output "Error: Failed to retrieve #{@browsePath}"
 			return
 		end
 		
+		#puts data
+		
 		releases = @htmlParser.processData(data)
 		if releases.empty?
-			output "Failed to retrieve any releases from #{@browsePath}"
+			output "Error: Failed to retrieve any releases from #{@browsePath}"
 			return
 		end
 		output "Retrieved #{releases.size} releases from #{@browsePath}"
 		releases.each do |release|
-			result = @dataset.where(site_id: release.site_d)
+			result = @dataset.where(site_id: release.siteId)
 			#check if this release is already in the database
 			next if !result.empty?
 			processNewRelease release
@@ -42,7 +45,7 @@ class HTTPReleaseSite < ReleaseSite
 	
 	def processNewRelease(release)
 		name = release.name
-		path = "/details.php?id=#{release.siteId}&hit=1"
+		path = "/details.php?id=#{release.siteId}"
 
 		output "Discovered a new release: #{name}"
 		#sleep here, in order to enforce a minimal delay between most of the queries to mimic humans

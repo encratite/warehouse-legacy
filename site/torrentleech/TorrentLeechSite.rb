@@ -1,6 +1,6 @@
-require 'shared/ReleaseSite'
+require 'shared/HTTPReleaseSite'
 
-class TorrentLeechSite < ReleaseSite
+class TorrentLeechSite < HTTPReleaseSite
 	def initialize(siteData, torrentData)
 		super(siteData, torrentData)
 	end

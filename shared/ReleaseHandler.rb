@@ -39,8 +39,11 @@ class ReleaseHandler
 		idCondition = 'user_data.id = user_release_filter.user_id'
 	
 		target = releaseData.instance_variable_get("@#{type.to_s}".to_sym)
+		if target == nil
+			raise "Failed to retrieve instance variable of release #{releaseData.inspect} (symbol: #{type})"
+		end
 		results = @database["#{select} where #{regexpCondition} and #{filterCondition} and #{idCondition}", target, typeString]
-		
+		puts results.sql
 		matchCount = results.count
 		isOfInterest = matchCount > 0
 		if isOfInterest
@@ -159,7 +162,7 @@ class ReleaseHandler
 		rescue Sequel::DatabaseConnectionError => exception
 			databaseDown exception
 		rescue ReleaseData::Error => exception
-			output "Error: Unable to parse data from release #{release} at #{url}: #{exception.message}"
+			output "Error: Unable to parse data of release #{release}: #{exception.message}"
 		end
 	end
 end

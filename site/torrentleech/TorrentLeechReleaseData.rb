@@ -10,16 +10,16 @@ class TorrentLeechReleaseData < ReleaseData
 	
 	Targets =
 	[
-		['Release', /<h1>(.+?)<\/h1>/, :release],
+		['Release', /<h1>(.+?)<\/h1>/, :name],
 		['Path', /"(download\.php.+?)"/, :path],
 		['Info hash', /<td valign="top" align=left>(.+?)<\/td>/, :infoHash],
-		['NFO', /<nobr>(.+?)<\/nobr>/, :nfo],
+		['NFO', /<nobr>([\s\S]+?)<\/nobr>/, :nfo],
 		['Category', /Type<\/td><td valign="top" align=left>(.+?)<\/td>/, :category],
 		['Size', /Size<\/td><td valign="top" align=left>.+?\((.+?) bytes\)/, :sizeString],
 		['Release date', /Added<\/td><td valign="top" align=left>(.+?)<\/td>/, :releaseDate],
-		['Snatched', /Snatched<\/td><td valign="top" align=left>(\d+) time(s)<\/td>/, :downloads],
+		['Snatched', /Snatched<\/td><td valign="top" align=left>(\d+) time\(s\)<\/td>/, :downloads],
 		['Uploader', /Upped by<\/td><td valign="top" align=left><a href=userdetails\.php\?id=\d+><b>(.+?)<\/b>/, :uploader],
-		['Files', /[See full list]<\/a><\/td><td valign="top" align=left>(\d+) files<\/td>/, :fileCount],
+		['Files', /\[See full list\]<\/a><\/td><td valign="top" align=left>(\d+) files<\/td>/, :fileCount],
 		['Seeders', /<td valign="top" align=left>(\d+) seeder\(s\), /, :seeders],
 		['Leechers', /, (\d+) leecher\(s\) = /, :leechers],
 		
@@ -53,7 +53,7 @@ class TorrentLeechReleaseData < ReleaseData
 			torrent_path: @path,
 			info_hash: @infoHash,
 			section_name: @category,
-			name: @release,
+			name: @name,
 			nfo: @nfo,
 			release_date: @releaseDate,
 			release_size: @size,

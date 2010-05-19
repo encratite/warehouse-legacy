@@ -55,7 +55,8 @@ module Configuration
 		
 		module HTTP
 			BrowseDelay = 15 * 60
-			DownloadDelay = 6
+			#DownloadDelay = 6
+			DownloadDelay = 0
 			ParserTimeout = 10
 		end
 		

@@ -14,7 +14,7 @@ class TorrentLeechReleaseData < ReleaseData
 		['Release', /<h1>(.+?)<\/h1>/, :name],
 		['Path', /"(download\.php.+?)"/, :path],
 		['Info hash', /<td valign="top" align=left>(.+?)<\/td>/, :infoHash],
-		['NFO', /<nobr>([\s\S]+?)<\/nobr>/, :nfo],
+		#['NFO', /<nobr>([\s\S]+?)<\/nobr>/, :nfo],
 		['Category', /Type<\/td><td valign="top" align=left>(.+?)<\/td>/, :category],
 		['Size', /Size<\/td><td valign="top" align=left>.+?\((.+?) bytes\)/, :sizeString],
 		['Release date', /Added<\/td><td valign="top" align=left>(.+?)<\/td>/, :releaseDate],
@@ -26,6 +26,13 @@ class TorrentLeechReleaseData < ReleaseData
 		
 		['ID', /details\.php\?id=(\d+)&amp;/, :id],
 	]
+	
+	def processInput(pages)
+		detailsPage = pages[0]
+		nfoPage = pages[1]
+		super(detailsPage)
+		processNFO(nfoPage)
+	end
 	
 	def postProcessing(input)
 		size = @sizeString.gsub(',', '')
@@ -43,13 +50,16 @@ class TorrentLeechReleaseData < ReleaseData
 		
 		@path = "/#{@path}" if !@path.empty? && @path[0] != '/'
 		
-		@nfo = @nfo.gsub('<br />', '')
-		@nfo = @nfo.gsub('&nbsp;', ' ')
-		@nfo = CGI::unescapeHTML(@nfo)
+		@name = @name.gsub(' ', '.')
+	end
+	
+	def processNFO(input)
+		match = /<pre>.+?>([\s\S]+?)<\//.match(input)
+		raise Error.new('Failed to get a match on the NFO data') if match == nil
+		
+		@nfo = CGI::unescapeHTML(match[1])
 		@nfo.force_encoding 'CP437'
 		@nfo = @nfo.encode 'UTF-8'
-		
-		@name = @name.gsub(' ', '.')
 	end
 	
 	def getData

@@ -122,18 +122,32 @@ class ReleaseHandler
 		processReleasePath(release, path)
 	end
 	
-	def processReleasePath(release, path)
-		data = @httpHandler.get(path)
-		if data == nil
-			output "Error: Failed to retrieve path #{path} for release #{release}"
-			return
-		end
-		processReleaseData(release, data)
+	def processReleasePaths(release, path)
+		processReleasePath(release, [path])
 	end
 	
-	def processReleaseData(release, data)
+	def processReleasePaths(release, paths)
+		pages = []
+		paths.each do |path|
+			result = @httpHandler.get(path)
+			if data == nil
+				output "Error: Failed to retrieve path #{path} for release #{release}"
+				return
+			end
+			pages << result
+		end
+		processReleaseData(release, pages)
+	end
+	
+	def processReleaseData(release, pages)
 		begin
-			releaseData = @releaseDataClass.new(data)
+			#reduce the array to its first element if possible, for the sake of not breaking the old release data classes
+			if pages.size == 1
+				input = pages[0]
+			else
+				input = pages
+			end
+			releaseData = @releaseDataClass.new(input)
 			isOfInterest = false
 			@database.transaction do
 				insertData(releaseData)

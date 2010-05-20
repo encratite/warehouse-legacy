@@ -5,6 +5,7 @@ class HTTPReleaseSite < ReleaseSite
 		super(siteData, torrentData)
 		
 		@browsePath = siteData::HTTP::BrowsePath
+		@detailsPath = siteData::HTTP::DetailsPath
 		
 		httpData = torrentData::HTTP
 		@browseDelay = httpData::BrowseDelay
@@ -26,9 +27,7 @@ class HTTPReleaseSite < ReleaseSite
 			output "Error: Failed to retrieve #{@browsePath}"
 			return
 		end
-		
-		#puts data
-		
+
 		releases = @htmlParser.processData(data)
 		if releases.empty?
 			output "Error: Failed to retrieve any releases from #{@browsePath}"
@@ -45,12 +44,12 @@ class HTTPReleaseSite < ReleaseSite
 	
 	def processNewRelease(release)
 		name = release.name
-		path = "/details.php?id=#{release.siteId}"
+		path = sprintf(@detailsPath, release.siteId.to_s)
 
 		output "Discovered a new release: #{name}"
 		#sleep here, in order to enforce a minimal delay between most of the queries to mimic humans
 		sleep @downloadDelay
-		@releaseHandler.processReleasePath(name, path)
+		@releaseHandler.processReleasePaths(name, path)
 	end
 	
 	def run

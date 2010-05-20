@@ -27,7 +27,6 @@ class ReleaseData
 				raise Error.new(errorMessage)
 			end
 			data = match[1]
-			puts "#{name}: \"#{data}\" (#{match.size} match(es))" if debugging
 			symbol = ('@' + symbol.to_s).to_sym
 			instance_variable_set(symbol, data)
 		end

@@ -38,10 +38,16 @@ class ReleaseHandler
 		filterCondition = "user_release_filter.release_filter_type = ?"
 		idCondition = 'user_data.id = user_release_filter.user_id'
 	
-		target = releaseData.instance_variable_get("@#{type.to_s}".to_sym)
-		if target == nil
-			raise "Failed to retrieve instance variable of release #{releaseData.inspect} (symbol: #{type})"
+		symbolString = "@#{type.to_s}"
+		symbol = symbolString.to_sym
+		
+		if !releaseData.instance_variables.include?(symbol)
+			#genres are not supported by all sites
+			return false if type == :genre
+			puts releaseData.inspect
+			raise "Failed to retrieve instance variable of release #{releaseData.name} (symbol: #{type})"
 		end
+		target = releaseData.instance_variable_get(symbol)
 		results = @database["#{select} where #{regexpCondition} and #{filterCondition} and #{idCondition}", target, typeString]
 		#puts results.sql
 		matchCount = results.count
@@ -87,21 +93,12 @@ class ReleaseHandler
 				puts 'This entry already exists - overwriting it'
 				dataset.delete
 			end
-			#dataset.insert(insertData)
-			fields = []
-			values = []
-			insertData.each do |key, value|
-				fields << key.to_s
-				if key == :nfo
-					escapedValue = PGconn.escape_bytea(value)
-					values << "e'#{escapedValue}'"
-				else if value.class == String
-					escapedValue = PGconn.escape_string(value)
-					values << "'#{escapedValue}'"
-				end
-			end
+			dataset.insert(insertData)
 		rescue	Sequel::DatabaseError => exception
 			output "DBMS exception: #{exception.message}"
+		rescue PGError => exception
+			output "PostgreSQL error: #{exception.inspect}"
+			exit
 		end
 	end
 	

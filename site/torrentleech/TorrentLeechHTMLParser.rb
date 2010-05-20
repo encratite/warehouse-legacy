@@ -1,7 +1,8 @@
 require 'shared/HTMLParser'
 
 class TorrentLeechHTMLParser < HTMLParser
-	Pattern = /browse\.php\?cat=.+?alt="(.+?)".+?details\.php\?id=(\d+)&amp;.+?<b>(.+?)<\/b>.+?#666666'>(.+?)<.+?<a href="(download\.php.+?)">.+?<td align="right">(\d+)<\/td>.+?<td align=center>(.+?)<br>(.+?)<\/td>.+?<td align=center>(\d+)<br>.+?<font color=#CCCCCC>(\d+)<\/font>.+?<td align=right><b>(\d+)<\/b><\/td>.+?<b>(.+?)<\/b>/
+	#Pattern = /browse\.php\?cat=.+?alt="(.+?)"[\s\S]+?details\.php\?id=(\d+)&amp;.+?<b>(.+?)<\/b>.+?#666666'>(.+?)<\/font>[\s\S]+?<a href="(download\.php.+?)">[\s\S]+?<td align="right">(\d+)<\/td>[\s\S]+?<td align=center>(.+?)<br>(.+?)<\/td>[\s\S]+?<td align=center>(\d+)<br>.+?<font color=#CCCCCC>(\d+)<\/font>[\s\S]+?<td align=right><b>(\d+)<\/b><\/td>[\s\S]+?<b>(.+?)<\/b>/
+	Pattern = /browse\.php\?cat=.+?alt="(.+?)"[\s\S]+?details\.php\?id=(\d+)&amp;.+?<b>(.+?)<\/b>.+?#666666'>(.+?)<\/font>[\s\S]+?<a href="(download\.php.+?)">[\s\S]+?<td align="right">(\d+)<\/td>[\s\S]+?<td align=center>(.+?)<br>(.+?)<\/td>[\s\S]+?<td align=center>(\d+)<br>.+?<\/td>[\s\S]+?<font color=#CCCCCC>(\d+)<\/font>[\s\S]+?<td align=right><b>(\d+)<\/b><\/td>[\s\S]+?<b>(.+?)<\/b>/
 	
 	Symbols =
 	[

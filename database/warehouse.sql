@@ -92,6 +92,8 @@ create table torrentvault_data
 
 create index torrentvault_name_index on torrentvault_data(name);
 
+drop table if exists torrentleech_data;
+
 create table torrentleech_data
 (
 	id serial primary key,

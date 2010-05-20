@@ -1,9 +1,10 @@
+require 'cgi'
+require 'sequel'
+
 require 'nil/string'
 
 require 'shared/timeString'
 require 'shared/ReleaseData'
-
-require 'cgi'
 
 class TorrentLeechReleaseData < ReleaseData
 	Debugging = false
@@ -45,6 +46,10 @@ class TorrentLeechReleaseData < ReleaseData
 		@nfo = @nfo.gsub('<br />', '')
 		@nfo = @nfo.gsub('&nbsp;', ' ')
 		@nfo = CGI::unescapeHTML(@nfo)
+		@nfo.force_encoding 'CP437'
+		@nfo = @nfo.encode 'UTF-8'
+		
+		@name = @name.gsub(' ', '.')
 	end
 	
 	def getData
@@ -54,7 +59,7 @@ class TorrentLeechReleaseData < ReleaseData
 			info_hash: @infoHash,
 			section_name: @category,
 			name: @name,
-			nfo: @nfo,
+			nfo: @nfo.to_sequel_blob,
 			release_date: @releaseDate,
 			release_size: @size,
 			file_count: @fileCount,

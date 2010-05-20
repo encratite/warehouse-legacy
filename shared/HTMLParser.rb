@@ -7,7 +7,8 @@ class HTMLParser
 	
 	def processData(html)
 		output = []
-		html = html.gsub(/[\n\r]/, '')
+		#html = html.gsub(/[\n\r]/, '')
+		puts html
 		html.scan(self.class::Pattern) do |match|
 			#puts "Got a match: #{match.inspect}"
 			release = @releaseClass.new(match, self.class::Symbols)

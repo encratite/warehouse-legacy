@@ -3,6 +3,7 @@ require 'fileutils'
 require 'nil/console'
 require 'nil/string'
 require 'nil/file'
+require 'nil/network'
 
 require 'shell/Timer'
 require 'shell/SearchResult'

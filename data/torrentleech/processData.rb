@@ -2,6 +2,7 @@ require 'nil/file'
 require 'configuration/TorrentLeech'
 require 'shared/database'
 require 'site/torrentleech/TorrentLeechFullHTMLParser'
+require 'pg'
 
 files = Nil.readDirectory 'html/torrentleech'
 counter = 0
@@ -15,11 +16,23 @@ files.each do |file|
 	printf("#{file.name} (%.2f%%)\n", process)
 	html = Nil.readFile(file.path)
 	releases = parser.processData(html)
-	puts "Processing #{releases.size} releases"
-	exit
+	if releases.size == 25
+		puts "Processing #{releases.size} releases"
+	elsif releases.empty?
+		puts 'Looks like a 404 document'
+	else
+		puts "*** WARNING: Detected a bad release count: #{releases.size} ***"
+		#exit
+	end
 	releases.each do |release|
 		dataset.where(site_id: release.siteId).delete
 		insertData = release.getData
-		dataset.insert(insertData)
+		begin
+			dataset.insert(insertData)
+		rescue Exception => exception
+			puts "PostgreSQL error: #{exception.message}"
+			puts insertData.inspect
+			exit
+		end
 	end
 end

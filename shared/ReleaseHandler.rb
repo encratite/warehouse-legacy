@@ -97,9 +97,6 @@ class ReleaseHandler
 			dataset.insert(insertData)
 		rescue	Sequel::DatabaseError => exception
 			output "DBMS exception: #{exception.message}"
-		rescue PGError => exception
-			output "PostgreSQL error: #{exception.inspect}"
-			exit
 		end
 	end
 	

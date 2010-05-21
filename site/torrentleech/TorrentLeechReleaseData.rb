@@ -6,6 +6,8 @@ require 'nil/string'
 require 'shared/timeString'
 require 'shared/ReleaseData'
 
+require 'site/torrentleech/extractName'
+
 class TorrentLeechReleaseData < ReleaseData
 	Debugging = false
 	
@@ -48,7 +50,9 @@ class TorrentLeechReleaseData < ReleaseData
 		
 		@path = "/#{@path}" if !@path.empty? && @path[0] != '/'
 		
-		@name = @name.gsub(' ', '.')
+		#the original @name is actually being ignored - this site is too much of a mess
+		@name = extractNameFromTorrent(@path)
+		puts "Debug: #{@name}"
 	end
 	
 	def processNFO(input)

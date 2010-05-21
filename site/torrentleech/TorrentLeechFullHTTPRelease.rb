@@ -1,13 +1,11 @@
 require 'shared/HTTPRelease'
 require 'shared/sizeString'
 
+require 'site/torrentleech/extractName'
+
 class TorrentLeechFullHTTPRelease < HTTPRelease
 	def initialize(data, symbols)
 		super(data, symbols)
-		#some names actually contain non standard symbols such as my
-		@name = @name.gsub(' ', '.')
-		@name.force_encoding 'IBM437'
-		@name = @name.encode('UTF-8')
 		@siteId = @siteId.to_i
 		@commentCount = @commentCount.to_i
 		@size = convertSizeString("#{@size} #{@sizeUnit}")
@@ -17,6 +15,17 @@ class TorrentLeechFullHTTPRelease < HTTPRelease
 		@downloads = @downloads.gsub(',', '').to_i
 		@seeders = @seeders.to_i
 		@leechers = @leechers.to_i
+		
+		@torrentPath = "/#{@torrentPath}"
+		
+		#the original @name is actually being ignored - this site is too much of a mess
+		@name = extractNameFromTorrent(@torrentPath)
+		puts "Debug: #{@name} (#{@name.inspect})"
+		
+		match = />([^><]+)</.match(@uploader)
+		if match != nil
+			@uploader = match[1]
+		end
 	end
 	
 	def getData

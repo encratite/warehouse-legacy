@@ -54,7 +54,7 @@ class SceneAccessReleaseData < ReleaseData
 		@nfo = CGI::unescapeHTML(@nfo)
 		@nfo = removeHTMLLinks(@nfo)
 		
-		if debugging
+		if Debugging
 			puts "Size: #{@size}"
 			puts "Pre-time in seconds: #{@preTime.inspect}"
 			puts "NFO: #{@nfo}"

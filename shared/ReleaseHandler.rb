@@ -11,7 +11,7 @@ class ReleaseHandler
 		@httpHandler = site.httpHandler
 		@outputHandler = site.outputHandler
 		#regular ReleaseSites don't have this member
-		@downloadDelay = site.instance_variable_get(:downloadDelay) || 0
+		@downloadDelay = site.instance_variable_get(:@downloadDelay) || 0
 		
 		@database = site.database
 		

@@ -48,7 +48,7 @@ class HTTPReleaseSite < ReleaseSite
 		name = release.name
 		path = sprintf(@detailsPath, release.siteId.to_s)
 
-		output "Discovered a new release: #{name}"
+		output "Discovered a new release: #{name} (ID: #{release.siteId})"
 		#sleep here, in order to enforce a minimal delay between most of the queries to mimic humans
 		sleep @downloadDelay
 		@releaseHandler.processReleasePaths(name, path)

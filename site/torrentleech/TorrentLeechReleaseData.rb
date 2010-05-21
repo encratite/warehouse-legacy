@@ -21,7 +21,7 @@ class TorrentLeechReleaseData < ReleaseData
 		['Release date', /Added<\/td><td valign="top" align=left>(.+?)<\/td>/, :releaseDate],
 		['Snatched', /Snatched<\/td><td valign="top" align=left>(\d+) time\(s\)<\/td>/, :downloads],
 		['Uploader', /Upped by<\/td><td valign="top" align=left>.+?>([^><]+)<.+?>/, :uploader],
-		['Files', /\[See full list\]<\/a><\/td><td valign="top" align=left>(\d+) files<\/td>/, :fileCount],
+		['File count', /\[See full list\]<\/a><\/td><td valign="top" align=left>(\d+) files<\/td>/, :fileCount, false],
 		['Seeders', /<td valign="top" align=left>(\d+) seeder\(s\), /, :seeders],
 		['Leechers', /, (\d+) leecher\(s\) = /, :leechers],
 		['ID', /details\.php\?id=(\d+)&amp;/, :id],
@@ -52,6 +52,12 @@ class TorrentLeechReleaseData < ReleaseData
 		
 		#the original @name is actually being ignored - this site is too much of a mess
 		@name = extractNameFromTorrent(@path)
+		
+		if @fileCount == nil
+			@fileCount = 1
+		else
+			@fileCount = @fileCount.to_i
+		end
 	end
 	
 	def processNFO(input)

@@ -1,17 +1,17 @@
 #!/bin/bash
 
+TEMPORARY_PATH1=~/database/warehouse.dump.original
+TEMPORARY_PATH2=~/database/warehouse.dump
+DUMP_PATH=~/database/warehouse-dump/warehouse.dump.gz
+SED_SCRIPT=~/code/warehouse/secret/warehouse.sed
+
 while [ 1 ]
 do
-	pg_dump -f warehouse.dump.original -t scene_access_data -t torrentvault_data warehouse
-	sed -f warehouse.sed < warehouse.dump.original > warehouse.dump
-	rm warehouse.dump.original
-	gzip -1 -f warehouse.dump
-	mv warehouse.dump dump
+	pg_dump -f $TEMPORARY_PATH1 -t scene_access_data -t torrentvault_data -t torrentleech_data warehouse
+	sed -f $SED_SCRIPT < $TEMPORARY_PATH1 > $TEMPORARY_PATH2
+	rm $TEMPORARY_PATH1
+	gzip -1 -f $TEMPORARY_PATH2
+	mv $TEMPORARY_PATH2.gz $DUMP_PATH
 	sleep 1800
 done
 
-warehouse.sed:
-
-s/40d5b69470486753f78986717cf55ce7/x/
-s/64708934439b4053a72662ab4925c5a6/x/
-s/64216775f492dfa69b30e07d86cb4b54/x/

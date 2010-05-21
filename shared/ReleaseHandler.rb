@@ -27,7 +27,6 @@ class ReleaseHandler
 		exit
 	end
 	
-	#type is :name, :nfo or :genre
 	def isReleaseOfInterestType(releaseData, type)
 		release = releaseData.name
 		
@@ -72,7 +71,7 @@ class ReleaseHandler
 	def isReleaseOfInterest(releaseData)
 		types =
 		[
-			:name,
+			:release,
 			:nfo,
 			:genre
 		]
@@ -121,7 +120,7 @@ class ReleaseHandler
 	end
 	
 	def processReleasePath(release, path)
-		processReleasePath(release, [path])
+		processReleasePaths(release, [path])
 	end
 	
 	def processReleasePaths(release, paths)

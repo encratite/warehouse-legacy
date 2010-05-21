@@ -13,7 +13,7 @@ class TorrentLeechReleaseData < ReleaseData
 	
 	Targets =
 	[
-		['Release', /<h1>(.+?)<\/h1>/, :name],
+		['Release', /<h1>(.+?)<\/h1>/, :release],
 		['Path', /"(download\.php.+?)"/, :path],
 		['Info hash', /<td valign="top" align=left>(.+?)<\/td>/, :infoHash],
 		['Category', /Type<\/td><td valign="top" align=left>(.+?)<\/td>/, :category],
@@ -50,8 +50,8 @@ class TorrentLeechReleaseData < ReleaseData
 		
 		@path = "/#{@path}" if !@path.empty? && @path[0] != '/'
 		
-		#the original @name is actually being ignored - this site is too much of a mess
-		@name = extractNameFromTorrent(@path)
+		#the original @release is actually being ignored - this site is too much of a mess
+		@release = extractNameFromTorrent(@path)
 	end
 	
 	def processNFO(input)
@@ -69,7 +69,7 @@ class TorrentLeechReleaseData < ReleaseData
 			torrent_path: @path,
 			info_hash: @infoHash,
 			section_name: @category,
-			name: @name,
+			name: @release,
 			nfo: @nfo.to_sequel_blob,
 			release_date: @releaseDate,
 			release_size: @size,

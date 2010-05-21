@@ -56,9 +56,13 @@ class HTTPReleaseSite < ReleaseSite
 	
 	def run
 		while @running
-			browse
-			puts "Sleeping for #{@browseDelay} seconds until the next update"
-			sleep @browseDelay
+			begin
+				browse
+				puts "Sleeping for #{@browseDelay} seconds until the next update"
+				sleep @browseDelay
+			rescue Interrupt
+				exit
+			end
 		end
 	end
 end

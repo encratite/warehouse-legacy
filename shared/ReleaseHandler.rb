@@ -71,7 +71,7 @@ class ReleaseHandler
 	def isReleaseOfInterest(releaseData)
 		types =
 		[
-			:release,
+			:name,
 			:nfo,
 			:genre
 		]

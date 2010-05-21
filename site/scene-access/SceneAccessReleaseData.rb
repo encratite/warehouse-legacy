@@ -10,7 +10,7 @@ class SceneAccessReleaseData < ReleaseData
 	
 	Targets =
 	[
-		['Release', /<h1>(.+?)<\/h1>/, :release],
+		['Release', /<h1>(.+?)<\/h1>/, :name],
 		['ID', /Download.+?\?id=(\d+)\"/, :id],
 		['Info hash', /<td valign=\"top\" align=left>(.+?)<\/td>/, :infoHash],
 		['Pre-time', />Pre Time<\/td>.+?>(.+?)<\/td>/, :preTimeString],
@@ -66,7 +66,7 @@ class SceneAccessReleaseData < ReleaseData
 			site_id: @id,
 			torrent_path: @path,
 			section_name: @section,
-			name: @release,
+			name: @name,
 			nfo: @nfo,
 			info_hash: @infoHash,
 			pre_time: @preTime,

@@ -1,5 +1,5 @@
-require 'site/TorrentLeech/TorrentLeechReleaseData'
-require 'site/TorrentLeech/TorrentLeechHTMLParser'
+require 'site/torrentleech/TorrentLeechReleaseData'
+require 'site/torrentleech/TorrentLeechHTMLParser'
 
 require 'secret/TorrentLeech'
 

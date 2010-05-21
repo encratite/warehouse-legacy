@@ -130,7 +130,7 @@ class ReleaseHandler
 		pages = []
 		paths.each do |path|
 			result = @httpHandler.get(path)
-			if data == nil
+			if result == nil
 				output "Error: Failed to retrieve path #{path} for release #{release}"
 				return
 			end

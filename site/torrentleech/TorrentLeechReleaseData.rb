@@ -14,16 +14,14 @@ class TorrentLeechReleaseData < ReleaseData
 		['Release', /<h1>(.+?)<\/h1>/, :name],
 		['Path', /"(download\.php.+?)"/, :path],
 		['Info hash', /<td valign="top" align=left>(.+?)<\/td>/, :infoHash],
-		#['NFO', /<nobr>([\s\S]+?)<\/nobr>/, :nfo],
 		['Category', /Type<\/td><td valign="top" align=left>(.+?)<\/td>/, :category],
 		['Size', /Size<\/td><td valign="top" align=left>.+?\((.+?) bytes\)/, :sizeString],
 		['Release date', /Added<\/td><td valign="top" align=left>(.+?)<\/td>/, :releaseDate],
 		['Snatched', /Snatched<\/td><td valign="top" align=left>(\d+) time\(s\)<\/td>/, :downloads],
-		['Uploader', /Upped by<\/td><td valign="top" align=left><a href=userdetails\.php\?id=\d+><b>(.+?)<\/b>/, :uploader],
+		['Uploader', /Upped by<\/td><td valign="top" align=left>.+?>([^><]+)<.+?>/, :uploader],
 		['Files', /\[See full list\]<\/a><\/td><td valign="top" align=left>(\d+) files<\/td>/, :fileCount],
 		['Seeders', /<td valign="top" align=left>(\d+) seeder\(s\), /, :seeders],
 		['Leechers', /, (\d+) leecher\(s\) = /, :leechers],
-		
 		['ID', /details\.php\?id=(\d+)&amp;/, :id],
 	]
 	

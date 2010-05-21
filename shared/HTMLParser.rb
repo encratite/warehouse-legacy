@@ -7,8 +7,9 @@ class HTMLParser
 	
 	def processData(html)
 		output = []
-		html.scan(self.class::Pattern) do |match|
-			#puts "Got a match: #{match.inspect}"
+		results = html.scan(self.class::Pattern)
+		puts "Result count: #{results.size}"
+		results.each do |match|
 			release = @releaseClass.new(match, self.class::Symbols)
 			output << release
 		end

@@ -120,7 +120,7 @@ class ReleaseHandler
 		processReleasePath(release, path)
 	end
 	
-	def processReleasePaths(release, path)
+	def processReleasePath(release, path)
 		processReleasePath(release, [path])
 	end
 	

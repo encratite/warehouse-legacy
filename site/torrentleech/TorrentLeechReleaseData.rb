@@ -52,7 +52,6 @@ class TorrentLeechReleaseData < ReleaseData
 		
 		#the original @name is actually being ignored - this site is too much of a mess
 		@name = extractNameFromTorrent(@path)
-		puts "Debug: #{@name}"
 	end
 	
 	def processNFO(input)

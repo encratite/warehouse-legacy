@@ -1,6 +1,8 @@
 require 'shared/ReleaseSite'
 
 class HTTPReleaseSite < ReleaseSite
+	attr_reader :downloadDelay
+	
 	def initialize(siteData, torrentData)
 		super(siteData, torrentData)
 		
@@ -55,6 +57,7 @@ class HTTPReleaseSite < ReleaseSite
 	def run
 		while @running
 			browse
+			puts "Sleeping for #{@browseDelay} seconds until the next update"
 			sleep @browseDelay
 		end
 	end

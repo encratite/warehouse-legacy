@@ -10,6 +10,8 @@ class ReleaseHandler
 	def initialize(site)
 		@httpHandler = site.httpHandler
 		@outputHandler = site.outputHandler
+		#regular ReleaseSites don't have this member
+		@downloadDelay = site.instance_variable_get(:downloadDelay) || 0
 		
 		@database = site.database
 		
@@ -49,7 +51,6 @@ class ReleaseHandler
 		end
 		target = releaseData.instance_variable_get(symbol)
 		results = @database["#{select} where #{regexpCondition} and #{filterCondition} and #{idCondition}", target, typeString]
-		#puts results.sql
 		matchCount = results.count
 		isOfInterest = matchCount > 0
 		if isOfInterest
@@ -135,6 +136,7 @@ class ReleaseHandler
 				return
 			end
 			pages << result
+			sleep @downloadDelay
 		end
 		processReleaseData(release, pages)
 	end

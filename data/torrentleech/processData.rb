@@ -1,6 +1,6 @@
 require 'nil/file'
 require 'configuration/TorrentLeech'
-require 'database'
+require 'shared/database'
 require 'site/torrentleech/TorrentLeechFullHTMLParser'
 
 files = Nil.readDirectory 'html/torrentleech'
@@ -12,13 +12,14 @@ dataset = database[TorrentLeechConfiguration::Table]
 files.each do |file|
 	counter += 1
 	process = Float(counter) / files.size * 100.0
-	printf("#{file.name} (%.2f%%)", process)
+	printf("#{file.name} (%.2f%%)\n", process)
 	html = Nil.readFile(file.path)
 	releases = parser.processData(html)
 	puts "Processing #{releases.size} releases"
+	exit
 	releases.each do |release|
-		dataset.where(site_id: release.siteId).erase
+		dataset.where(site_id: release.siteId).delete
 		insertData = release.getData
-		dataset.insert(*insertData)
+		dataset.insert(insertData)
 	end
 end

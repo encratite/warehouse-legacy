@@ -2,7 +2,7 @@ require 'shared/HTMLParser'
 
 require 'site/torrentleech/TorrentLeechFullHTTPRelease'
 
-class TorrentLeechHTMLParser < HTMLParser
+class TorrentLeechFullHTMLParser < HTMLParser
 	Pattern = /browse\.php\?cat=.+?alt="(.+?)"[\s\S]+?details\.php\?id=(\d+)&amp;.+?<b>(.+?)<\/b>.+?#666666'>(.+?)<\/font>[\s\S]+?<a href="(download\.php.+?)">[\s\S]+?<td align="right".*?>(\d+)<.*?\/td>[\s\S]+?<td align=center>(.+?)<br>(.+?)<\/td>[\s\S]+?<td align=center>(\d+)<br>[\s\S]+?>(\d+)<[\s\S]+?>(\d+)<[\s\S]+?<td align=center>(.+?)<\/td>/
 	
 	Symbols =
@@ -18,7 +18,7 @@ class TorrentLeechHTMLParser < HTMLParser
 		:downloads,
 		:seeders,
 		:leechers,
-		:seeders,
+		:uploader,
 	]
 	
 	def initialize

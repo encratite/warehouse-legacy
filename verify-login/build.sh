@@ -1,0 +1,6 @@
+BINARY_DIRECTORY=binary
+SOURCE_DIRECTORY=source
+BASE=verify-login
+
+mkdir -p $BINARY_DIRECTORY
+g++ -o $BINARY_DIRECTORY/$BASE -lcrypt $SOURCE_DIRECTORY/$BASE.cpp

@@ -19,10 +19,25 @@ namespace mainResult
 	};
 }
 
-std::string readData()
+namespace keyword
 {
-	std::string output(getpass("Specify the user and the password to be checked (user:password): "));
-	return output;
+	std::string const
+		hidden = "hidden",
+		visible = "visible";
+}
+
+std::string readData(bool hidePasswordInput)
+{
+	std::string const prompt = "Specify the user and the password to be checked (user:password): ";
+	if(hidePasswordInput)
+		return std::string(getpass(prompt.c_str()));
+	else
+	{
+		std::cout << prompt;
+		std::string output;
+		std::getline(std::cin, output);
+		return output;
+	}
 }
 
 //returns false if the input was malformed
@@ -65,19 +80,33 @@ int performCheck(std::string const & username, std::string const & password)
 void printUsage(int argc, char ** argv)
 {
 	std::cout << "Usage:" << std::endl;
-	std::cout << argv[0] << " - read user:password from stdin and check if the login is valid." << std::endl;
+	std::cout << argv[0] << " [" << keyword::hidden << "|" << keyword::visible << "] - read user:password from stdin and check if the login is valid." << std::endl;
 	std::cout << "Returns 0 when that is the case, 1 when they mismatch and 2 in case of an error." << std::endl;
+	std::cout << "Warning: 'visible' mode is required for piping!" << std::endl;
 }
 
 int main(int argc, char ** argv)
 {
-	if(argc != 1)
+	if(argc != 2)
 	{
 		printUsage(argc, argv);
 		return mainResult::error;
 	}
 	
-	std::string input = readData();
+	std::string argument(argv[1]);
+	
+	bool hidePasswordInput;
+	if(argument == keyword::hidden)
+		hidePasswordInput = true;
+	else if(argument == keyword::visible)
+		hidePasswordInput = false;
+	else
+	{
+		printUsage(argc, argv);
+		return mainResult::error;
+	}
+	
+	std::string input = readData(hidePasswordInput);
 	
 	std::string
 		username,

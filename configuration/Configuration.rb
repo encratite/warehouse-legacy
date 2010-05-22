@@ -74,4 +74,9 @@ module Configuration
 		Path = 'log'
 		CategoriserLog = Nil.joinPaths(Path, 'categoriser.log')
 	end
+	
+	module RPCServer
+		SessionCookie = 'session'
+		Log = 'rpc.log'
+	end
 end

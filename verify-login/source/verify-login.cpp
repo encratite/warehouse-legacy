@@ -20,11 +20,8 @@ namespace mainResult
 
 std::string readData()
 {
-	std::istream_iterator<char>
-		iterator(std::cin),
-		end;
-		
-	std::string output(iterator, end);
+	int const limit = 256;
+	std::string output(getpasswd("Specify the user and the password to be checked (user:password): ", limit));
 	return output;
 }
 

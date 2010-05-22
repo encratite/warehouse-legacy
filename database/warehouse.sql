@@ -6,10 +6,23 @@ create table user_data
 (
 	id serial primary key,
 	name text unique not null,
+	--unused feature
 	email text default null,
-	--null if the standard search format is used
+	--null if the standard search format is used - unused feature
 	search_format text default null,
 	is_administrator boolean not null default false
+);
+
+--there may only be one JSON session for a user at a time
+
+drop table if exists user_session
+
+create table user_session
+(
+	user_id integer references user_data(id) primary key not null,
+	--using one of the smarter types for IPs is not really necessary at this scale and this even permits IPv4/IPv6 in the same field
+	ip text not null,
+	session_string text not null
 );
 
 drop table if exists user_release_filter cascade;

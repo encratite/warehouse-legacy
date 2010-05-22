@@ -5,6 +5,7 @@
 
 #include <sys/types.h>
 
+#include <unistd.h>
 #include <pwd.h>
 #include <shadow.h>
 
@@ -20,8 +21,7 @@ namespace mainResult
 
 std::string readData()
 {
-	int const limit = 256;
-	std::string output(getpasswd("Specify the user and the password to be checked (user:password): ", limit));
+	std::string output(getpass("Specify the user and the password to be checked (user:password): "));
 	return output;
 }
 

@@ -49,10 +49,12 @@ class SceneAccessReleaseData < ReleaseData
 		
 		@path = "/#{@path}" if !@path.empty? && @path[0] != '/'
 		
-		@nfo = @nfo.gsub('<br>', '')
-		@nfo = @nfo.gsub('&nbsp;', ' ')
-		@nfo = CGI::unescapeHTML(@nfo)
-		@nfo = removeHTMLLinks(@nfo)
+		if @nfo != nil
+			@nfo = @nfo.gsub('<br>', '')
+			@nfo = @nfo.gsub('&nbsp;', ' ')
+			@nfo = CGI::unescapeHTML(@nfo)
+			@nfo = removeHTMLLinks(@nfo)
+		end
 		
 		if Debugging
 			puts "Size: #{@size}"

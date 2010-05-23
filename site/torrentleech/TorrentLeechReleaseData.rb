@@ -24,7 +24,7 @@ class TorrentLeechReleaseData < ReleaseData
 		['File count', /\[See full list\]<\/a><\/td><td valign="top" align=left>(\d+) files<\/td>/, :fileCount, false],
 		['Seeders', /<td valign="top" align=left>(\d+) seeder\(s\), /, :seeders],
 		['Leechers', /, (\d+) leecher\(s\) = /, :leechers],
-		['ID', /details\.php\?id=(\d+)&amp;/, :id],
+		['ID', /download\.php\/(\d+)\//, :id],
 	]
 	
 	def processInput(pages)

@@ -45,23 +45,23 @@ class JSONServer
 		sessions = @database[:user_session]
 		results = sessions.join(:user_data, id: :user_id).where(ip: request.address, session_string: sessionString).filter(:id, :name, :is_administrator).all
 		if results.empty?
-			output "Received an invalid session string from #{request.address}: #{sessionString}"
+			output(request, "Received an invalid session string: #{sessionString}")
 			return nil
 		end
 		result = results[0]
 		user = User.new(result)
-		output "Recognised the session string of user #{user.name}"
+		output(request, "Recognised the session string of user #{user.name}")
 		return user
 	end
 	
 	def error(message, id)
-		output =
+		reply =
 		{
 			'error' => message,
 			'id' => id
 		}
 		
-		return output
+		return reply
 	end
 	
 	def processJSONRPCRequest(jsonRequest, user)
@@ -92,16 +92,16 @@ class JSONServer
 		end
 		
 		begin
-			result = handlerMethod(*arguments)
+			result = handlerMethod.call(*arguments)
 			
-			output =
+			reply =
 			{
 				'result' => result,
 				'error' => nil,
 				'id' => id
 			}
 			
-			return output
+			return reply
 		rescue RuntimeError => exception
 			return error(exception.message, id)
 		end
@@ -109,11 +109,13 @@ class JSONServer
 	
 	def indexHandler(request)
 		user = getUser(request)
-		output = ''
+		content = ''
+		userDescription = user == nil ? '' : " (#{user})"
 		request.jsonRequests.each do |jsonRequest|
-			output.concat(JSON.unparse(processJSONRPCRequest(jsonRequest, user)) + "\n")
+			output(request, "JSON-RPC call from #{request.address}#{userDescription}: #{jsonRequest.inspect}")
+			content.concat(JSON.unparse(processJSONRPCRequest(jsonRequest, user)) + "\n")
 		end
-		reply = HTTPReply.new(output)
+		reply = HTTPReply.new(content)
 		reply.contentType = 'application/json-rpc'
 		return reply
 	end

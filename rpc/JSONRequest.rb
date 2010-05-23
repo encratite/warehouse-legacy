@@ -8,11 +8,8 @@ class JSONRequest < HTTPRequest
 	
 	def initialize(environment)
 		super(environment)
-		processJSON
-	end
-	
-	def processJSON
-		lines = environment['rack.input'].read.split("\n")
+		
+		lines = @rawInput.split("\n")
 		@jsonRequests = lines.map{|x| JSON.parse(x)}
 	end
 end

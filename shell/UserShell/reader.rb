@@ -2,6 +2,8 @@ require 'readline'
 
 require 'nil/console'
 
+require 'user-api/UserAPI'
+
 class UserShell	
 	def run
 		@prefix = @user.shellPrefix
@@ -25,25 +27,19 @@ class UserShell
 				#it's 1984 all over again
 				@logs.insert(user_id: @user.id, command: line)
 				
-				begin
-					Commands.each do |data|
-						arguments, description, symbol = data
-						next if !hasAccess(data)
-						commandNames = arguments.split(' ')[0].split('/')
-						next if !commandNames.include?(command)
-						method(symbol).call
-						validCommand = true
-						break
-					end
-				rescue RegexpError => exception
-					error('You have entered an invalid regular expression: ' + exception.message)
-					next
-				rescue Sequel::DatabaseError => exception
-					error "DBMS error: #{exception.message.chop}"
-					next
+				Commands.each do |data|
+					arguments, description, symbol = data
+					next if !hasAccess(data)
+					commandNames = arguments.split(' ')[0].split('/')
+					next if !commandNames.include?(command)
+					method(symbol).call
+					validCommand = true
+					break
 				end
 				
 				error('Invalid command.') if !validCommand
+			rescue UserAPI::Error => exception
+				puts Nil.red("User API error: #{exception.message}")
 			rescue Interrupt
 				puts Nil.cyan('Interrupt.')
 				exit

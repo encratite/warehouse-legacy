@@ -1,9 +1,3 @@
-require 'nil/file'
-
-require 'shell/SearchResult'
-
-require 'shared/sites'
-
 [
 	'commandDescriptions',
 	'commands',
@@ -15,63 +9,16 @@ require 'shared/sites'
 	'administratorCommands',
 ].each { |x| require "shell/UserShell/#{x}" }
 
+require 'user-api/api'
+
 class HTTPError < StandardError
 end
 
 class UserShell
 	def initialize(configuration, database, user)
-		@configuration = configuration
-		
-		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
-		@filterCountMaximum = configuration::Shell::FilterCountMaximum
-		@searchResultMaximum = configuration::Shell::SearchResultMaximum
-		@commandLogCountMaximum = configuration::Shell::CommandLogCountMaximum
-		
-		@sshKeyMaximum = configuration::Shell::SSHKeyMaximum
-		
-		@releaseSizeLimit = configuration::Torrent::SizeLimit
-		
-		@database = database
 		@user = user
-		
-		@torrentPath = configuration::Torrent::Path::Torrent
-		@userPath = Nil.joinPaths(configuration::Torrent::Path::User, @user.name)
-		@filteredPath = Nil.joinPaths(@userPath, configuration::Torrent::Path::Filtered)
-		@nic = configuration::Torrent::NIC
-		
-		@filters = @database[:user_release_filter]
-		@logs = @database[:user_command_log]
-		
-		@sites = getReleaseSites
-		
 		@commands = getCommandStrings
-	end
-	
-	def convertFilterIndices(input)
-		input.each do |index|
-			if !index.isNumber
-				error "Invalid argument: #{index}"
-				return
-			end
-		end
-		
-		indices = input.map { |index| index.to_i }
-		ids = []
-		
-		indices.each do |index|
-			if index <= 0
-				error "Index too low: #{index}"
-				return
-			end
-			result = @filters.where(user_id: @user.id).order(:id).select(:id).limit(1, index - 1)
-			if result.empty?
-				error "Invalid index: #{index}"
-				return
-			end
-			ids << result.first[:id]
-		end
-		
-		return ids
+		@api = UserAPI.new(configuration, database, user)
 	end
 		
 	def padEntries(input)
@@ -88,5 +35,18 @@ class UserShell
 			newArray
 		end
 		return output
+	end
+	
+	def convertFilterIndexStrings(indexStrings)
+		indexStrings.each do |index|
+			if !index.isNumber
+				error "Invalid argument: #{index}"
+				return
+			end
+		end
+		
+		indices = indexStrings.map { |index| index.to_i }
+		
+		return indices
 	end
 end

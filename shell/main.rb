@@ -8,7 +8,7 @@ require 'shared/HTTPHandler'
 require 'configuration/Configuration'
 
 require 'shell/UserShell'
-require 'shell/User'
+require 'shell/ShellUser'
 
 def getUser(database)
 	username = Nil.getUser
@@ -26,19 +26,19 @@ def getUser(database)
 				#make the user an administrator, they are the first user to connect
 				id = userData.insert(name: username, is_administrator: true)
 				puts "Welcome, #{highlightedName}! You have been made an administrator."
-				user = User.new(id, username, true)
+				user = ShellUser.new(id, username, true)
 			else
 				#it's not the first user, add them to the system
 				id = userData.insert(name: username)
 				puts "Welcome to the system, #{highlightedName}!"
-				user = User.new(id, username)
+				user = ShellUser.new(id, username, false)
 			end
 			
 			puts "Use the '#{Nil.white 'help'}' command to familiarise yourself with this environment."
 		else
 			puts "Welcome back, #{highlightedName}."
 			currentUserData = dataset.first
-			user = User.new(currentUserData[:id], username, currentUserData[:is_administrator])
+			user = ShellUser.new(currentUserData[:id], username, currentUserData[:is_administrator])
 		end
 	end
 

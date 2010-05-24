@@ -1,5 +1,7 @@
 require 'json'
 
+require 'nil/file'
+
 require 'rpc/JSONRequest'
 
 require 'shared/OutputHandler'
@@ -10,19 +12,23 @@ require 'www-library/RequestManager'
 require 'www-library/RequestHandler'
 require 'www-library/HTTPReply'
 
+require 'user-api/UserAPI'
+
 class JSONServer
 	WarehousePath = 'warehouse'
 	
 	RequestHandlers =
 	{
+		#just for testing purposes
 		'sum' => [:sumRPC, [Fixnum, Fixnum]],
-		'login' => [:loginRPC, [String, String]],
 	}
 	
-	def initialize(sessionCookie, log)
-		@sessionCookie = sessionCookie
+	def initialize(configuration)
+		log = Nil.joinPaths(configuration::Logging::Path, Configuration::RPCServer::Log)
+		@sessionCookie = configuration::RPCServer::SessionCookie
 		@output = OutputHandler.new(log)
 		@database = getDatabase
+		@configuration = configuration
 		initialiseRequestManager
 	end
 	
@@ -47,17 +53,12 @@ class JSONServer
 	end
 	
 	def getUser(request)
-		sessionString = request.cookies[@sessionCookie]
-		return nil if sessionString == nil
-		sessions = @database[:user_session]
-		results = sessions.join(:user_data, id: :user_id).where(ip: request.address, session_string: sessionString).filter(:id, :name, :is_administrator).all
-		if results.empty?
-			output(request, "Received an invalid session string: #{sessionString}")
-			return nil
+		dataset = @database[:user_data]
+		results = dataset.where(name: request.name).all
+		if results.size != 1
+			raise "Unable to find user #{request.name} in database"
 		end
-		result = results[0]
-		user = User.new(result)
-		output(request, "Recognised the session string of user #{user.name}")
+		user = User.new(results[0])
 		return user
 	end
 	
@@ -99,6 +100,7 @@ class JSONServer
 		end
 		
 		begin
+			arguments = [user] + arguments
 			result = handlerMethod.call(*arguments)
 			
 			reply =
@@ -127,10 +129,10 @@ class JSONServer
 	
 	def warehouseHandler(request)
 		user = getUser(request)
+		api = UserAPI.new(@configuration, @database, user)
 		content = ''
-		userDescription = user == nil ? '' : " (#{user})"
 		request.jsonRequests.each do |jsonRequest|
-			output(request, "JSON-RPC call from #{request.address}#{userDescription}: #{jsonRequest.inspect}")
+			output(request, "JSON-RPC call from user #{user.name} from #{request.address}: #{jsonRequest.inspect}")
 			content.concat(JSON.unparse(processJSONRPCRequest(jsonRequest, user)) + "\n")
 		end
 		reply = HTTPReply.new(content)
@@ -140,9 +142,5 @@ class JSONServer
 	
 	def sumRPC(a, b)
 		return a + b
-	end
-	
-	def loginRPC(username, password)
-		return nil
 	end
 end

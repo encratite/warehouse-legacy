@@ -6,7 +6,8 @@ require 'nil/file'
 require 'nil/network'
 
 require 'shell/Timer'
-require 'shell/SearchResult'
+
+require 'user-api/SearchResult'
 
 class UserShell
 	def commandHelp
@@ -26,36 +27,25 @@ class UserShell
 	end
 	
 	def commandAddFilter(type)
-		if @argument.empty?
+		filter = @argument
+		if filter.empty?
 			warning 'Please specify a filter to add.'
 			return
 		end
-		filter = @argument
-		if filter.size > @filterLengthMaximum
-			error "Your filter exceeds the maximum length of #{@filterLengthMaximum}."
-			return
-		end
-		if @filters.where(user_id: @user.id).count > @filterCountMaximum
-			error "You have too many filters (#{filterCountMaximum})."
-			return
-		end
-		
-		#check if it is a valid regular expression first
-		@database["select 1 where '' ~* ?", @argument].all
-		@filters.insert(user_id: @user.id, filter: filter, release_filter_type: type.to_s)
-		success "Your filter has been added."
+		@api.addFilter(filter, type)
+		success 'Your filter has been added.'
 	end
 	
 	def commandAddNameFilter
-		commandAddFilter(:name)
+		commandAddFilter('name')
 	end
 	
 	def commandAddNFOFilter
-		commandAddFilter(:nfo)
+		commandAddFilter('nfo')
 	end
 	
 	def commandAddGenreFilter
-		commandAddFilter(:genre)
+		commandAddFilter('genre')
 	end
 	
 	def commandListFilters
@@ -65,7 +55,7 @@ class UserShell
 			'nfo' => [:lightGreen, 'NFO filter'],
 			'genre' => [:pink, 'MP3 genre filter'],
 		}
-		filters = @filters.where(user_id: @user.id).order(:id).select(:filter, :category, :release_filter_type)
+		filters = @api.listFilters
 		if filters.empty?
 			puts 'You currently have no filters.'
 			return
@@ -93,14 +83,11 @@ class UserShell
 			return
 		end
 		
-		@database.transaction do
-			ids = convertFilterIndices(@arguments)
-			return if ids == nil
-			
-			ids.each { |id| @filters.where(id: id).delete }
-		end
+		indices = convertFilterIndexStrings(@arguments)
+		return if ids == nil
+		@api.convertFilterIndices(indices)
 		
-		if @arguments.size == 1
+		if ids.size == 1
 			puts 'The filter has been removed.'
 		else
 			puts 'The filters have been removed.'
@@ -108,7 +95,7 @@ class UserShell
 	end
 	
 	def commandClearFilters
-		@filters.where(user_id: @user.id).delete
+		@api.clearFilters
 		puts 'All your filters have been removed.'
 	end
 	

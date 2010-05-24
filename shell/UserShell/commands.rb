@@ -104,12 +104,13 @@ class UserShell
 		queryCount = 0
 		@sites.each do |site|
 			siteName = site.name
-			table = @database[site.table]
+			
+			statistics = @api.getSiteStatistics(siteName)
 			
 			data =
 			[
-				['Number of releases in the database', table.count.to_s],
-				['Size of releases available on demand', Nil.getSizeString(table.sum(:release_size))],
+				['Number of releases in the database', statistics.releaseCount.to_s],
+				['Size of releases available on demand', Nil.getSizeString(statistics.totalSize)],
 			]
 			
 			puts "#{stringColour(siteName)}:"
@@ -126,21 +127,12 @@ class UserShell
 			warning "Specify a regular expression to look for."
 			return
 		end
-		
-		if @argument.size > @filterLengthMaximum
-			error "Your search filter exceeds the maximum length of #{@filterLengthMaximum}."
-			return
-		end
-		
+	
 		timer = Timer.new
 		
-		siteResults = {}
+		siteResults = @api.performSearch(@argument)
 		count = 0
-		@sites.each do |site|
-			table = site.table.to_s
-			abbreviation = site.abbreviation
-			results = @database["select site_id, section_name, name, release_date, release_size from #{table} where name ~* ? order by site_id desc limit ?", @argument, @searchResultMaximum].all
-			siteResults[abbreviation] = results
+		siteResults.each do |results|
 			count += results.size
 		end
 		
@@ -155,7 +147,7 @@ class UserShell
 		@sites.each do |site|
 			abbreviation = site.abbreviation
 			
-			results = siteResults[abbreviation]
+			results = siteResults[site.name]
 			results.each do |result|
 				name = result[:name]
 				if searchResults[name] == nil

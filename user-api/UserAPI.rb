@@ -3,6 +3,14 @@ require 'nil/file'
 require 'shared/SearchResult'
 require 'shared/sites'
 
+[
+	'general',
+	'filters',
+	'search',
+].each do |name|
+	require "user-api/UserAPI/#{name}"
+end
+
 class UserAPI
 	class Error < Exception
 	end

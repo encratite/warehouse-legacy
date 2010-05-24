@@ -1,15 +1,18 @@
-require 'nil/string'
 require 'nil/console'
 
 require 'shell/stringColour'
 
-class SearchResult
+require 'user-api/JSONObject'
+
+class SearchResult < JSONObject
 	attr_reader :id
 	
 	def initialize(source, data)
+		#do not serialise the descriptions
+		super(:@descriptions)
 		@name = data[:name]
 		@section = data[:section_name]
-		@size = Nil.getSizeString(data[:release_size])
+		@size = data[:release_size]
 		@date = data[:release_date]
 		@descriptions = []
 		@id = data[:site_id]

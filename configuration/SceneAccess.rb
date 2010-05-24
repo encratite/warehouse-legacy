@@ -25,7 +25,7 @@ module SceneAccessConfiguration
 		end
 	end
 	
-	Log = 'scene-access.log'
+	Log = 'sceneaccess.log'
 	Table = :scene_access_data
 	Name = 'SceneAccess'
 	Abbreviation = 'SCC'

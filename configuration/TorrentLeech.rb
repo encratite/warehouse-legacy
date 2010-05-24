@@ -13,7 +13,7 @@ module TorrentLeechConfiguration
 		#Cookies are secret
 	end
 	
-	Log = 'TorrentLeech.log'
+	Log = 'torrentleech.log'
 	Table = :torrentleech_data
 	Name = 'TorrentLeech'
 	Abbreviation = 'TL'

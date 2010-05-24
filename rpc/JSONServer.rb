@@ -11,6 +11,8 @@ require 'www-library/RequestHandler'
 require 'www-library/HTTPReply'
 
 class JSONServer
+	WarehousePath = 'warehouse'
+	
 	RequestHandlers =
 	{
 		'sum' => [:sumRPC, [Fixnum, Fixnum]],
@@ -26,9 +28,14 @@ class JSONServer
 	
 	def initialiseRequestManager
 		@requestManager = RequestManager.new(JSONRequest)
-		mainHandler = RequestHandler.new(nil)
-		mainHandler.setHandler(method(:indexHandler))
-		@requestManager.addHandler(mainHandler)
+		
+		indexHandler = RequestHandler.new(nil)
+		indexHandler.setHandler(method(:indexHandler))
+		@requestManager.addHandler(indexHandler)
+		
+		warehouseHandler = RequestHandler.new(WarehousePath)
+		warehouseHandler.setHandler(method(:warehouseHandler))
+		@requestManager.addHandler(warehouseHandler)
 	end
 	
 	def output(request, line)
@@ -108,6 +115,17 @@ class JSONServer
 	end
 	
 	def indexHandler(request)
+		content = "Methods available on /#{WarehousePath}:\n\n"
+		RequestHandlers.each do |key, value|
+			symbol, arguments = value
+			content.concat "#{key}: #{arguments.inspect}\n"
+		end
+		reply = HTTPReply.new(content)
+		reply.contentType = MIMEType::Plain
+		return reply
+	end
+	
+	def warehouseHandler(request)
 		user = getUser(request)
 		content = ''
 		userDescription = user == nil ? '' : " (#{user})"

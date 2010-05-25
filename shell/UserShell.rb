@@ -19,6 +19,7 @@ class UserShell
 		@user = user
 		@commands = getCommandStrings
 		@api = UserAPI.new(configuration, database, user)
+		@nic = configuration::Torrent::NIC
 	end
 		
 	def padEntries(input)

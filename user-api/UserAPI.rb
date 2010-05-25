@@ -7,6 +7,7 @@ require 'shared/sites'
 	'general',
 	'filters',
 	'search',
+	'category',
 ].each do |name|
 	require "user-api/UserAPI/#{name}"
 end
@@ -45,5 +46,28 @@ class UserAPI
 	
 	def error(message)
 		raise Error.new(message)
+	end
+	
+	def getSiteByName(name)
+		@sites.each do |site|
+			return site if site.name == name
+		end
+		error "Unable to find site \"#{name}\""
+	end
+	
+	def isIllegalName(name)
+		forbidden =
+		[
+			'..',
+			'/'
+		]
+		
+		forbidden.each do |string|
+			if name.index(string) != nil
+				return true
+			end
+		end
+		
+		return false
 	end
 end

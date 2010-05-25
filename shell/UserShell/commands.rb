@@ -105,7 +105,7 @@ class UserShell
 		@sites.each do |site|
 			siteName = site.name
 			
-			statistics = @api.getSiteStatistics(siteName)
+			statistics = @api.getSiteStatistics(site)
 			
 			data =
 			[
@@ -182,16 +182,12 @@ class UserShell
 			return
 		end
 		
-		@sites.each do |site|
-			result = downloadTorrent(site, target)
-			case result
-				when false then next
-				when true then return
-				when nil then return
-			end
+		success = downloadTorrentByName(target)
+		if success
+			success 'Success!'
+		else
+			error "Unable to find release \"#{target}\"."
 		end
-		
-		error "Unable to find release \"#{target}\"."
 	end
 	
 	def commandDownloadByID
@@ -216,7 +212,7 @@ class UserShell
 		end
 		
 		site = @sites[offset]
-		result = downloadTorrent(site, id)
+		result = downloadTorrentFromSite(site, id)
 		if result == false
 			error 'You have specified an invalid ID.'
 			return
@@ -226,7 +222,7 @@ class UserShell
 	def commandStatus
 		puts 'Status of the server:'
 		
-		freeSpace = Nil.getSizeString(Nil.getFreeSpace(@torrentPath))
+		freeSpace = Nil.getSizeString(@api.getFreeSpace)
 		speedString = Nil.getDeviceSpeedStrings(@nic)
 		
 		data =
@@ -240,33 +236,11 @@ class UserShell
 	end
 	
 	def commandCancel
-		forbidden = ['..', '/']
 		if @arguments.empty?
-			warning 'You need to specify a release whose download you wish to cancel.'
+			warning 'You need to specify a release which you would like to have removed. (cancels download/upload)'
 			return
 		end
-		filename = @argument + '.torrent'
-		forbidden.each do |illegalString|
-			if filename.index(illegalString) != nil
-				error 'You have specified an invalid release name.'
-				return
-			end
-		end
-		torrent = Nil.joinPaths(@torrentPath, filename)
-		begin
-			stat = File.stat(torrentPath)
-			user = Etc.getpwuid(stat.uid).name
-			if user != @user.name
-				error "#{filename} is owned by another user - ask the administrator for help."
-				return
-			end
-			FileUtils.rm(torrent)
-			success "#{filename} has been removed successfully."
-		rescue Errno::EACCES
-			error "You do not have the permission to remove #{filename}."
-		rescue Errno::ENOENT
-			error "Unable to find #{filename}."
-		end
+		@api.deleteTorrent(@argument)
 	end
 	
 	def commandExit
@@ -276,19 +250,19 @@ class UserShell
 	end
 
 	def commandPermissions
-		if @user.isAdministrator
+		if @api.isAdministrator
 			userLevel = 'Administrator'
 		else
 			userLevel = 'Regular user'
 		end
 		
-		sizeLimitString = Nil.getSizeString @releaseSizeLimit
+		sizeLimitString = Nil.getSizeString(@api.getReleaseSizeLimit)
 		
 		data =
 		[
 			['User level', userLevel],
 			['Size limit per release', sizeLimitString],
-			['Search result limit per site', @searchResultMaximum.to_s],
+			['Search result limit per site', @api.getSearchResultCountMaximum.to_s],
 		]
 		
 		printData data
@@ -343,18 +317,8 @@ class UserShell
 		end
 		category = @arguments[0]
 		indices = @arguments[1..-1]
-		if category.index('..') != nil
-			error 'You have specified an invalid folder.'
-			return
-		end
 		
-		@database.transaction do		
-			ids = convertFilterIndices(indices)
-			return if ids == nil
-			ids.each do |id|
-				@filters.where(id: id).update(category: category)
-			end
-		end
+		@api.assignCategoryToFilters(category, indices)
 		
 		if indices.size == 1
 			success "Assigned category #{category} to one filter."
@@ -370,18 +334,7 @@ class UserShell
 		end
 		
 		category = @argument
-		
-		if category.index('..') != nil
-			error 'You have specified an invalid path.'
-			return
-		end
-		
-		path = Nil.joinPaths(@filteredPath, category)
-		begin
-			FileUtils.rm_r(path)
-			success "Removed category \"#{category}\""
-		rescue Errno::ENOENT
-			error "Unable to find category \"#{category}\" in your folder."
-		end
+		@api.deleteCategory(category)
+		success "Removed category \"#{category}\""
 	end
 end

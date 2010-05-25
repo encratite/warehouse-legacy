@@ -25,7 +25,7 @@ class UserAPI
 		return result
 	end
 	
-	def performTorrentDownload(data)
+	def performTorrentDownload(site, data)
 		administrator = 'please contact the administrator'
 		
 		begin
@@ -52,18 +52,18 @@ class UserAPI
 			torrentPath = File.expand_path(torrent, @torrentPath)
 			
 			if Nil.readFile(torrentPath) != nil
-				warning 'This release had already been queued, overwriting it'
+				#use notifications?
+				#warning 'This release had already been queued, overwriting it'
 			end
 			
-			debug "Downloading path #{httpPath} from site #{site.name}"
+			#use notifications?
+			#debug "Downloading path #{httpPath} from site #{site.name}"
 			data = site.httpHandler.get(httpPath)
 			if data == nil
 				error "HTTP error: Unable to queue release - #{administrator}"
 			end
 			
 			Nil.writeFile(torrentPath, data)
-			
-			success 'Success!'
 		rescue HTTPError => exception
 			error "HTTP error: #{exception.message} - #{administrator}."
 		rescue ReleaseData::Error => exception
@@ -78,7 +78,7 @@ class UserAPI
 	def downloadTorrentFromSite(site, target)
 		data = prepareTorrentDownload(site, target)
 		return false if data == nil
-		performTorrentDownload(data)
+		performTorrentDownload(site, data)
 		return true
 	end
 	
@@ -88,7 +88,7 @@ class UserAPI
 			result = downloadTorrentFromSite(site, name)
 			case result
 				when false then next
-				when true then return
+				when true then return true
 			end
 		end
 		return false

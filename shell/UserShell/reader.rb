@@ -42,7 +42,6 @@ class UserShell
 				puts Nil.red("User API error: #{exception.message}")
 			rescue Interrupt
 				puts Nil.cyan('Interrupt.')
-				exit
 			rescue EOFError
 				puts Nil.cyan('Terminating.')
 				exit

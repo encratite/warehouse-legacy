@@ -84,10 +84,10 @@ class UserShell
 		end
 		
 		indices = convertFilterIndexStrings(@arguments)
-		return if ids == nil
-		@api.convertFilterIndices(indices)
+		return if indices == nil
+		@api.deleteFilters(indices)
 		
-		if ids.size == 1
+		if indices.size == 1
 			puts 'The filter has been removed.'
 		else
 			puts 'The filters have been removed.'
@@ -103,8 +103,6 @@ class UserShell
 		timer = Timer.new
 		queryCount = 0
 		@sites.each do |site|
-			siteName = site.name
-			
 			statistics = @api.getSiteStatistics(site)
 			
 			data =
@@ -113,7 +111,7 @@ class UserShell
 				['Size of releases available on demand', Nil.getSizeString(statistics.totalSize)],
 			]
 			
-			puts "#{stringColour(siteName)}:"
+			puts "#{stringColour(site.name)}:"
 			printData data
 			print "\n"
 			queryCount += 2
@@ -132,7 +130,7 @@ class UserShell
 		
 		siteResults = @api.performSearch(@argument)
 		count = 0
-		siteResults.each do |results|
+		siteResults.each do |siteName, results|
 			count += results.size
 		end
 		
@@ -145,15 +143,13 @@ class UserShell
 		
 		searchResults = {}
 		@sites.each do |site|
-			abbreviation = site.abbreviation
-			
 			results = siteResults[site.name]
 			results.each do |result|
-				name = result[:name]
+				name = result.name
 				if searchResults[name] == nil
-					searchResults[name] = SearchResult.new(abbreviation, result)
+					searchResults[name] = result
 				else
-					searchResults[name].processData(abbreviation, result)
+					searchResults[name].processData(site, result.id, result.date)
 				end
 			end
 		end
@@ -217,6 +213,8 @@ class UserShell
 			error 'You have specified an invalid ID.'
 			return
 		end
+		
+		success 'Success!'
 	end
 	
 	def commandStatus
@@ -240,7 +238,9 @@ class UserShell
 			warning 'You need to specify a release which you would like to have removed. (cancels download/upload)'
 			return
 		end
-		@api.deleteTorrent(@argument)
+		target = @argument
+		@api.deleteTorrent(target)
+		success "#{target} has been removed successfully."
 	end
 	
 	def commandExit
@@ -316,8 +316,9 @@ class UserShell
 			return
 		end
 		category = @arguments[0]
-		indices = @arguments[1..-1]
+		indexStrings = @arguments[1..-1]
 		
+		indices = convertFilterIndexStrings(indexStrings)
 		@api.assignCategoryToFilters(category, indices)
 		
 		if indices.size == 1

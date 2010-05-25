@@ -1,28 +1,29 @@
 require 'nil/console'
+require 'nil/string'
 
 require 'shell/stringColour'
 
 require 'user-api/JSONObject'
 
 class SearchResult < JSONObject
-	attr_reader :id
+	attr_reader :id, :name, :date
 	
-	def initialize(source, data)
+	def initialize(site, data)
 		#do not serialise the descriptions
-		super(:@descriptions)
+		super([:@descriptions])
 		@name = data[:name]
 		@section = data[:section_name]
 		@size = data[:release_size]
 		@date = data[:release_date]
 		@descriptions = []
 		@id = data[:site_id]
-		processData(source, data)
+		processData(site, @id, @date)
 	end
 	
-	def processData(source, data)
-		@date = data[:release_date] if @date == nil
-		source = stringColour source
-		description = "#{source}: #{data[:site_id]}"
+	def processData(site, id, releaseDate)
+		@date = releaseDate if @date == nil
+		source = stringColour(site.abbreviation)
+		description = "#{source}: #{id}"
 		@descriptions << description
 	end
 	
@@ -33,7 +34,7 @@ class SearchResult < JSONObject
 			'' :
 			", #{@date.utc.to_s}"
 		descriptions = @descriptions.join(', ')
-		output = "[#{section}] #{@name} [#{Nil.white @size}#{date}] [#{descriptions}]"
+		output = "[#{section}] #{@name} [#{Nil.white(Nil.getSizeString(@size))}#{date}] [#{descriptions}]"
 		return output
 	end
 end

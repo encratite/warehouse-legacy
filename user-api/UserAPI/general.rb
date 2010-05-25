@@ -8,6 +8,8 @@ class UserAPI
 		table = @database[site.table]
 		releaseCount = table.count
 		totalSize = table.sum(:release_size)
+		#special case for an empty table
+		totalSize = 0 if totalSize == nil
 		output = SiteStatistics.new(releaseCount, totalSize)
 		return output
 	end
@@ -29,13 +31,12 @@ class UserAPI
 		end
 		torrent = Nil.joinPaths(@torrentPath, filename)
 		begin
-			stat = File.stat(torrentPath)
+			stat = File.stat(torrent)
 			user = Etc.getpwuid(stat.uid).name
 			if user != @user.name
 				error "#{filename} is owned by another user - ask the administrator for help."
 			end
 			FileUtils.rm(torrent)
-			success "#{filename} has been removed successfully."
 		rescue Errno::EACCES
 			error "You do not have the permission to remove #{filename}."
 		rescue Errno::ENOENT

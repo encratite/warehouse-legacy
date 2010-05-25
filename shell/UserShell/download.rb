@@ -5,7 +5,7 @@ class UserShell
 		data = @api.prepareTorrentDownload(site, target)
 		return false if data == nil
 		puts "Attempting to queue release #{data[:name]} from #{site.name}..."
-		@api.performTorrentDownload(data)
+		@api.performTorrentDownload(site, data)
 		return true
 	end
 	
@@ -14,7 +14,7 @@ class UserShell
 			result = downloadTorrentFromSite(site, name)
 			case result
 				when false then next
-				when true then return
+				when true then return true
 			end
 		end
 		return false

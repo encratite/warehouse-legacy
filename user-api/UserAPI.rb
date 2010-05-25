@@ -1,6 +1,5 @@
 require 'nil/file'
 
-require 'shared/SearchResult'
 require 'shared/sites'
 
 [
@@ -8,6 +7,7 @@ require 'shared/sites'
 	'filters',
 	'search',
 	'category',
+	'download',
 ].each do |name|
 	require "user-api/UserAPI/#{name}"
 end
@@ -18,6 +18,8 @@ class UserAPI
 	
 	def initialize(configuration, database, user)
 		@configuration = configuration
+		@user = user
+		@database = database
 		
 		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
 		@filterCountMaximum = configuration::Shell::FilterCountMaximum
@@ -28,15 +30,12 @@ class UserAPI
 		
 		@releaseSizeLimit = configuration::Torrent::SizeLimit
 		
-		@database = database
-		
 		@torrentPath = configuration::Torrent::Path::Torrent
 		@userPath = Nil.joinPaths(configuration::Torrent::Path::User, @user.name)
 		@filteredPath = Nil.joinPaths(@userPath, configuration::Torrent::Path::Filtered)
 		@nic = configuration::Torrent::NIC
 		
 		@filters = @database[:user_release_filter]
-		@logs = @database[:user_command_log]
 		
 		@sites = getReleaseSites
 		

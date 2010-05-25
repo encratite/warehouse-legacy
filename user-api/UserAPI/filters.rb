@@ -31,7 +31,6 @@ class UserAPI
 			@filters.insert(user_id: @user.id, filter: filter, release_filter_type: type)
 		rescue Sequel::DatabaseError => exception
 			error "DBMS error: #{exception.message.chop}"
-			next
 		end
 	end
 	
@@ -42,7 +41,7 @@ class UserAPI
 	
 	def deleteFilters(indices)
 		@database.transaction do
-			ids = convertFilterIndices(@user, indices)
+			ids = convertFilterIndices(indices)
 			ids.each { |id| @filters.where(id: id).delete }
 		end
 	end

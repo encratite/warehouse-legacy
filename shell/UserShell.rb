@@ -9,7 +9,9 @@
 	'administratorCommands',
 ].each { |x| require "shell/UserShell/#{x}" }
 
-require 'user-api/api'
+require 'shared/sites'
+
+require 'user-api/UserAPI'
 
 class HTTPError < StandardError
 end
@@ -17,9 +19,15 @@ end
 class UserShell
 	def initialize(configuration, database, user)
 		@user = user
+		
 		@commands = getCommandStrings
 		@api = UserAPI.new(configuration, database, user)
 		@nic = configuration::Torrent::NIC
+		
+		@database = database
+		@logs = @database[:user_command_log]
+		
+		@sites = getReleaseSites
 	end
 		
 	def padEntries(input)

@@ -1,7 +1,7 @@
 require 'user-api/SearchResult'
 
 class UserAPI
-	def performSearch(target)
+	def search(target)
 		if target.size > @filterLengthMaximum
 			error "Your search filter exceeds the maximum length of #{@filterLengthMaximum}."
 			return

@@ -128,7 +128,7 @@ class UserShell
 	
 		timer = Timer.new
 		
-		siteResults = @api.performSearch(@argument)
+		siteResults = @api.search(@argument)
 		count = 0
 		siteResults.each do |siteName, results|
 			count += results.size

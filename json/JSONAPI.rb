@@ -10,12 +10,42 @@ class JSONAPI
 		@localHandlers =
 		[
 			#just for testing purposes
-			[:sum, [Fixnum, Fixnum]],
+			sum: [Fixnum, Fixnum],
+			
+			#download
+			downloadTorrentById: [String, Fixnum],
+			
+			#general
+			getSiteStatistics: [String],
 		]
 		
 		@apiHandlers =
 		[
-			[:assignCategoryToFilters, [String, [Fixnum]]],
+			#category
+			assignCategoryToFilters: [String, [Fixnum]],
+			deleteCategory: [String],
+
+			#download
+			downloadTorrentByName: [String],
+			
+			#filters
+			convertFilterIndices: [[Fixnum]],
+			addFilter: [String, String],
+			listFilters: [],
+			deleteFilters: [[Fixnum]],
+			clearFilters: [],
+			
+			#general
+			getFreeSpace: [],
+			getBytesTransferred: [],
+			#not secure right now - need to resolve process user issues first
+			#deleteTorrent: [String],
+			isAdministrator: [],
+			getReleaseSizeLimit: [],
+			getSearchResultCountMaximum: [],
+			
+			#search
+			search: [],
 		]
 		
 		@requestHandlers = {}
@@ -28,6 +58,24 @@ class JSONAPI
 		input.each do |symbol, arguments|
 			@requestHandlers[symbol.to_s] = [handler.call(symbol), arguments]
 		end
+	end
+	
+	def typeCheck(input, type)
+		return false if input.class != type
+		if type == Array
+			arrayType = type[0]
+			input.each do |element|
+				return false if !typeCheck(element, arrayType)
+			end
+		elsif type == Hash
+			keyType, valueType = type.each_pair.first
+			input.each do |key, value|
+				return false if
+					!typeCheck(key, keyType) ||
+					!typeCheck(value, valueType)
+			end
+		end
+		return true
 	end
 	
 	def processJSONRPCRequest(jsonRequest)
@@ -51,12 +99,11 @@ class JSONAPI
 		while offset < arguments.size
 			argument = arguments[offset]
 			argumentType = handlerArguments[offset]
-			if !(argumentType === argument)
+			if !typeCheck(argument, argumentType)
 				return error("The argument type of argument #{offset + 1} for method \"#{method}\" is invalid (expected: #{argumentType}, given: #{argument.class})", id)
 			end
 			offset += 1
 		end
-		
 		
 		result = handlerMethod.call(*arguments)
 		
@@ -72,5 +119,15 @@ class JSONAPI
 	
 	def sum(a, b)
 		return a + b
+	end
+	
+	def downloadTorrentById(site, id)
+		site = @api.getSiteByName(site)
+		return @api.downloadTorrentById(site, id)
+	end
+	
+	def getSiteStatistics(site)
+		site = @api.getSiteByName(site)
+		return @api.getSiteStatistics(site)
 	end
 end

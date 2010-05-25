@@ -7,15 +7,14 @@ class JSONRequest < HTTPRequest
 	attr_reader :jsonRequests, :commonName, :name, :serial
 	
 	SubjectData =
-	[
+	{
 		'name' => :@name,
 		'CN' => :@commonName,
-	]
+	}
 	
 	def initialize(environment)
 		super(environment)
-		
-		puts environment.inspect
+		#puts environment.inspect
 		
 		lines = @rawInput.split("\n")
 		@jsonRequests = lines.map{|x| JSON.parse(x)}
@@ -32,7 +31,7 @@ class JSONRequest < HTTPRequest
 		if subject == nil
 			raise 'Certificate subject missing in HTTP query'
 		end
-		tokens = subject.split('/')
+		tokens = subject.split('/')[1..-1]
 		if tokens.size != SubjectData.size
 			raise "Invalid token count in subject: #{subject}"
 		end

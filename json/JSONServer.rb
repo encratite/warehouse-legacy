@@ -68,10 +68,13 @@ class JSONServer
 	end
 	
 	def indexHandler(request)
+		user = getUser(request)
+		jsonApi = JSONAPI.new(@configuration, @database, user)
+		output(request, "Index request from user #{user.name} from #{request.address}")
 		content = "Methods available on /#{WarehousePath}:\n\n"
-		RequestHandlers.each do |key, value|
-			symbol, arguments = value
-			content.concat "#{key}: #{arguments.inspect}\n"
+		jsonApi.requestHandlers.each do |name, value|
+			method, arguments = value
+			content.concat "#{name}: #{arguments.inspect}\n"
 		end
 		reply = HTTPReply.new(content)
 		reply.contentType = MIMEType::Plain
@@ -80,15 +83,15 @@ class JSONServer
 	
 	def warehouseHandler(request)
 		user = getUser(request)
-		jsonApi = JSONAPI.new(@configuration, database, user)
+		jsonApi = JSONAPI.new(@configuration, @database, user)
 		content = ''
 		request.jsonRequests.each do |jsonRequest|
 			string = nil
 			begin
 				output(request, "JSON-RPC call from user #{user.name} from #{request.address}: #{jsonRequest.inspect}")
-				reply = processJSONRPCRequest(jsonRequest)
+				reply = jsonApi.processJSONRPCRequest(jsonRequest)
 				string = JSON.unparse(reply)
-			rescue UserApi::Error => exception
+			rescue UserAPI::Error => exception
 				output(request, "JSON-RPC exception in call from user #{user.name} from #{request.address}: #{exception.message}")
 				string = error(exception.message, jsonRequest['id'])
 			end

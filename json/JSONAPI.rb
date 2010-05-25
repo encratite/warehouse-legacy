@@ -1,6 +1,8 @@
 require 'user-api/UserAPI'
 
 class JSONAPI
+	attr_reader :requestHandlers
+	
 	def initialize(configuration, database, user)
 		@api = UserAPI.new(configuration, database, user)
 		initialiseHandlers
@@ -8,7 +10,7 @@ class JSONAPI
 	
 	def initialiseHandlers
 		@localHandlers =
-		[
+		{
 			#just for testing purposes
 			sum: [Fixnum, Fixnum],
 			
@@ -17,10 +19,10 @@ class JSONAPI
 			
 			#general
 			getSiteStatistics: [String],
-		]
+		}
 		
 		@apiHandlers =
-		[
+		{
 			#category
 			assignCategoryToFilters: [String, [Fixnum]],
 			deleteCategory: [String],
@@ -46,7 +48,7 @@ class JSONAPI
 			
 			#search
 			search: [],
-		]
+		}
 		
 		@requestHandlers = {}
 		

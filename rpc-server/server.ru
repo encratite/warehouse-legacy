@@ -1,4 +1,4 @@
-require 'rpc/JSONServer'
+require 'json/JSONServer'
 require 'configuration/Configuration'
 
 server = JSONServer.new(Configuration)

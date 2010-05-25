@@ -1,4 +1,4 @@
-require 'user-api/JSONObject'
+require 'json/JSONObject'
 
 class SiteStatistics
 	attr_reader :releaseCount, :totalSize

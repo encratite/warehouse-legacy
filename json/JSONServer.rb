@@ -2,7 +2,7 @@ require 'json'
 
 require 'nil/file'
 
-require 'rpc/JSONRequest'
+require 'json/JSONRequest'
 
 require 'shared/OutputHandler'
 require 'shared/database'

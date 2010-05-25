@@ -81,19 +81,27 @@ class JSONServer
 		return reply
 	end
 	
+	def outputError(type, user, request, message)
+		output(request, "#{type} from user #{user.name} from #{request.address}: #{message}")
+	end
+	
 	def warehouseHandler(request)
 		user = getUser(request)
 		jsonApi = JSONAPI.new(@configuration, @database, user)
 		content = ''
 		request.jsonRequests.each do |jsonRequest|
 			string = nil
+			id = jsonRequest['id']
 			begin
-				output(request, "JSON-RPC call from user #{user.name} from #{request.address}: #{jsonRequest.inspect}")
+				outputError('JSON-RPC call', user, request, jsonRequest.inspect)
 				reply = jsonApi.processJSONRPCRequest(jsonRequest)
 				string = JSON.unparse(reply)
+			rescue JSONAPI::Error => exception
+				outputError('JSON-RPC API exception', user, request, exception.message)
+				string = error(exception.message, id)
 			rescue UserAPI::Error => exception
-				output(request, "JSON-RPC exception in call from user #{user.name} from #{request.address}: #{exception.message}")
-				string = error(exception.message, jsonRequest['id'])
+				outputError('User API exception', user, request, exception.message)
+				string = error(exception.message, id)
 			end
 			content.concat("#{string}\n")
 		end

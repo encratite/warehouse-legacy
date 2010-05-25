@@ -3,6 +3,9 @@ require 'user-api/UserAPI'
 class JSONAPI
 	attr_reader :requestHandlers
 	
+	class Error < Exception
+	end
+	
 	def initialize(configuration, database, user)
 		@api = UserAPI.new(configuration, database, user)
 		initialiseHandlers
@@ -80,6 +83,10 @@ class JSONAPI
 		return true
 	end
 	
+	def error(message)
+		raise Error.new(message)
+	end
+	
 	def processJSONRPCRequest(jsonRequest)
 		#{"id":1,"method":"system.about","params":[]}
 		id = jsonRequest['id']
@@ -88,13 +95,13 @@ class JSONAPI
 		
 		handlerData = @requestHandlers[method]
 		if handlerData == nil
-			return error("The method \"#{method}\" does not exist", id)
+			error("The method \"#{method}\" does not exist")
 		end
 		
 		handlerMethod = handlerData[0]
 		handlerArguments = handlerData[1]
 		if arguments.size != handlerArguments.size
-			return error("The argument counts for the method \"#{method}\" mismatch (expected: #{handlerArguments.size}, given: #{arguments.size})", id)
+			error("The argument counts for the method \"#{method}\" mismatch (expected: #{handlerArguments.size}, given: #{arguments.size})")
 		end
 		
 		offset = 0
@@ -102,7 +109,7 @@ class JSONAPI
 			argument = arguments[offset]
 			argumentType = handlerArguments[offset]
 			if !typeCheck(argument, argumentType)
-				return error("The argument type of argument #{offset + 1} for method \"#{method}\" is invalid (expected: #{argumentType}, given: #{argument.class})", id)
+				error("The argument type of argument #{offset + 1} for method \"#{method}\" is invalid (expected: #{argumentType}, given: #{argument.class})")
 			end
 			offset += 1
 		end

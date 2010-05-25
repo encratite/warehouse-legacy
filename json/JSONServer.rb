@@ -3,6 +3,7 @@ require 'json'
 require 'nil/file'
 
 require 'json/JSONRequest'
+require 'json/JSONAPI'
 
 require 'shared/OutputHandler'
 require 'shared/database'
@@ -16,12 +17,6 @@ require 'user-api/UserAPI'
 
 class JSONServer
 	WarehousePath = 'warehouse'
-	
-	RequestHandlers =
-	{
-		#just for testing purposes
-		'sum' => [:sumRPC, [Fixnum, Fixnum]],
-	}
 	
 	def initialize(configuration)
 		log = Nil.joinPaths(configuration::Logging::Path, Configuration::RPCServer::Log)
@@ -72,50 +67,6 @@ class JSONServer
 		return reply
 	end
 	
-	def processJSONRPCRequest(jsonRequest, user)
-		#{"id":1,"method":"system.about","params":[]}
-		id = jsonRequest['id']
-		method = jsonRequest['method']
-		arguments = jsonRequest['params']
-		
-		handlerData = RequestHandlers[method]
-		if handlerData == nil
-			return error("The method \"#{method}\" does not exist", id)
-		end
-		
-		handlerMethod = method(handlerData[0])
-		handlerArguments = handlerData[1]
-		if arguments.size != handlerArguments.size
-			return error("The argument counts for the method \"#{method}\" mismatch (expected: #{handlerArguments.size}, given: #{arguments.size})", id)
-		end
-		
-		offset = 0
-		while offset < arguments.size
-			argument = arguments[offset]
-			argumentType = handlerArguments[offset]
-			if !(argumentType === argument)
-				return error("The argument type of argument #{offset + 1} for method \"#{method}\" is invalid (expected: #{argumentType}, given: #{argument.class})", id)
-			end
-			offset += 1
-		end
-		
-		begin
-			arguments = [user] + arguments
-			result = handlerMethod.call(*arguments)
-			
-			reply =
-			{
-				'result' => result,
-				'error' => nil,
-				'id' => id
-			}
-			
-			return reply
-		rescue RuntimeError => exception
-			return error(exception.message, id)
-		end
-	end
-	
 	def indexHandler(request)
 		content = "Methods available on /#{WarehousePath}:\n\n"
 		RequestHandlers.each do |key, value|
@@ -129,18 +80,22 @@ class JSONServer
 	
 	def warehouseHandler(request)
 		user = getUser(request)
-		api = UserAPI.new(@configuration, @database, user)
+		jsonApi = JSONAPI.new(@configuration, database, user)
 		content = ''
 		request.jsonRequests.each do |jsonRequest|
-			output(request, "JSON-RPC call from user #{user.name} from #{request.address}: #{jsonRequest.inspect}")
-			content.concat(JSON.unparse(processJSONRPCRequest(jsonRequest, user)) + "\n")
+			string = nil
+			begin
+				output(request, "JSON-RPC call from user #{user.name} from #{request.address}: #{jsonRequest.inspect}")
+				reply = processJSONRPCRequest(jsonRequest)
+				string = JSON.unparse(reply)
+			rescue UserApi::Error => exception
+				output(request, "JSON-RPC exception in call from user #{user.name} from #{request.address}: #{exception.message}")
+				string = error(exception.message, jsonRequest['id'])
+			end
+			content.concat("#{string}\n")
 		end
 		reply = HTTPReply.new(content)
 		reply.contentType = 'application/json-rpc'
 		return reply
-	end
-	
-	def sumRPC(a, b)
-		return a + b
 	end
 end

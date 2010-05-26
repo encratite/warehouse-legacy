@@ -25,7 +25,6 @@ class JSONAPI
 			
 			#search
 			search: [String],
-			serialisableSearch: [String],
 		}
 		
 		@apiHandlers =

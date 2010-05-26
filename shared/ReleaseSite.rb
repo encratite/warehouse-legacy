@@ -1,8 +1,8 @@
-require 'shared/HTTPHandler'
+require 'shared/html/HTTPHandler'
 require 'shared/ReleaseHandler'
 require 'shared/OutputHandler'
 
-require 'shared/IRCData'
+require 'shared/html/IRCData'
 
 require 'shared/database'
 require 'shared/logging'

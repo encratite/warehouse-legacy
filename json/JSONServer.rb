@@ -19,10 +19,10 @@ class JSONServer
 	WarehousePath = 'warehouse'
 	
 	def initialize(configuration)
-		log = Nil.joinPaths(configuration::Logging::Path, Configuration::RPCServer::Log)
-		@sessionCookie = configuration::RPCServer::SessionCookie
+		log = Nil.joinPaths(configuration::Logging::Path, Configuration::JSONRPCServer::Log)
+		@sessionCookie = configuration::JSONRPCServer::SessionCookie
 		@output = OutputHandler.new(log)
-		@database = getDatabase
+		@database = getSQLDatabase
 		@configuration = configuration
 		initialiseRequestManager
 	end

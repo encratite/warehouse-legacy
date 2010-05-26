@@ -5,7 +5,7 @@ require 'category/Categoriser'
 
 require 'nil/file'
 
-database = getDatabase
+database = getSQLDatabase
 categoriser = Categoriser.new(Configuration, database)
 releases = Nil.readDirectory(Configuration::Torrent::Path::DownloadDone)
 releases.each do |release|

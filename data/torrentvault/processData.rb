@@ -88,7 +88,7 @@ end
 def processData(path, configuration)
 	pattern = /switch_row_. torrent.+?title="(.+?)".+?"(torrents\.php\?.+?)".+?<strong>.+?torrents\.php\?id=(\d+).+?title="(.+?)".+?Pre: (.+?)<.+?<td class="nobr">(.+?)<.+?<td class="center">(\d+)<.+?<td class="nobr">(.+?)<.+?<td class="center">(\d+)<.+?<td class="center">(\d+)<.+?<td class="center">(\d+)<.+?<td class="center">(.+?)</
 	
-	database = getDatabase
+	database = getSQLDatabase
 	dataset = database[:torrentvault_data]
 
 	files = Nil.readDirectory(path)

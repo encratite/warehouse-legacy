@@ -4,7 +4,7 @@ require 'nil/environment'
 require 'nil/console'
 
 require 'shared/database'
-require 'shared/HTTPHandler'
+require 'shared/html/HTTPHandler'
 require 'configuration/Configuration'
 
 require 'shell/UserShell'
@@ -45,7 +45,7 @@ def getUser(database)
 	return user
 end
 
-database = getDatabase
+database = getSQLDatabase
 user = getUser database
 shell = UserShell.new(Configuration, database, user)
 shell.run

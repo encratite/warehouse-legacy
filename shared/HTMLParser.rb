@@ -1,4 +1,4 @@
-require 'shared/HTTPRelease'
+require 'shared/html/HTTPRelease'
 
 class HTMLParser
 	def initialize(releaseClass = HTTPRelease)

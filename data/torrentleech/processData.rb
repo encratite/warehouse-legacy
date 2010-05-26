@@ -7,7 +7,7 @@ require 'pg'
 files = Nil.readDirectory 'html/torrentleech'
 counter = 0
 parser = TorrentLeechFullHTMLParser.new
-database = getDatabase
+database = getSQLDatabase
 dataset = database[TorrentLeechConfiguration::Table]
 
 files.each do |file|

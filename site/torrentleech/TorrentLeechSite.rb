@@ -1,4 +1,4 @@
-require 'shared/HTTPReleaseSite'
+require 'shared/html/HTTPReleaseSite'
 
 class TorrentLeechSite < HTTPReleaseSite
 	def initialize(siteData, torrentData, database)

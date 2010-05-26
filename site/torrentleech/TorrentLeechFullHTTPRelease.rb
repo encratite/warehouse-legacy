@@ -1,4 +1,4 @@
-require 'shared/HTTPRelease'
+require 'shared/html/HTTPRelease'
 require 'shared/sizeString'
 
 require 'site/torrentleech/extractName'

@@ -2,7 +2,7 @@ require 'sequel'
 
 require 'configuration/Configuration'
 
-def getDatabase(data = Configuration::Database)
+def getSQLDatabase(data = Configuration::SQLDatabase)
 	begin
 		database =
 			Sequel.connect(
@@ -10,7 +10,7 @@ def getDatabase(data = Configuration::Database)
 				host: data::Host,
 				user: data::User,
 				password: data::Password,
-				database: data::Database
+				database: data::SQLDatabase
 			)
 	
 		#run an early test to see if the DBMS is accessible

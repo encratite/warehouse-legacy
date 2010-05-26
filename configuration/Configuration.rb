@@ -2,12 +2,12 @@ require 'nil/environment'
 require 'nil/file'
 
 module Configuration
-	module Database
+	module SQLDatabase
 		Adapter = 'postgres'
 		Host = '127.0.0.1'
 		User = 'void'
 		Password = ''
-		Database = 'warehouse'
+		SQLDatabase = 'warehouse'
 	end
 	
 	module Torrent
@@ -75,8 +75,14 @@ module Configuration
 		CategoriserLog = Nil.joinPaths(Path, 'categoriser.log')
 	end
 	
-	module RPCServer
+	module JSONRPCServer
 		SessionCookie = 'session'
 		Log = 'rpc.log'
+	end
+	
+	module XMLRPC
+		Host = '127.0.0.1'
+		Port = 80
+		Path = '/rtorrent'
 	end
 end

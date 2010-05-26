@@ -1,6 +1,7 @@
 Ad-hoc rtorrent XML RPC documentation
 
 system.listMethods: to get a list of all functions available
+
 download_list: Returns an array of hash strings, one for each torrent
 d.get_name <hash>: returns the base name of the release
 d.get_base_filename <hash>: same thing it seems

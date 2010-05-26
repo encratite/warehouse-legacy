@@ -133,7 +133,7 @@ def processDirectory(directory)
 
 	pattern = /"\/(browse|browse2|archive)\.php\?cat=\d+".+?alt="(.+?)".+?\?id=(\d+)&.+?<b>(.+?)<\/b>.+?small>(.+?)<\/font>.+?">(\d+)<.+?">(\d+)<.+?<nobr>(.+?)<br \/>(.+?)<\/nobr>.+?center>(.+?)<br>(.+?)<.+?center>(\d+)<.+?#fffff'>(\d+)<.+?>(\d+)</
 
-	database = getDatabase
+	database = getSQLDatabase
 	extractor = DataExtractor.new(database, pattern)
 
 	#extractor.processFile("#{directory}/0")

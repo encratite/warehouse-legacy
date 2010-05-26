@@ -25,9 +25,9 @@ class UserAPI
 		
 		output =
 		{
-			'downloaded': downloaded,
-			'uploaded': uploaded,
-			'timestamp': Time.now.utc.to_f
+			'downloaded' => downloaded,
+			'uploaded' => uploaded,
+			'timestamp' => Time.now.utc.to_f
 		}
 		
 		return output

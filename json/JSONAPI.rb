@@ -146,15 +146,6 @@ class JSONAPI
 	
 	def search(target)
 		results = @api.search(target)
-		serialisedResults = {}
-		results.each do |key, values|
-			serialisedResults[key] = values.map{|x| x.serialise}
-		end
-		return serialisedResults
-	end
-	
-	def serialisableSearch(target)
-		results = @api.search(target)
 		serialisedResults = []
 		results.each do |key, values|
 			serialisedResult =

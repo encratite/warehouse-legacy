@@ -25,6 +25,7 @@ class JSONAPI
 			
 			#search
 			search: [String],
+			serialisableSearch: [String],
 		}
 		
 		@apiHandlers =
@@ -147,6 +148,20 @@ class JSONAPI
 		serialisedResults = {}
 		results.each do |key, values|
 			serialisedResults[key] = values.map{|x| x.serialise}
+		end
+		return serialisedResults
+	end
+	
+	def serialisableSearch(target)
+		results = @api.search(target)
+		serialisedResults = []
+		results.each do |key, values|
+			serialisedResult =
+			{
+				'site' => key,
+				'results' => values.map{|x| x.serialise}
+			}
+			serialisedResults << serialisedResult
 		end
 		return serialisedResults
 	end

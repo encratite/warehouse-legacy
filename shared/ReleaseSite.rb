@@ -22,11 +22,12 @@ class ReleaseSite
 		ReleaseHandler: HTTPHandler, OutputHandler
 		"""
 
+		@database = database
 		@log = getSiteLogPath(siteData::Log)
 		@table = siteData::Table
 		@name = siteData::Name
 		@abbreviation = siteData::Abbreviation
-		@dataset = @database[@table]
+		@dataset = database[@table]
 		
 		@torrentPath = torrentData::Path::Torrent
 		@releaseSizeLimit = torrentData::SizeLimit

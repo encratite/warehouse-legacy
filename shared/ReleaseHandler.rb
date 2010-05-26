@@ -46,7 +46,7 @@ class ReleaseHandler
 			#genres are not supported by all sites
 			return false if type == :genre
 			puts releaseData.inspect
-			raise "Failed to retrieve instance variable of release #{releaseData.name} (symbol: #{type})"
+			raise "Failed to retrieve instance variable of release #{releaseData.name} (symbol: #{symbol.to_s})"
 		end
 		target = releaseData.instance_variable_get(symbol)
 		results = @database["#{select} where #{regexpCondition} and #{filterCondition} and #{idCondition}", target, typeString]

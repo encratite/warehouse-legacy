@@ -21,13 +21,17 @@ class ReleaseData
 				isRequired = true
 			end
 			match = pattern.match(input)
+			symbol = ('@' + symbol.to_s).to_sym
 			if match == nil
-				next if !isRequired
+				if !isRequired
+					#set NFO and such to nil - otherwise they will not be available for instance_variable_get in the ReleaseHandler
+					instance_variable_set(symbol, nil)
+					next
+				end
 				errorMessage = "#{name} match failed"
 				raise Error.new(errorMessage)
 			end
 			data = match[1]
-			symbol = ('@' + symbol.to_s).to_sym
 			instance_variable_set(symbol, data)
 		end
 		

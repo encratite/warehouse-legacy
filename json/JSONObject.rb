@@ -12,6 +12,9 @@ class JSONObject
 			next if @ignored.include?(symbol)
 			name = symbol.to_s[1..-1]
 			value = instance_variable_get(symbol)
+			if value.class == Time
+				value = value.to_s.gsub(' UTC', '')
+			end
 			output[name] = value
 		end
 		return output

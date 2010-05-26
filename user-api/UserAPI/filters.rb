@@ -32,6 +32,8 @@ class UserAPI
 		rescue Sequel::DatabaseError => exception
 			error "DBMS error: #{exception.message.chop}"
 		end
+		
+		return
 	end
 	
 	def listFilters
@@ -44,9 +46,11 @@ class UserAPI
 			ids = convertFilterIndices(indices)
 			ids.each { |id| @filters.where(id: id).delete }
 		end
+		return
 	end
 	
 	def clearFilters
 		@filters.where(user_id: @user.id).delete
+		return
 	end
 end

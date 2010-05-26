@@ -95,7 +95,6 @@ class UserAPI
 	end
 	
 	def downloadTorrentById(site, id)
-		site = getSiteByName(site)
 		return downloadTorrentFromSite(site, id)
 	end
 end

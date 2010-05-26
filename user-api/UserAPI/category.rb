@@ -13,6 +13,8 @@ class UserAPI
 				@filters.where(id: id).update(category: category)
 			end
 		end
+		
+		return
 	end
 	
 	def deleteCategory(category)
@@ -26,5 +28,7 @@ class UserAPI
 		rescue Errno::ENOENT
 			error "Unable to find category \"#{category}\" in your folder."
 		end
+		
+		return
 	end
 end

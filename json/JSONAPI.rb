@@ -22,6 +22,9 @@ class JSONAPI
 			
 			#general
 			getSiteStatistics: [String],
+			
+			#search
+			search: [String],
 		}
 		
 		@apiHandlers =
@@ -34,7 +37,6 @@ class JSONAPI
 			downloadTorrentByName: [String],
 			
 			#filters
-			convertFilterIndices: [[Fixnum]],
 			addFilter: [String, String],
 			listFilters: [],
 			deleteFilters: [[Fixnum]],
@@ -48,9 +50,6 @@ class JSONAPI
 			isAdministrator: [],
 			getReleaseSizeLimit: [],
 			getSearchResultCountMaximum: [],
-			
-			#search
-			search: [],
 		}
 		
 		@requestHandlers = {}
@@ -66,19 +65,22 @@ class JSONAPI
 	end
 	
 	def typeCheck(input, type)
-		return false if input.class != type
-		if type == Array
+		if type.class == Array
+			return false if input.class != type.class
 			arrayType = type[0]
 			input.each do |element|
 				return false if !typeCheck(element, arrayType)
 			end
-		elsif type == Hash
+		elsif type.class == Hash
+			return false if input.class != type.class
 			keyType, valueType = type.each_pair.first
 			input.each do |key, value|
 				return false if
 					!typeCheck(key, keyType) ||
 					!typeCheck(value, valueType)
 			end
+		else
+			return false if input.class != type
 		end
 		return true
 	end
@@ -130,13 +132,22 @@ class JSONAPI
 		return a + b
 	end
 	
-	def downloadTorrentById(site, id)
-		site = @api.getSiteByName(site)
+	def downloadTorrentById(siteName, id)
+		site = @api.getSiteByName(siteName)
 		return @api.downloadTorrentById(site, id)
 	end
 	
-	def getSiteStatistics(site)
-		site = @api.getSiteByName(site)
-		return @api.getSiteStatistics(site)
+	def getSiteStatistics(siteName)
+		site = @api.getSiteByName(siteName)
+		return @api.getSiteStatistics(site).serialise
+	end
+	
+	def search(target)
+		results = @api.search(target)
+		serialisedResults = {}
+		results.each do |key, values|
+			serialisedResults[key] = values.map{|x| x.serialise}
+		end
+		return serialisedResults
 	end
 end

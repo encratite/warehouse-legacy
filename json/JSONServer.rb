@@ -53,7 +53,8 @@ class JSONServer
 		if results.size != 1
 			raise "Unable to find user #{request.name} in database"
 		end
-		user = User.new(results[0])
+		userData = results[0]
+		user = User.new(userData)
 		return user
 	end
 	

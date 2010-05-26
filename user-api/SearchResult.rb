@@ -14,14 +14,14 @@ class SearchResult < JSONObject
 		@name = data[:name]
 		@section = data[:section_name]
 		@size = data[:release_size]
-		@date = data[:release_date]
+		@date = data[:release_date].utc
 		@descriptions = []
 		@id = data[:site_id]
 		processData(site, @id, @date)
 	end
 	
 	def processData(site, id, releaseDate)
-		@date = releaseDate if @date == nil
+		@date = releaseDate.utc if @date == nil
 		source = stringColour(site.abbreviation)
 		description = "#{source}: #{id}"
 		@descriptions << description

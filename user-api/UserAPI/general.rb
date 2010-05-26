@@ -7,7 +7,7 @@ class UserAPI
 	def getSiteStatistics(site)
 		table = @database[site.table]
 		releaseCount = table.count
-		totalSize = table.sum(:release_size)
+		totalSize = table.sum(:release_size).to_i
 		#special case for an empty table
 		totalSize = 0 if totalSize == nil
 		output = SiteStatistics.new(releaseCount, totalSize)

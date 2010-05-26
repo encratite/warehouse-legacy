@@ -1,8 +1,9 @@
 #this is a superclass for classes whose members can be serialised to a dictionary for JSON RPC return values
 class JSONObject
-	def initialize(ignored)
+	def initialize(ignored = [])
 		#this contains the symbols which are not to be serialised
 		@ignored = ignored
+		@ignored << :@ignored
 	end
 	
 	def serialise

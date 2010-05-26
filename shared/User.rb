@@ -7,7 +7,7 @@ class User
 			data = arguments[0]
 			@id = data[:id]
 			@name = data[:name]
-			@isAdministrator = data[:isAdministrator]
+			@isAdministrator = data[:is_administrator]
 		else
 			@id, @name, @isAdministrator = arguments
 		end

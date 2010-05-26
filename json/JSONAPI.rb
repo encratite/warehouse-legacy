@@ -51,6 +51,15 @@ class JSONAPI
 			getReleaseSizeLimit: [],
 			getSearchResultCountMaximum: [],
 			getSiteNames: [],
+			
+			#rtorrent
+			getInfoHashes: [],
+			getTorrentName: [String],
+			getTorrentDownloadSpeed: [String],
+			getTorrentUploadSpeed: [String],
+			getTorrentFileCount: [String],
+			getTorrentSize: [String],
+			getTorrentBytesDone: [String],
 		}
 		
 		@requestHandlers = {}

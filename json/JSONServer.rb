@@ -15,6 +15,8 @@ require 'www-library/HTTPReply'
 
 require 'user-api/UserAPI'
 
+require 'xmlrpc/client'
+
 class JSONServer
 	WarehousePath = 'warehouse'
 	
@@ -104,6 +106,9 @@ class JSONServer
 				string = error(exception.message, id)
 			rescue UserAPI::Error => exception
 				outputError('User API exception', user, request, exception.message)
+				string = error(exception.message, id)
+			rescue XMLRPC::FaultException => exception
+				outputError('XML RPC exception', user, request, exception.message)
 				string = error(exception.message, id)
 			end
 			content.concat("#{string}\n")

@@ -25,7 +25,7 @@ class UserAPI
 		
 		@connections = connections
 		@database = connections.sqlDatabase
-		@xmlRPC = connections.xmlRPCClient
+		@rpc = connections.xmlRPCClient
 		
 		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
 		@filterCountMaximum = configuration::Shell::FilterCountMaximum

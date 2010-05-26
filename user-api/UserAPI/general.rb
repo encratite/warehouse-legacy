@@ -19,8 +19,18 @@ class UserAPI
 	end
 	
 	#this function can be used to calculate the current download/upload speed of the server
+	#it also returns a timestamp in order to enable clients to eradicate timing jitter/inaccuracies due to packet delays
 	def getBytesTransferred
-		return Nil.getDeviceBytes(@nic)
+		downloaded, uploaded = Nil.getDeviceBytes(@nic)
+		
+		output =
+		{
+			'downloaded': downloaded,
+			'uploaded': uploaded,
+			'timestamp': Time.now.utc.to_f
+		}
+		
+		return output
 	end
 	
 	#this function should not be exposed to the JSON RPC API yet until the username issue is fixed

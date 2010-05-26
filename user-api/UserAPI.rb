@@ -8,6 +8,7 @@ require 'shared/sites'
 	'search',
 	'category',
 	'download',
+	'rtorrent',
 ].each do |name|
 	require "user-api/UserAPI/#{name}"
 end
@@ -24,6 +25,7 @@ class UserAPI
 		
 		@connections = connections
 		@database = connections.sqlDatabase
+		@xmlRPC = connections.xmlRPCClient
 		
 		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
 		@filterCountMaximum = configuration::Shell::FilterCountMaximum

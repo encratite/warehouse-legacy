@@ -16,6 +16,8 @@ class UserAPI
 	class Error < Exception
 	end
 	
+	attr_reader :sites
+	
 	def initialize(configuration, database, user)
 		@configuration = configuration
 		@user = user

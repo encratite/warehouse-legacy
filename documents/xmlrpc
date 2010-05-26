@@ -1,0 +1,13 @@
+Ad-hoc rtorrent XML RPC documentation
+
+system.listMethods: to get a list of all functions available
+download_list: Returns an array of hash strings, one for each torrent
+d.get_name <hash>: returns the base name of the release
+d.get_base_filename <hash>: same thing it seems
+d.name <hash>: same thing again
+d.get_down_rate <hash>: return a 64-bit integer, bytes per second
+d.get_up_rate <hash>: return a 64-bit integer, bytes per second
+d.get_size_files <hash>: Returns the number of files in the torrent
+d.get_size_bytes <hash>: Returns the size of the release in bytes, 64-bit int
+d.get_complete <hash>: Returns 1 if the download is done, 0 otherwise I suppose, 64-bit int
+d.get_bytes_done <hash>: 64-bit int, returns the number of bytes which have been downloaded successfully - use this in combination with d.get_size_bytes to calculate the progress on a torrent

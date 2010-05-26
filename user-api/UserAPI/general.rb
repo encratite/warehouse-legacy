@@ -55,4 +55,8 @@ class UserAPI
 	def getSearchResultCountMaximum
 		return @searchResultMaximum
 	end
+	
+	def getSiteNames
+		return @sites.map{|x| x.name}
+	end
 end

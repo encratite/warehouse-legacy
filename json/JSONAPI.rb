@@ -51,6 +51,7 @@ class JSONAPI
 			isAdministrator: [],
 			getReleaseSizeLimit: [],
 			getSearchResultCountMaximum: [],
+			getSiteNames: [],
 		}
 		
 		@requestHandlers = {}

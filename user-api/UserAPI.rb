@@ -37,7 +37,7 @@ class UserAPI
 		
 		@filters = @database[:user_release_filter]
 		
-		@sites = getReleaseSites
+		@sites = getReleaseSites(database)
 		
 		@database = database
 		@user = user

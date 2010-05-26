@@ -27,7 +27,7 @@ class UserShell
 		@database = database
 		@logs = @database[:user_command_log]
 		
-		@sites = getReleaseSites
+		@sites = getReleaseSites(database)
 	end
 		
 	def padEntries(input)

@@ -14,7 +14,7 @@ class ReleaseSite
 	#Used by ReleaseHandler
 	attr_reader :torrentPath, :releaseSizeLimit, :releaseDataClass
 	
-	def initialize(siteData, torrentData)
+	def initialize(siteData, torrentData, database)
 		"""
 		Dependencies:
 		HTTPHandler: None
@@ -26,7 +26,6 @@ class ReleaseSite
 		@table = siteData::Table
 		@name = siteData::Name
 		@abbreviation = siteData::Abbreviation
-		@database = getDatabase
 		@dataset = @database[@table]
 		
 		@torrentPath = torrentData::Path::Torrent

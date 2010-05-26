@@ -2,8 +2,8 @@ require 'shared/IRCReleaseSite'
 require 'configuration/TorrentVault'
 
 class TorrentVaultSite < IRCReleaseSite
-	def initialize(siteData, torrentData)
-		super(siteData, torrentData)
+	def initialize(siteData, torrentData, database)
+		super(siteData, torrentData, database)
 		ircData = siteData::IRC
 		@ircHandler.inviteBot = ircData::InviteBot
 		@ircHandler.inviteCode = ircData::InviteCode

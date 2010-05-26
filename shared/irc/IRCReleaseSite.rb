@@ -1,5 +1,5 @@
 require 'shared/ReleaseSite'
-require 'shared/html/IRCHandler'
+require 'shared/irc/IRCHandler'
 require 'shared/ConsoleHandler'
 
 class IRCReleaseSite < ReleaseSite

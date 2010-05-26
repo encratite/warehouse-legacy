@@ -3,8 +3,9 @@ require 'sequel'
 require 'nil/environment'
 require 'nil/console'
 
-require 'shared/sqlDatabase'
-require 'shared/html/HTTPHandler'
+require 'shared/ConnectionContainer'
+require 'shared/http/HTTPHandler'
+
 require 'configuration/Configuration'
 
 require 'shell/UserShell'
@@ -45,7 +46,7 @@ def getUser(database)
 	return user
 end
 
-database = getSQLDatabase
-user = getUser database
-shell = UserShell.new(Configuration, database, user)
+connections = ConnectionContainer.new
+user = getUser(connections.sqlDatabase)
+shell = UserShell.new(Configuration, connections, user)
 shell.run

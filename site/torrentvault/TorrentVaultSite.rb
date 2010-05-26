@@ -1,4 +1,4 @@
-require 'shared/html/IRCReleaseSite'
+require 'shared/irc/IRCReleaseSite'
 require 'configuration/TorrentVault'
 
 class TorrentVaultSite < IRCReleaseSite

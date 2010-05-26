@@ -1,5 +1,5 @@
-require 'shared/html/IRCBot'
-require 'shared/html/IRCRegexp'
+require 'shared/irc/IRCBot'
+require 'shared/irc/IRCRegexp'
 
 class IRCData
 	attr_reader :server, :port, :nick, :channels, :bots, :regexp

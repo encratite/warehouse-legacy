@@ -18,10 +18,12 @@ class UserAPI
 	
 	attr_reader :sites
 	
-	def initialize(configuration, database, user)
+	def initialize(configuration, connections, user)
 		@configuration = configuration
 		@user = user
-		@database = database
+		
+		@connections = connections
+		@database = connections.sqlDatabase
 		
 		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
 		@filterCountMaximum = configuration::Shell::FilterCountMaximum
@@ -39,9 +41,8 @@ class UserAPI
 		
 		@filters = @database[:user_release_filter]
 		
-		@sites = getReleaseSites(database)
+		@sites = getReleaseSites(@database)
 		
-		@database = database
 		@user = user
 	end
 	

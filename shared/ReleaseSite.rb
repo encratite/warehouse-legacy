@@ -1,10 +1,9 @@
-require 'shared/html/HTTPHandler'
+require 'shared/http/HTTPHandler'
 require 'shared/ReleaseHandler'
 require 'shared/OutputHandler'
 
-require 'shared/html/IRCData'
+require 'shared/irc/IRCData'
 
-require 'shared/sqlDatabase'
 require 'shared/logging'
 
 class ReleaseSite

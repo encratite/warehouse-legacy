@@ -2,10 +2,10 @@ require 'shared/sqlDatabase'
 require 'shared/xmlRPC'
 
 class ConnectionContainer
-	attr_reader :database, :xmlRPC
+	attr_reader :sqlDatabase, :xmlRPCClient
 	
 	def initialize
-		@database = getSQLDatabase
-		@xmlRPC = getXMLRPCClient
+		@sqlDatabase = getSQLDatabase
+		@xmlRPCClient = getXMLRPCClient
 	end
 end

@@ -1,4 +1,4 @@
-require 'shared/html/HTTPRelease'
+require 'shared/http/HTTPRelease'
 require 'shared/sizeString'
 
 require 'cgi'

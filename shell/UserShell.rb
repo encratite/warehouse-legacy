@@ -17,17 +17,19 @@ class HTTPError < StandardError
 end
 
 class UserShell
-	def initialize(configuration, database, user)
+	def initialize(configuration, connections, user)
 		@user = user
 		
+		@connections = connections
+		@database = connections.sqlDatabase
+		
 		@commands = getCommandStrings
-		@api = UserAPI.new(configuration, database, user)
+		@api = UserAPI.new(configuration, connections, user)
 		@nic = configuration::Torrent::NIC
 		
-		@database = database
 		@logs = @database[:user_command_log]
 		
-		@sites = getReleaseSites(database)
+		@sites = getReleaseSites(@database)
 	end
 		
 	def padEntries(input)

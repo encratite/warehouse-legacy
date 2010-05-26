@@ -1,4 +1,4 @@
-require 'shared/html/IRCReleaseSite'
+require 'shared/irc/IRCReleaseSite'
 
 class SceneAccessSite < IRCReleaseSite
 	def initialize(siteData, torrentData, database)

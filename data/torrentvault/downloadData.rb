@@ -1,6 +1,6 @@
 require 'nil/file'
 require 'shared/sqlDatabase'
-require 'shared/html/HTTPHandler'
+require 'shared/http/HTTPHandler'
 require 'configuration/Configuration'
 
 def getHTTPHandler(configuration)

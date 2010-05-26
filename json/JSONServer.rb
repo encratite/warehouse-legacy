@@ -6,7 +6,7 @@ require 'json/JSONRequest'
 require 'json/JSONAPI'
 
 require 'shared/OutputHandler'
-require 'shared/sqlDatabase'
+require 'shared/ConnectionContainer'
 require 'shared/User'
 
 require 'www-library/RequestManager'
@@ -22,7 +22,9 @@ class JSONServer
 		log = Nil.joinPaths(configuration::Logging::Path, Configuration::JSONRPCServer::Log)
 		@sessionCookie = configuration::JSONRPCServer::SessionCookie
 		@output = OutputHandler.new(log)
-		@database = getSQLDatabase
+		
+		@connections = ConnectionContainer.new
+		@database = @connections.sqlDatabase
 		@configuration = configuration
 		initialiseRequestManager
 	end
@@ -88,7 +90,7 @@ class JSONServer
 	
 	def warehouseHandler(request)
 		user = getUser(request)
-		jsonApi = JSONAPI.new(@configuration, @database, user)
+		jsonApi = JSONAPI.new(@configuration, @connections, user)
 		content = ''
 		request.jsonRequests.each do |jsonRequest|
 			string = nil

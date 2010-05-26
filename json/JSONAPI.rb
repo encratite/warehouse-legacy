@@ -6,8 +6,8 @@ class JSONAPI
 	class Error < Exception
 	end
 	
-	def initialize(configuration, database, user)
-		@api = UserAPI.new(configuration, database, user)
+	def initialize(configuration, connections, user)
+		@api = UserAPI.new(configuration, connections, user)
 		initialiseHandlers
 	end
 	

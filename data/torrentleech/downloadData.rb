@@ -5,7 +5,7 @@ require 'nil/file'
 require 'configuration/TorrentLeech'
 
 require 'shared/sqlDatabase'
-require 'shared/html/HTTPHandler'
+require 'shared/http/HTTPHandler'
 
 def getHTTPHandler(configuration)
 	data = TorrentLeechConfiguration::HTTP

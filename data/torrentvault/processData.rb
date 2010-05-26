@@ -2,7 +2,7 @@ require 'nil/file'
 
 require 'shared/timeString'
 require 'shared/sizeString'
-require 'shared/database'
+require 'shared/sqlDatabase'
 require 'configuration/Configuration'
 
 class TorrentVaultReleaseData

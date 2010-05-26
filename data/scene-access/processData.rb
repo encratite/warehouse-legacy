@@ -1,7 +1,7 @@
 require 'nil/file'
 require 'shared/timeString'
 require 'configuration/Configuration'
-require 'shared/database'
+require 'shared/sqlDatabase'
 
 class SceneAccessReleaseData
 	attr_reader :name, :id

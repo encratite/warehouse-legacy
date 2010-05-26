@@ -1,6 +1,6 @@
 require 'nil/file'
 require 'configuration/TorrentLeech'
-require 'shared/database'
+require 'shared/sqlDatabase'
 require 'site/torrentleech/TorrentLeechFullHTMLParser'
 require 'pg'
 

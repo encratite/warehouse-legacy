@@ -3,7 +3,7 @@ require 'pg'
 
 require 'nil/file'
 
-require 'shared/database'
+require 'shared/sqlDatabase'
 require 'shared/ReleaseData'
 
 class ReleaseHandler

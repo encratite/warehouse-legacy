@@ -6,7 +6,7 @@ require 'json/JSONRequest'
 require 'json/JSONAPI'
 
 require 'shared/OutputHandler'
-require 'shared/database'
+require 'shared/sqlDatabase'
 require 'shared/User'
 
 require 'www-library/RequestManager'

@@ -4,7 +4,7 @@ require 'shared/OutputHandler'
 
 require 'shared/html/IRCData'
 
-require 'shared/database'
+require 'shared/sqlDatabase'
 require 'shared/logging'
 
 class ReleaseSite

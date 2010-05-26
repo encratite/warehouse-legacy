@@ -6,7 +6,7 @@ target = Nil.joinPaths(base, '..')
 Dir.chdir(target)
 
 require 'configuration/Configuration'
-require 'shared/database'
+require 'shared/sqlDatabase'
 require 'category/Categoriser'
 
 if ARGV.size != 1

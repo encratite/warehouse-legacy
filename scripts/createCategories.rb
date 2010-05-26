@@ -1,5 +1,5 @@
 require 'configuration/Configuration'
-require 'shared/database'
+require 'shared/sqlDatabase'
 
 require 'category/Categoriser'
 

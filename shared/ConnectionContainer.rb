@@ -1,4 +1,4 @@
-require 'shared/database'
+require 'shared/sqlDatabase'
 require 'shared/xmlRPC'
 
 class ConnectionContainer

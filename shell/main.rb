@@ -3,7 +3,7 @@ require 'sequel'
 require 'nil/environment'
 require 'nil/console'
 
-require 'shared/database'
+require 'shared/sqlDatabase'
 require 'shared/html/HTTPHandler'
 require 'configuration/Configuration'
 

@@ -1,5 +1,5 @@
 require 'nil/file'
-require 'shared/database'
+require 'shared/sqlDatabase'
 require 'shared/html/HTTPHandler'
 require 'configuration/Configuration'
 

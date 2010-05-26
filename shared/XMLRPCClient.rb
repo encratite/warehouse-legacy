@@ -9,7 +9,7 @@ class XMLRPCClient
 	
 	def call(*arguments)
 		client = XMLRPC::Client.new(@host, @path, @port)
-		output = client.call(arguments)
+		output = client.call(*arguments)
 		return output
 	end
 end

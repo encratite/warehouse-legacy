@@ -8,19 +8,26 @@ class XMLRPCClient
 		@client = nil
 	end
 	
-	def call(*arguments)
+	def performCall(&block)
 		tries = 2
 		tries.times do
 			if @client == nil
 				@client = XMLRPC::Client.new(@host, @path, @port)
 			end
 			begin
-				output = @client.call(*arguments)
-				return output
+				yield(block)
 			rescue Errno::EPIPE
 				@client = nil
 			end
 		end
 		raise XMLRPC::FaultException.new('Broken pipe')
+	end
+	
+	def call(*arguments)
+		performCall { @client.call(*arguments) }
+	end
+	
+	def multicall(calls)
+		performCall { @client.multicall(calls) }
 	end
 end

@@ -109,9 +109,9 @@ class Cleaner
 	
 	def checkForUnseededTorrents
 		torrents = @api.getTorrents
-		unseededTorrents = torrents.reject{|x| torrent.bytesDone > 0}
+		unseededTorrents = torrents.reject{|x| x.bytesDone > 0}
 		unseededTorrents.each do |torrent|
-			torrentPath = torrent.torrentPath
+			torrentPath = Nil.joinPaths(@torrentPath, File.basename(torrent.torrentPath))
 			info = Nil.getFileInformation(torrentPath)
 			if info == nil
 				output "Failed to retrieve age of torrent #{torrentPath}"
@@ -173,6 +173,8 @@ class Cleaner
 	end
 	
 	def freeSomeSpace
+		checkForUnseededTorrents
+		
 		freeSpace = getFreeSpace
 		freeSpaceString = Nil.getSizeString freeSpace
 		freeSpaceMinimumString = Nil.getSizeString @freeSpaceMinimum
@@ -185,7 +187,6 @@ class Cleaner
 		@downloads = getDownloads
 		@completedDownloads = getCompletedDownloads
 		@torrents = getTorrents
-		checkForUnseededTorrents
 		orphanCheck
 		return true if getFreeSpace > @freeSpaceMinimum
 		return true if freeCompletedDownloadSpace

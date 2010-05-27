@@ -71,6 +71,23 @@ def cmdCall(client)
 	puts reply
 end
 
+def performanceTest(client)
+	while true
+		puts client.call([['getTorrents']])
+	end
+end
+
+def generalTest(client)
+	reply = client.call(
+		[
+			['sum', 2, 3],
+			['getInfoHashes']
+		]
+	)
+	puts 'Reply:'
+	puts reply
+end
+
 user = 'void'
 serial = '01'
 host = '127.0.0.1'
@@ -78,12 +95,4 @@ port = 59172
 path = '/warehouse'
 
 client = JSONClient.new(user, serial, host, port, path)
-reply = client.call(
-	[
-		#['sum', 2, 3],
-		#['getInfoHashes']
-		['getTorrents']
-	]
-)
-puts 'Reply:'
-puts reply
+performanceTest(client)

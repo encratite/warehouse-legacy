@@ -41,10 +41,16 @@ class JSONServer
 		warehouseHandler = RequestHandler.new(WarehousePath)
 		warehouseHandler.setHandler(method(:warehouseHandler))
 		@requestManager.addHandler(warehouseHandler)
+		
+		@requestManager.exceptionMessageHandler = method(:exceptionMessageHandler)
 	end
 	
 	def output(request, line)
 		@output.output("#{request.address}: #{line}")
+	end
+	
+	def exceptionMessageHandler(message)
+		@output.output("Exception: #{message}")
 	end
 	
 	def processRequest(environment)

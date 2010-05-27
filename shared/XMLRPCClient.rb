@@ -15,7 +15,7 @@ class XMLRPCClient
 				@client = XMLRPC::Client.new(@host, @path, @port)
 			end
 			begin
-				yield(block)
+				return yield(block)
 			rescue Errno::EPIPE
 				@client = nil
 			end

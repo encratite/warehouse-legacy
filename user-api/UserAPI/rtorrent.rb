@@ -2,6 +2,8 @@ require 'user-api/TorrentData'
 
 require 'xmlrpc/client'
 
+require 'shared/Timer'
+
 class UserAPI
 	#this returns an array of the hashes (strings) associated with the torrents in rtorrent
 	def getInfoHashes
@@ -39,18 +41,36 @@ class UserAPI
 	
 	#at the request of death
 	def getTorrents
+		timer = Timer.new
 		infoHashes = getInfoHashes
 		puts "Got #{infoHashes.size} hashes"
-		output = []
-		infoHashes.each do |hash|
-			puts "Processing hash #{hash}"
-			begin
-				data = TorrentData.new(hash, self)
-				output << data
-			rescue XMLRPC::FaultException
-				#skip faulty torrent hashes in case of errors (because they just happened to get removed by the disk cleaning unit or by a user at the wrong time)
-			end
+		callData = []
+		infoHashes.each do |infoHash|
+			callData.concat [
+				['d.get_name', infoHash],
+				['d.get_down_rate', infoHash],
+				['d.get_up_rate', infoHash],
+				['d.get_size_files', infoHash],
+				['d.get_size_bytes', infoHash],
+				['d.get_bytes_done', infoHash]
+			]
 		end
+		puts 'Performing multicall...'
+		
+		rpcData = @rpc.multicall(callData)
+		offset = 0
+		callCountPerTorrent = 6
+		output = []
+		infoHashes.each do |infoHash|
+			data = [infoHash] + rpcData[offset..(offset + callCountPerTorrent - 1)]
+			torrent = TorrentData.new(*data)
+			output << torrent
+			offset += callCountPerTorrent
+		end
+		
+		delay = timer.stop
+		puts "Finished processing multicall, execution took #{delay} ms"
+		
 		return output
 	end
 end

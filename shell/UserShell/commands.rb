@@ -5,7 +5,7 @@ require 'nil/string'
 require 'nil/file'
 require 'nil/network'
 
-require 'shell/Timer'
+require 'shared/Timer'
 
 require 'user-api/SearchResult'
 

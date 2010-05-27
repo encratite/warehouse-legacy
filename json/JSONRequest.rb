@@ -14,7 +14,6 @@ class JSONRequest < HTTPRequest
 	
 	def initialize(environment)
 		super(environment)
-		#puts environment.inspect
 		
 		@jsonRequests = JSON.parse(@rawInput)
 		if @jsonRequests.class != Array

@@ -88,12 +88,19 @@ class JSONServer
 	
 	def outputData(type, user, request, message)
 		output(request, "#{type} from user #{user.name} from #{request.address}: #{message}")
+		return
+	end
+	
+	def outputError(type, user, request, message, id, replies)
+		outputData(type, user, request, message)
+		replies << error(message, id)
+		return
 	end
 	
 	def warehouseHandler(request)
 		user = getUser(request)
 		jsonApi = JSONAPI.new(@configuration, @connections, user)
-		content = ''
+		replies = []
 		request.jsonRequests.each do |jsonRequest|
 			string = nil
 			id = jsonRequest['id']
@@ -105,19 +112,24 @@ class JSONServer
 			begin
 				outputData('JSON-RPC call', user, request, jsonRequest.inspect)
 				reply = jsonApi.processJSONRPCRequest(jsonRequest)
-				string = JSON.unparse(reply)
+				replies << reply
 			rescue JSONAPI::Error => exception
-				outputData('JSON-RPC API exception', user, request, exception.message)
-				string = error(exception.message, id)
+				outputError('JSON-RPC API exception', user, request, exception.message, id, replies)
 			rescue UserAPI::Error => exception
-				outputData('User API exception', user, request, exception.message)
-				string = error(exception.message, id)
+				outputError('User API exception', user, request, exception.message, id, replies)
 			rescue XMLRPC::FaultException => exception
-				outputData('XML RPC exception', user, request, exception.message)
-				string = error(exception.message, id)
+				outputError('XML RPC exception', user, request, exception.message, id, replies)
+			rescue RuntimeError => exception
+				outputError('Runtime error', user, request, exception.message, id, replies)
 			end
 			content.concat("#{string}\n")
 		end
+		if replies.size == 1
+			jsonOutput = replies[0]
+		else
+			jsonOutput = replies
+		end
+		content = JSON.unparse(jsonOutput)
 		reply = HTTPReply.new(content)
 		reply.contentType = 'application/json-rpc'
 		return reply

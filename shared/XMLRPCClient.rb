@@ -20,7 +20,7 @@ class XMLRPCClient
 				@client = nil
 			end
 		end
-		raise XMLRPC::FaultException.new('Broken pipe')
+		raise 'Broken pipe'
 	end
 	
 	def call(*arguments)

@@ -17,7 +17,7 @@ class JSONRequest < HTTPRequest
 		#puts environment.inspect
 		
 		@jsonRequests = JSON.parse(@rawInput)
-		if @jsonRequests.type != Array
+		if @jsonRequests.class != Array
 			@jsonRequests = [@jsonRequests]
 		end
 		

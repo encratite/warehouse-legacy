@@ -86,7 +86,7 @@ class JSONServer
 		return reply
 	end
 	
-	def outputError(type, user, request, message)
+	def outputData(type, user, request, message)
 		output(request, "#{type} from user #{user.name} from #{request.address}: #{message}")
 	end
 	
@@ -97,18 +97,23 @@ class JSONServer
 		request.jsonRequests.each do |jsonRequest|
 			string = nil
 			id = jsonRequest['id']
+			if id == nil
+				errorMessage = 'Missing ID in call'
+				outputData(errorMessage, user, request, jsonRequest.inspect)
+				content = errorMessage
+			end
 			begin
-				outputError('JSON-RPC call', user, request, jsonRequest.inspect)
+				outputData('JSON-RPC call', user, request, jsonRequest.inspect)
 				reply = jsonApi.processJSONRPCRequest(jsonRequest)
 				string = JSON.unparse(reply)
 			rescue JSONAPI::Error => exception
-				outputError('JSON-RPC API exception', user, request, exception.message)
+				outputData('JSON-RPC API exception', user, request, exception.message)
 				string = error(exception.message, id)
 			rescue UserAPI::Error => exception
-				outputError('User API exception', user, request, exception.message)
+				outputData('User API exception', user, request, exception.message)
 				string = error(exception.message, id)
 			rescue XMLRPC::FaultException => exception
-				outputError('XML RPC exception', user, request, exception.message)
+				outputData('XML RPC exception', user, request, exception.message)
 				string = error(exception.message, id)
 			end
 			content.concat("#{string}\n")

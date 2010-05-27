@@ -16,8 +16,10 @@ class JSONRequest < HTTPRequest
 		super(environment)
 		#puts environment.inspect
 		
-		lines = @rawInput.split("\n")
-		@jsonRequests = lines.map{|x| JSON.parse(x)}
+		@jsonRequests = JSON.parse(@rawInput)
+		if @jsonRequests.type != Array
+			@jsonRequests = [@jsonRequests]
+		end
 		
 		subject = environment['HTTP_SSL_SUBJECT']
 		parseSubject(subject)

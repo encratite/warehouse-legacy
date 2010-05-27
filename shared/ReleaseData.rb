@@ -5,6 +5,9 @@ class ReleaseData
 	end
 	
 	def initialize(input)
+		#to ensure that the ReleaseHandler doesn't die in isReleaseOfInterestType
+		@nfo = nil
+		@genre = nil
 		processInput(input)
 	end
 	

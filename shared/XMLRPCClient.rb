@@ -27,7 +27,7 @@ class XMLRPCClient
 		performCall { @client.call(*arguments) }
 	end
 	
-	def multicall(calls)
-		performCall { @client.multicall(calls) }
+	def multicall(*calls)
+		performCall { @client.multicall(*calls) }
 	end
 end

@@ -80,8 +80,9 @@ path = '/warehouse'
 client = JSONClient.new(user, serial, host, port, path)
 reply = client.call(
 	[
-		['sum', 2, 3],
-		['getInfoHashes']
+		#['sum', 2, 3],
+		#['getInfoHashes']
+		['getTorrents']
 	]
 )
 puts 'Reply:'

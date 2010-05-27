@@ -57,7 +57,7 @@ class UserAPI
 		end
 		puts 'Performing multicall...'
 		
-		rpcData = @rpc.multicall(callData)
+		rpcData = @rpc.multicall(*callData)
 		offset = 0
 		callCountPerTorrent = 6
 		output = []

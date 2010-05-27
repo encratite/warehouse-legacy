@@ -1,3 +1,7 @@
+require 'user-api/TorrentData'
+
+require 'xmlrpc'
+
 class UserAPI
 	#this returns an array of the hashes (strings) associated with the torrents in rtorrent
 	def getInfoHashes
@@ -31,5 +35,20 @@ class UserAPI
 	#returns the number of bytes of a torrent which have been downloaded successfully so far
 	def getTorrentBytesDone(infoHash)
 		return @rpc.call('d.get_bytes_done', infoHash)
+	end
+	
+	#at the request of death
+	def getTorrents
+		infoHashes = getInfoHashes
+		output = []
+		infoHashes.each do |hash|
+			begin
+				data = TorrentData.new(hash, self)
+				output << data
+			rescue XMLRPC::FaultException
+				#skip faulty torrent hashes in case of errors (because they just happened to get removed by the disk cleaning unit or by a user at the wrong time)
+			end
+		end
+		return data
 	end
 end

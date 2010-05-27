@@ -25,6 +25,9 @@ class JSONAPI
 			
 			#search
 			search: [String],
+			
+			#rtorrent
+			getTorrents: [],
 		}
 		
 		@apiHandlers =
@@ -164,5 +167,10 @@ class JSONAPI
 			serialisedResults << serialisedResult
 		end
 		return serialisedResults
+	end
+	
+	def getTorrents
+		torrents = @api.getTorrents.map{|x| x.serialise}
+		return torrents
 	end
 end

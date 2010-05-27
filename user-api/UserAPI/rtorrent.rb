@@ -1,6 +1,6 @@
 require 'user-api/TorrentData'
 
-require 'xmlrpc'
+require 'xmlrpc/client'
 
 class UserAPI
 	#this returns an array of the hashes (strings) associated with the torrents in rtorrent
@@ -40,8 +40,10 @@ class UserAPI
 	#at the request of death
 	def getTorrents
 		infoHashes = getInfoHashes
+		puts "Got #{infoHashes.size} hashes"
 		output = []
 		infoHashes.each do |hash|
+			puts "Processing hash #{hash}"
 			begin
 				data = TorrentData.new(hash, self)
 				output << data
@@ -49,6 +51,6 @@ class UserAPI
 				#skip faulty torrent hashes in case of errors (because they just happened to get removed by the disk cleaning unit or by a user at the wrong time)
 			end
 		end
-		return data
+		return output
 	end
 end

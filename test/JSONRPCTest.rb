@@ -81,7 +81,7 @@ def generalTest(client)
 	reply = client.call(
 		[
 			['sum', 2, 3],
-			['getInfoHashes']
+			['getTorrents']
 		]
 	)
 	puts 'Reply:'
@@ -95,4 +95,5 @@ port = 59172
 path = '/warehouse'
 
 client = JSONClient.new(user, serial, host, port, path)
-performanceTest(client)
+#performanceTest(client)
+generalTest(client)

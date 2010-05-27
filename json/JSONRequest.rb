@@ -4,8 +4,8 @@ require 'cgi'
 require 'www-library/HTTPRequest'
 
 class JSONRequest < HTTPRequest
-	attr_reader :jsonRequests, :commonName, :name, :serial
-	
+	attr_reader :jsonRequests, :commonName, :name, :serial, :isMultiCall
+		
 	SubjectData =
 	{
 		'name' => :@name,
@@ -16,7 +16,8 @@ class JSONRequest < HTTPRequest
 		super(environment)
 		
 		@jsonRequests = JSON.parse(@rawInput)
-		if @jsonRequests.class != Array
+		@isMultiCall = @jsonRequests.class == Array
+		if !@isMultiCall
 			@jsonRequests = [@jsonRequests]
 		end
 		

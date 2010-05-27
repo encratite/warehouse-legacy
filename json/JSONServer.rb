@@ -129,10 +129,10 @@ class JSONServer
 				outputError('Runtime error', user, request, exception.message, id, replies)
 			end
 		end
-		if replies.size == 1
-			jsonOutput = replies[0]
-		else
+		if request.isMultiCall
 			jsonOutput = replies
+		else
+			jsonOutput = replies[0]
 		end
 		content = JSON.unparse(jsonOutput)
 		reply = HTTPReply.new(content)

@@ -23,6 +23,9 @@ class UserShell
 		['category <path> <filter 1> <...>', 'assign a folder to a set of filters', :commandCategory],
 		['delete-category <path>', 'get rid of a symlinks folder', :commandDeleteCategory],
 		
+		['torrents', 'retrieve a list of all torrents of the BT client', :commandListAllTorrents],
+		['incomplete-torrents', 'retrieve a list of all the incomplete torrents of the BT client', :commandListIncompleteTorrents],
+		
 		['read-logs <user 1> <...>', 'read the commands typed by users or a single user', :commandReadCommandLogs, true],
 	]
 end

@@ -127,6 +127,8 @@ class JSONServer
 				outputError('XML RPC exception', user, request, exception.message, id, replies)
 			rescue RuntimeError => exception
 				outputError('Runtime error', user, request, exception.message, id, replies)
+			rescue Errno::ECONNREFUSED
+				outputError('Connection error', user, request, "The server refused the connection (the HTTP proxy for the XML RPC interface probably isn't running)", id, replies)
 			end
 		end
 		if request.isMultiCall

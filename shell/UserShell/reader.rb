@@ -45,6 +45,8 @@ class UserShell
 			rescue EOFError
 				puts Nil.cyan('Terminating.')
 				exit
+			rescue Errno::ECONNREFUSED
+				error 'Connection refused!'
 			end
 		end
 	end

@@ -7,6 +7,7 @@
 	'reader',
 	'output',
 	'administratorCommands',
+	'torrentCommands',
 ].each { |x| require "shell/UserShell/#{x}" }
 
 require 'shared/sites'

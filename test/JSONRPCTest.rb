@@ -13,24 +13,33 @@ class JSONClient
 		@id = 1
 	end
 	
-	def performRequest(*units)
-		function = units[0].to_s
-		arguments = units[1..-1]
-		
-		rpc =
-		{
-			'id' => @id,
-			'method' => function,
-			'params' => arguments,
-		}
-		
+	def call(calls)
 		request =
 			"GET #{@path} HTTP/1.1\r\n" +
 			"Host: #{@host}\r\nConnection: close\r\n" +
 			"SSL-Subject: /CN=#{@commonName}/name=#{@user}\r\n" +
 			"SSL-Serial: #{@serial}\r\n" +
-			"\r\n" +
-			JSON.unparse(rpc)
+			"\r\n"
+			
+		callData = []
+		calls.each do |call|
+			function = call[0].to_s
+			arguments = call[1..-1]
+			
+			rpc =
+			{
+				'id' => @id,
+				'method' => function,
+				'params' => arguments,
+			}
+			callData << rpc
+		end
+		
+		if callData.size == 1
+			callData = callData[0]
+		end
+			
+		request += JSON.unparse(callData)
 		socket = TCPSocket.open(@host, @port)
 		socket.print(request)
 		puts 'Reading...'
@@ -47,11 +56,19 @@ end
 def reader(client)
 	while true
 		line = Readline.readline('> ', true)
-		string = "client.performRequest(#{line})"
+		string = "client.call(#{line})"
 		reply = eval(string)
 		puts 'Reply:'
 		puts reply
 	end
+end
+
+def cmdCall(client)
+	line = ARGV.join(', ')
+	string = "client.call(:#{line})"
+	reply = eval(string)
+	puts 'Reply:'
+	puts reply
 end
 
 user = 'void'
@@ -61,8 +78,11 @@ port = 59172
 path = '/warehouse'
 
 client = JSONClient.new(user, serial, host, port, path)
-line = ARGV.join(', ')
-string = "client.performRequest(:#{line})"
-reply = eval(string)
+reply = client.call(
+	[
+		['sum', 2, 3],
+		['sum', 4, 5]
+	]
+)
 puts 'Reply:'
 puts reply

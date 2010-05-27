@@ -46,6 +46,8 @@ module Configuration
 			FreeSpaceMinimum = 10 * Gigabyte
 			#delay in seconds
 			CheckDelay = 120
+			UnseededTorrentRemovalDelay = 3600
+			Log = 'cleaner.log'
 		end
 		
 		module User

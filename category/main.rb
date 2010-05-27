@@ -6,8 +6,8 @@ target = Nil.joinPaths(base, '..')
 Dir.chdir(target)
 
 require 'configuration/Configuration'
-require 'shared/sqlDatabase'
 require 'category/Categoriser'
+require 'shared/ConnectionContainer'
 
 if ARGV.size != 1
 	puts "ruby #{__FILE__} <release>"
@@ -15,6 +15,5 @@ if ARGV.size != 1
 end
 
 release = File.basename(ARGV[0])
-database = getSQLDatabase
-categoriser = Categoriser.new(Configuration, database)
+categoriser = Categoriser.new(Configuration, ConnectionContainer.new)
 categoriser.categorise(release)

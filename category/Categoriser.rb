@@ -8,12 +8,13 @@ require 'nil/environment'
 require 'shared/sites'
 
 class Categoriser
-	def initialize(configuration, database)
+	def initialize(configuration, connections)
 		@userBind = configuration::Torrent::Path::UserBind
 		@filteredPath = configuration::Torrent::Path::Filtered
 		@ownPath = configuration::Torrent::Path::Own
 		@userPath = configuration::Torrent::Path::User
-		@database = database
+		@database = connections.sqlDatabase
+		@connections = connections
 		@log = File.open(configuration::Logging::CategoriserLog, 'ab')
 		@shellGroup = configuration::Torrent::User::ShellGroup
 		@user = Nil.getUser

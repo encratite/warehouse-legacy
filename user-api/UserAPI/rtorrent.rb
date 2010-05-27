@@ -54,7 +54,8 @@ class UserAPI
 				['d.get_up_rate', infoHash],
 				['d.get_size_files', infoHash],
 				['d.get_size_bytes', infoHash],
-				['d.get_bytes_done', infoHash]
+				['d.get_bytes_done', infoHash],
+				['d.get_tied_to_file', infoHash],
 			]
 		end
 		
@@ -65,7 +66,7 @@ class UserAPI
 		#puts "The multicall itself took #{timer.stop} ms"
 		
 		offset = 0
-		callCountPerTorrent = 6
+		callCountPerTorrent = 7
 		output = []
 		infoHashes.each do |infoHash|
 			data = [infoHash] + rpcData[offset..(offset + callCountPerTorrent - 1)]

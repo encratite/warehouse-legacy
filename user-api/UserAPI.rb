@@ -1,6 +1,8 @@
 require 'nil/file'
+require 'nil/environment'
 
 require 'shared/sites'
+require 'shared/User'
 
 [
 	'general',
@@ -19,9 +21,9 @@ class UserAPI
 	
 	attr_reader :sites
 	
-	def initialize(configuration, connections, user)
+	#if user is equal to nil then the program will attempt to look up the current user
+	def initialize(configuration, connections, user = nil)
 		@configuration = configuration
-		@user = user
 		
 		@connections = connections
 		@database = connections.sqlDatabase
@@ -45,7 +47,20 @@ class UserAPI
 		
 		@sites = getReleaseSites(@database)
 		
-		@user = user
+		processUser(user)
+	end
+	
+	def processUser(user)
+		if user == nil
+			user = Nil.getUser
+			userData = @database[:user_data].where(name: user).all
+			if userData.empty
+				raise "User #{user} was not found in the database."
+			end
+			@user = User.new(userData)
+		else
+			@user = user
+		end
 	end
 	
 	def error(message)

@@ -4,10 +4,14 @@ require 'nil/time'
 
 require 'fileutils'
 
+require 'user-api/UserAPI'
+
+require 'shared/OutputHandler'
+
 class Cleaner
 	Debugging = false
 	
-	def initialize(configuration)
+	def initialize(configuration, connections)
 		torrentData = configuration::Torrent
 		
 		pathData = torrentData::Path
@@ -18,9 +22,15 @@ class Cleaner
 		cleanerData = torrentData::Cleaner
 		@freeSpaceMinimum = cleanerData::FreeSpaceMinimum
 		@checkDelay = cleanerData::CheckDelay
+		@unseededTorrentRemovalDelay = cleanerData::UnseededTorrentRemovalDelay
+		
+		logPath = Nil.joinPaths(configuration::Logging::Path, cleanerData::Log)
+		@output = OutputHandler.new(logPath)
 		
 		@userPath = pathData::User
 		@filteredPath = pathData::Filtered
+		
+		@api = UserAPI.new(configuration, connections)
 	end
 	
 	def run
@@ -39,6 +49,10 @@ class Cleaner
 		end
 	end
 	
+	def output(line)
+		@output.output(line)
+	end
+	
 	def getDownloads
 		return getSortedFiles @downloadPath
 	end
@@ -54,7 +68,7 @@ class Cleaner
 	def removeSymlinks(directory, release)
 		data = Nil.readDirectory(directory, true)
 		if data == nil
-			puts "Unable to process directory #{directory}"
+			output "Unable to process directory #{directory}"
 			return
 		end
 		directories, files = data
@@ -64,7 +78,7 @@ class Cleaner
 		
 		files.each do |file|
 			if file.name == release
-				puts "Getting rid of a symlink for the release #{release}"
+				output "Getting rid of a symlink for the release #{release}"
 				deleteFile(file.path)
 				break
 			end
@@ -72,21 +86,41 @@ class Cleaner
 	end
 	
 	def deleteDirectory(path)
-		puts "Deleting directory #{path}"
+		output "Deleting directory #{path}"
 		FileUtils.remove_dir(path, true) if !Debugging
 		release = File.basename(path)
 		users = Nil.readDirectory(@userPath)
 		users.each do |user|
 			filteredPath = Nil.joinPaths(user.path, @filteredPath)
-			#puts "Commencing symlink removal scan for release #{release} in #{filteredPath}"
+			#output "Commencing symlink removal scan for release #{release} in #{filteredPath}"
 			removeSymlinks(filteredPath, release)
 		end
 		return
 	end
 	
 	def deleteFile(path)
-		puts "Deleting file #{path}"
+		output "Deleting file #{path}"
 		FileUtils.rm_f path if !Debugging
+	end
+	
+	def checkForUnseededTorrents
+		torrents = @api.getTorrents
+		unseededTorrents = torrents.reject{|x| torrent.bytesDone > 0}
+		unseededTorrents.each do |torrent|
+			torrentPath = torrent.torrentPath
+			info = Nil.getFileInformation(torrentPath)
+			if info == nil
+				output "Failed to retrieve age of torrent #{torrentPath}"
+				next
+			end
+			timeTorrentWentUnseeded = Time.now - info.timeCreated
+			if timeTorrentWentUnseeded > @unseededTorrentRemovalDelay
+				downloadPath = Nil.joinPaths(@downloadPath, torrent.name)
+				output "Getting rid of unseeded torrent #{torrent.name}"
+				deleteFile(torrentPath)
+				deleteDirectory(downloadPath)
+			end
+		end
 	end
 	
 	def orphanCheck
@@ -95,13 +129,13 @@ class Cleaner
 		end
 		@downloads.each do |entry|
 			if !torrentBases.include?(entry.name)
-				puts "Encountered an incomplete download without a torrent (#{entry.name}), removing it"
+				output "Encountered an incomplete download without a torrent (#{entry.name}), removing it"
 				deleteDirectory entry.path
 			end
 		end
 		@completedDownloads.each do |entry|
 			if !torrentBases.include?(entry.name)
-				puts "Encountered a completed download without a torrent (#{entry.name}), removing it"
+				output "Encountered a completed download without a torrent (#{entry.name}), removing it"
 				deleteDirectory entry.path
 			end
 		end
@@ -114,9 +148,9 @@ class Cleaner
 	end
 	
 	def freeSpaceInDirectory(entries, directory)
-		puts "Attempting to free space in directory #{directory}"
+		output "Attempting to free space in directory #{directory}"
 		if entries.empty?
-			puts 'This directory is empty'
+			output 'This directory is empty'
 			return false
 		end
 		target = entries[0]
@@ -140,13 +174,14 @@ class Cleaner
 		freeSpaceMinimumString = Nil.getSizeString @freeSpaceMinimum
 		infoString = "#{Nil.timestamp} Free space: #{freeSpaceString}, required minimum: #{freeSpaceMinimumString}"
 		if freeSpace > @freeSpaceMinimum
-			puts "#{infoString} - no action required"
+			output "#{infoString} - no action required"
 			return false
 		end
-		puts "#{infoString} - need to remove files"
+		output "#{infoString} - need to remove files"
 		@downloads = getDownloads
 		@completedDownloads = getCompletedDownloads
 		@torrents = getTorrents
+		checkForUnseededTorrents
 		orphanCheck
 		return true if getFreeSpace > @freeSpaceMinimum
 		return true if freeCompletedDownloadSpace

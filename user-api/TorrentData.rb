@@ -1,9 +1,9 @@
 require 'json/JSONObject'
 
 class TorrentData < JSONObject
-	attr_reader :infoHash, :name, :downloadSpeed, :uploadSpeed, :fileCount, :size, :bytesDone
+	attr_reader :infoHash, :name, :downloadSpeed, :uploadSpeed, :fileCount, :size, :bytesDone, :torrentPath
 	
-	def initialize(infoHash, name, downloadSpeed, uploadSpeed, fileCount, size, bytesDone)
+	def initialize(infoHash, name, downloadSpeed, uploadSpeed, fileCount, size, bytesDone, torrentPath)
 		super()
 		@infoHash = infoHash
 		@name = name
@@ -12,5 +12,6 @@ class TorrentData < JSONObject
 		@fileCount = fileCount
 		@size = size
 		@bytesDone = bytesDone
+		@torrentPath = torrentPath
 	end
 end

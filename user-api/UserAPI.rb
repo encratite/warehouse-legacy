@@ -29,6 +29,8 @@ class UserAPI
 		@database = connections.sqlDatabase
 		@rpc = connections.xmlRPCClient
 		
+		processUser(user)
+		
 		@filterLengthMaximum = configuration::Shell::FilterLengthMaximum
 		@filterCountMaximum = configuration::Shell::FilterCountMaximum
 		@searchResultMaximum = configuration::Shell::SearchResultMaximum
@@ -46,18 +48,16 @@ class UserAPI
 		@filters = @database[:user_release_filter]
 		
 		@sites = getReleaseSites(@database)
-		
-		processUser(user)
 	end
 	
 	def processUser(user)
 		if user == nil
 			user = Nil.getUser
 			userData = @database[:user_data].where(name: user).all
-			if userData.empty
+			if userData.empty?
 				raise "User #{user} was not found in the database."
 			end
-			@user = User.new(userData)
+			@user = User.new(userData[0])
 		else
 			@user = user
 		end

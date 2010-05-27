@@ -44,6 +44,10 @@ class Cleaner
 	
 	def getSortedFiles(path)
 		input = Nil.readDirectory path
+		if input == nil
+			output "Unable to read path #{path} to retrieve a list of files"
+			exit
+		end
 		return input.sort do |x, y|
 			x.timeCreated <=> y.timeCreated
 		end

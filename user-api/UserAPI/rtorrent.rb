@@ -44,7 +44,7 @@ class UserAPI
 		timer = Timer.new
 		infoHashes = getInfoHashes
 		
-		puts "Got #{infoHashes.size} hashes after #{timer.stop} ms"
+		#puts "Got #{infoHashes.size} hashes after #{timer.stop} ms"
 		
 		callData = []
 		infoHashes.each do |infoHash|
@@ -58,11 +58,11 @@ class UserAPI
 			]
 		end
 		
-		puts "Created multicall arguments in #{timer.stop} ms"
+		#puts "Created multicall arguments in #{timer.stop} ms"
 		
 		rpcData = @rpc.multicall(*callData)
 		
-		puts "The multicall itself took #{timer.stop} ms"
+		#puts "The multicall itself took #{timer.stop} ms"
 		
 		offset = 0
 		callCountPerTorrent = 6
@@ -74,7 +74,7 @@ class UserAPI
 			offset += callCountPerTorrent
 		end
 		
-		puts "Finished processing the RPC data after #{timer.stop} ms"
+		#puts "Finished processing the RPC data after #{timer.stop} ms"
 		
 		return output
 	end

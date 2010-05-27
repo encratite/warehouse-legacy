@@ -1,5 +1,6 @@
 To do:
 
+add proper handling of torrents which consist of single files instead of folders (this breaks the cleaner and the categoriser I think)
 The JSON RPC server is one central process, unlike the shell, so the files it creates will have the wrong user (this will result in missing 'own' symlinks when using the download API)
 possible future issue: store NFOs with newlines instead of raping them (solved in the case of TL)
 move the type specifications from configuration/ to site/

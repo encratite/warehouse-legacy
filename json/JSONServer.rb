@@ -122,7 +122,6 @@ class JSONServer
 			rescue RuntimeError => exception
 				outputError('Runtime error', user, request, exception.message, id, replies)
 			end
-			content.concat("#{string}\n")
 		end
 		if replies.size == 1
 			jsonOutput = replies[0]

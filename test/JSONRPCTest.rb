@@ -8,7 +8,7 @@ class JSONClient
 	def initialize(user, serial, host, port, path)
 		@user = user
 		@serial = serial
-		@commonName = Nil.getHost
+		@commonName = Nil.getHostname
 		@host = host
 		@port = port
 		@path = path

@@ -14,9 +14,6 @@ require 'shared/sites'
 
 require 'user-api/UserAPI'
 
-class HTTPError < StandardError
-end
-
 class UserShell
 	def initialize(configuration, connections, user)
 		@user = user

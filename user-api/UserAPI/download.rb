@@ -2,6 +2,9 @@ require 'nil/file'
 require 'nil/string'
 require 'nil/environment'
 
+require 'net/http'
+
+
 class UserAPI
 	def prepareTorrentDownload(site, target)
 		table = site.table.to_s
@@ -33,13 +36,13 @@ class UserAPI
 			if site == 'SCC'
 				detailsPath = "/details.php?id=#{data[:site_id]}"
 				data = site.httpHandler.get(detailsPath)
-				raise HTTPError.new 'Unable to retrieve details on this release' if data == nil
+				raise 'Unable to retrieve details on this release' if data == nil
 				
 				releaseData = SceneAccessReleaseData.new data
 				httpPath = releaseData.path
 				
 				torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)
-				raise HTTPError.new 'Unable to extract the filename from the details' if torrentMatch == nil
+				raise 'Unable to extract the filename from the details' if torrentMatch == nil
 				torrent = torrentMatch[1]
 			else
 				httpPath = data[:torrent_path]

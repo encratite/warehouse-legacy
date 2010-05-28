@@ -65,7 +65,7 @@ end
 
 def cmdCall(client)
 	line = ARGV.join(', ')
-	string = "client.call(:#{line})"
+	string = "client.call([[:#{line}]])"
 	reply = eval(string)
 	puts 'Reply:'
 	puts reply
@@ -96,4 +96,5 @@ path = '/warehouse'
 
 client = JSONClient.new(user, serial, host, port, path)
 #performanceTest(client)
-generalTest(client)
+#generalTest(client)
+cmdCall(client)

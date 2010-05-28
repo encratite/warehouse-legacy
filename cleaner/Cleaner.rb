@@ -5,6 +5,7 @@ require 'nil/time'
 require 'fileutils'
 
 require 'user-api/UserAPI'
+require 'user-api/TorrentData'
 
 require 'shared/OutputHandler'
 
@@ -35,6 +36,7 @@ class Cleaner
 	
 	def run
 		while true
+			checkForUnseededTorrents
 			while true
 				break if !freeSomeSpace || Debugging
 			end
@@ -109,7 +111,15 @@ class Cleaner
 	
 	def checkForUnseededTorrents
 		torrents = @api.getTorrents
-		unseededTorrents = torrents.reject{|x| x.bytesDone > 0}
+		unseededTorrents = torrents.reject do |torrent|
+			target = torrent.bytesDone
+			if target.class != Fixnum
+				puts "Invalid class: #{target.class}"
+				puts torrent.inspect
+				exit
+			end
+			torrent.bytesDone > 0
+		end
 		unseededTorrents.each do |torrent|
 			torrentPath = Nil.joinPaths(@torrentPath, File.basename(torrent.torrentPath))
 			info = Nil.getFileInformation(torrentPath)
@@ -173,8 +183,6 @@ class Cleaner
 	end
 	
 	def freeSomeSpace
-		checkForUnseededTorrents
-		
 		freeSpace = getFreeSpace
 		freeSpaceString = Nil.getSizeString freeSpace
 		freeSpaceMinimumString = Nil.getSizeString @freeSpaceMinimum

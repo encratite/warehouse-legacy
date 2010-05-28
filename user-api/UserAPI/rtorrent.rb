@@ -69,9 +69,19 @@ class UserAPI
 		callCountPerTorrent = 7
 		output = []
 		infoHashes.each do |infoHash|
-			data = [infoHash] + rpcData[offset..(offset + callCountPerTorrent - 1)]
-			torrent = TorrentData.new(*data)
-			output << torrent
+			values = rpcData[offset..(offset + callCountPerTorrent - 1)]
+			gotHealthyData = true
+			values.each do |value|
+				if value.class == XMLRPC::FaultException
+					gotHealthyData = false
+					break
+				end
+			end
+			if gotHealthyData
+				data = [infoHash] + values
+				torrent = TorrentData.new(*data)
+				output << torrent
+			end
 			offset += callCountPerTorrent
 		end
 		

@@ -75,7 +75,7 @@ class UserAPI
 					raise "Failed to transfer ownership of torrent #{torrentPath} to #{@user.name}"
 				end
 			end
-		rescue HTTPError => exception
+		rescue RuntimeError => exception
 			error "HTTP error: #{exception.message} - #{administrator}."
 		rescue ReleaseData::Error => exception
 			error "An error occured parsing the details: #{exception.message} - #{administrator}."

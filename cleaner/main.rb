@@ -3,5 +3,9 @@ require 'cleaner/Cleaner'
 require 'shared/ConnectionContainer'
 
 cleaner = Cleaner.new(Configuration, ConnectionContainer.new)
-cleaner.run
+begin
+	cleaner.run
+rescue Interrupt
+	exit
+end
 

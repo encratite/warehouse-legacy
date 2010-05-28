@@ -36,7 +36,7 @@ class Cleaner
 	
 	def run
 		while true
-			checkForUnseededTorrents
+			processTorrents
 			while true
 				break if !freeSomeSpace || Debugging
 			end
@@ -109,8 +109,28 @@ class Cleaner
 		FileUtils.rm_f path if !Debugging
 	end
 	
-	def checkForUnseededTorrents
+	def processTorrents
 		torrents = @api.getTorrents
+		torrents = removeGhostTorrents(torrents)
+		checkForUnseededTorrents(torrents)
+	end
+	
+	def removeGhostTorrents(torrents)
+		outputTorrents = []
+		torrents.each do |torrent|
+			if torrent.torrentPath.empty?
+				output "Discovered an entry in rtorrent which doesn't have a torrent file associated with it: #{torrent.name}"
+				@api.removeTorrentEntry(torrent.infoHash)
+				downloadPath = Nil.joinPaths(@downloadPath, torrent.name)
+				deleteDirectory(downloadPath)
+			else
+				outputTorrents << torrent
+			end
+		end
+		return outputTorrents
+	end
+	
+	def checkForUnseededTorrents(torrents)
 		unseededTorrents = torrents.reject do |torrent|
 			target = torrent.bytesDone
 			if target.class != Fixnum
@@ -121,27 +141,17 @@ class Cleaner
 			torrent.bytesDone > 0
 		end
 		unseededTorrents.each do |torrent|
-			rpcPath = torrent.torrentPath
-			cacheError = rpcPath.empty?
-			if cacheError
-				output "rtorrent cache error: empty torrent path: #{torrent.inspect}"
-				output "Attempting to remove torrent entry #{torrent.name}"
-				@api.removeTorrentEntry(torrent.infoHash)
-				removalCondition = true
-			else
-				torrentPath = Nil.joinPaths(@torrentPath, File.basename(rpcPath))
-				info = Nil.getFileInformation(torrentPath)
-				if info == nil
-					output "Failed to retrieve age of torrent #{torrentPath}"
-					next
-				end
-				timeTorrentWentUnseeded = Time.now - info.timeCreated
-				removalCondition = timeTorrentWentUnseeded > @unseededTorrentRemovalDelay
+			torrentPath = Nil.joinPaths(@torrentPath, File.basename(rpcPath))
+			info = Nil.getFileInformation(torrentPath)
+			if info == nil
+				output "Failed to retrieve age of torrent #{torrentPath}"
+				next
 			end
-			if removalCondition
+			timeTorrentWentUnseeded = Time.now - info.timeCreated
+			if timeTorrentWentUnseeded > @unseededTorrentRemovalDelay
 				downloadPath = Nil.joinPaths(@downloadPath, torrent.name)
 				output "Getting rid of unseeded torrent #{torrent.name}"
-				deleteFile(torrentPath) if !cacheError
+				deleteFile(torrentPath)
 				deleteDirectory(downloadPath)
 			end
 		end

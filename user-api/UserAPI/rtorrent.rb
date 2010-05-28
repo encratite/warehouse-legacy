@@ -39,6 +39,20 @@ class UserAPI
 		return @rpc.call('d.get_bytes_done', infoHash)
 	end
 	
+	#this is for internal usage with the cleaner - apparently sometimes deleted torrents stay in the cache - bug in some component
+	def removeTorrentEntry(infoHash)
+		callData =
+		[
+			['d.stop', infoHash],
+			['d.close', infoHash],
+			['d.erase', infoHash],
+		]
+		
+		@rpc.multicall(*callData)
+		
+		return nil
+	end
+	
 	#at the request of death
 	def getTorrents
 		timer = Timer.new

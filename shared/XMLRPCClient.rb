@@ -10,6 +10,7 @@ class XMLRPCClient
 	
 	def performCall(&block)
 		tries = 2
+		message = nil
 		tries.times do
 			if @client == nil
 				@client = XMLRPC::Client.new(@host, @path, @port)
@@ -18,6 +19,10 @@ class XMLRPCClient
 				return yield(block)
 			rescue Errno::EPIPE
 				@client = nil
+				message = 'Broken pipe'
+			rescue EOFError
+				@client = nil
+				message = 'End of file'
 			end
 		end
 		raise 'Broken pipe'

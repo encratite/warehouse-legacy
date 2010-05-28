@@ -121,17 +121,27 @@ class Cleaner
 			torrent.bytesDone > 0
 		end
 		unseededTorrents.each do |torrent|
-			torrentPath = Nil.joinPaths(@torrentPath, File.basename(torrent.torrentPath))
-			info = Nil.getFileInformation(torrentPath)
-			if info == nil
-				output "Failed to retrieve age of torrent #{torrentPath}"
-				next
+			rpcPath = torrent.torrentPath
+			cacheError = rpcPath.empty?
+			if cacheError
+				output "rtorrent cache error: empty torrent path: #{torrent.inspect}"
+				output "Attempting to remove torrent entry #{torrent.name}"
+				@api.removeTorrentEntry(torrent.infoHash)
+				removalCondition = true
+			else
+				torrentPath = Nil.joinPaths(@torrentPath, File.basename(rpcPath))
+				info = Nil.getFileInformation(torrentPath)
+				if info == nil
+					output "Failed to retrieve age of torrent #{torrentPath}"
+					next
+				end
+				timeTorrentWentUnseeded = Time.now - info.timeCreated
+				removalCondition = timeTorrentWentUnseeded > @unseededTorrentRemovalDelay
 			end
-			timeTorrentWentUnseeded = Time.now - info.timeCreated
-			if timeTorrentWentUnseeded > @unseededTorrentRemovalDelay
+			if removalCondition
 				downloadPath = Nil.joinPaths(@downloadPath, torrent.name)
 				output "Getting rid of unseeded torrent #{torrent.name}"
-				deleteFile(torrentPath)
+				deleteFile(torrentPath) if !cacheError
 				deleteDirectory(downloadPath)
 			end
 		end

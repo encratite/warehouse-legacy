@@ -141,7 +141,7 @@ class Cleaner
 			torrent.bytesDone > 0
 		end
 		unseededTorrents.each do |torrent|
-			torrentPath = Nil.joinPaths(@torrentPath, File.basename(rpcPath))
+			torrentPath = Nil.joinPaths(@torrentPath, File.basename(torrent.torrentPath))
 			info = Nil.getFileInformation(torrentPath)
 			if info == nil
 				output "Failed to retrieve age of torrent #{torrentPath}"

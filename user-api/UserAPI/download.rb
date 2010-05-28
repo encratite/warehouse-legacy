@@ -1,5 +1,6 @@
 require 'nil/file'
 require 'nil/string'
+require 'nil/environment'
 
 class UserAPI
 	def prepareTorrentDownload(site, target)
@@ -64,6 +65,13 @@ class UserAPI
 			end
 			
 			Nil.writeFile(torrentPath, data)
+			if @user.name != Nil.getUser
+				`#{@changeOwnershipPath} #{@user.name} #{torrentPath}`
+				returnCode = $?.to_i
+				if returnCode != 0
+					raise "Failed to transfer ownership of torrent #{torrentPath} to #{@user.name}"
+				end
+			end
 		rescue HTTPError => exception
 			error "HTTP error: #{exception.message} - #{administrator}."
 		rescue ReleaseData::Error => exception

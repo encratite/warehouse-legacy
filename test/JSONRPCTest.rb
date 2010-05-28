@@ -2,11 +2,13 @@ require 'socket'
 require 'json'
 require 'readline'
 
+require 'nil/environment'
+
 class JSONClient
 	def initialize(user, serial, host, port, path)
 		@user = user
 		@serial = serial
-		@commonName = 'perelman'
+		@commonName = Nil.getHost
 		@host = host
 		@port = port
 		@path = path
@@ -88,7 +90,7 @@ def generalTest(client)
 	puts reply
 end
 
-user = 'void'
+user = 'torment'
 serial = '01'
 host = '127.0.0.1'
 port = 59172

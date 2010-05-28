@@ -87,4 +87,8 @@ module Configuration
 		Port = 80
 		Path = '/rtorrent'
 	end
+	
+	module API
+		ChangeOwnershipPath = '/bin/change-ownership'
+	end
 end

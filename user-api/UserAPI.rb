@@ -48,6 +48,8 @@ class UserAPI
 		@filters = @database[:user_release_filter]
 		
 		@sites = getReleaseSites(@database)
+		
+		@changeOwnershipPath = configuration::API::ChangeOwnershipPath
 	end
 	
 	def processUser(user)

@@ -11,7 +11,7 @@ class UserAPI
 		@sites.each do |site|
 			table = site.table.to_s
 			key = site.name
-			results = @database["select site_id, section_name, name, release_date, release_size from #{table} where name ~* ? order by site_id desc limit ?", target, @searchResultMaximum].all
+			results = @database["select site_id, section_name, name, release_date, release_size, seeder_count from #{table} where name ~* ? order by site_id desc limit ?", target, @searchResultMaximum].all
 			siteResults[key] = results.map do |result|
 				SearchResult.new(site, result)
 			end

@@ -68,14 +68,6 @@ class UserAPI
 				error "HTTP error: Unable to queue release - #{administrator}"
 			end
 			
-			currentUser = Etc.getpwuid(Process::Sys.getuid).name
-			currentGroup = Etc.getgrgid(Process::Sys.getgid).name
-			puts "Current user/group: #{currentUser}:#{currentGroup}"
-			
-			effectiveUser = Etc.getpwuid(Process::Sys.geteuid).name
-			effectiveGroup = Etc.getgrgid(Process::Sys.getegid).name
-			puts "Effective user/group: #{effectiveUser}:#{effectiveGroup}"
-			
 			begin
 				Nil.writeFile(torrentPath, data)
 			rescue Errno::EACCES

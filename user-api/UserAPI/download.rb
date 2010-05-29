@@ -4,6 +4,7 @@ require 'nil/environment'
 
 require 'net/http'
 
+require 'etc'
 
 class UserAPI
 	def prepareTorrentDownload(site, target)
@@ -67,20 +68,49 @@ class UserAPI
 				error "HTTP error: Unable to queue release - #{administrator}"
 			end
 			
-			Nil.writeFile(torrentPath, data)
+			currentUser = Etc.getpwuid(Process::Sys.getuid).name
+			currentGroup = Etc.getgrgid(Process::Sys.getgid).name
+			puts "Current user/group: #{currentUser}:#{currentGroup}"
+			
+			effectiveUser = Etc.getpwuid(Process::Sys.geteuid).name
+			effectiveGroup = Etc.getgrgid(Process::Sys.getegid).name
+			puts "Effective user/group: #{effectiveUser}:#{effectiveGroup}"
+			
+			begin
+				Nil.writeFile(torrentPath, data)
+			rescue Errno::EACCES
+				error 'Failed to overwrite file - access denied.'
+			end
+			
+			#data = `/home/void/code/warehouse/test/insanity`
+			#puts data
+			
+			#puts 'initgroups:'
+			
+			puts Process.groups.inspect
+			#Process.initgroups("void", 1023)
+			#puts Process.groups.inspect
+			#data = `/home/void/code/warehouse/test/insanity`
+			#puts data
+			
 			if @user.name != Nil.getUser
-				`#{@changeOwnershipPath} #{@user.name} #{torrentPath}`
+				commandLine = "#{@changeOwnershipPath} #{@user.name} #{torrentPath}"
+				puts "Executing #{commandLine}"
+				#Process::Sys.setgid(1023)
+				#puts "LOLS #{Process::Sys.getegid}"
+				message = `#{commandLine}`
 				returnCode = $?.to_i
 				if returnCode != 0
-					raise "Failed to transfer ownership of torrent #{torrentPath} to #{@user.name}"
+					raise "Failed to transfer ownership of torrent #{torrentPath} to #{@user.name}: #{message}"
 				end
+				puts "Message: #{message}"
+			else
+				puts "User names match"
 			end
 		rescue RuntimeError => exception
 			error "HTTP error: #{exception.message} - #{administrator}."
 		rescue ReleaseData::Error => exception
 			error "An error occured parsing the details: #{exception.message} - #{administrator}."
-		rescue Errno::EACCES
-			error 'Failed to overwrite file - access denied.'
 		end
 	end
 

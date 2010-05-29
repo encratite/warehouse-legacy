@@ -82,30 +82,13 @@ class UserAPI
 				error 'Failed to overwrite file - access denied.'
 			end
 			
-			#data = `/home/void/code/warehouse/test/insanity`
-			#puts data
-			
-			#puts 'initgroups:'
-			
-			puts Process.groups.inspect
-			#Process.initgroups("void", 1023)
-			#puts Process.groups.inspect
-			#data = `/home/void/code/warehouse/test/insanity`
-			#puts data
-			
 			if @user.name != Nil.getUser
 				commandLine = "#{@changeOwnershipPath} #{@user.name} #{torrentPath}"
-				puts "Executing #{commandLine}"
-				#Process::Sys.setgid(1023)
-				#puts "LOLS #{Process::Sys.getegid}"
 				message = `#{commandLine}`
 				returnCode = $?.to_i
 				if returnCode != 0
 					raise "Failed to transfer ownership of torrent #{torrentPath} to #{@user.name}: #{message}"
 				end
-				puts "Message: #{message}"
-			else
-				puts "User names match"
 			end
 		rescue RuntimeError => exception
 			error "HTTP error: #{exception.message} - #{administrator}."

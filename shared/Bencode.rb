@@ -3,11 +3,22 @@ require 'nil/string'
 class Bencode
 	attr_accessor :units
 	
+	class Error < Exception
+	end
+	
 	def initialize(input)
 		@input = input
 		@offset = 0
 		@units = []
 		processData
+	end
+	
+	def self.error(message)
+		raise Error.new(message)
+	end
+	
+	def error(message)
+		self.error(message)
 	end
 	
 	def processData
@@ -36,12 +47,12 @@ class Bencode
 			@offset += 1
 			return nil
 		when nil
-			raise 'Incomplete list/dictionary'
+			error 'Incomplete list/dictionary'
 		else
 			if letter.isNumber
 				return readString
 			else
-				raise "Invalid unit type: #{letter}"
+				error "Invalid unit type: #{letter}"
 			end
 		end
 	end
@@ -50,9 +61,9 @@ class Bencode
 		#integer: i<digits>e
 		@offset += 1
 		offset = @input.index('e', @offset)
-		raise 'Non-terminated integer' if offset == nil
+		error 'Non-terminated integer' if offset == nil
 		numberString = @input[@offset..(offset - 1)]
-		raise "Invalid integer length: #{numberString}" if !numberString.isNumber
+		error "Invalid integer length: #{numberString}" if !numberString.isNumber
 		number = numberString.to_i
 		@offset = offset + 1
 		return number
@@ -82,13 +93,13 @@ class Bencode
 	def readString
 		#<length digits>:<content of legth specified by the previous field>
 		offset = @input.index(':', @offset + 1)
-		raise 'Non-terminated string' if offset == nil
+		error 'Non-terminated string' if offset == nil
 		numberString = @input[@offset..(offset - 1)]
-		raise "Invalid string length: #{numberString}" if !numberString.isNumber
+		error "Invalid string length: #{numberString}" if !numberString.isNumber
 		number = numberString.to_i
 		@offset = offset + 1
 		newOffset = @offset + number
-		raise "Invalid string length: #{number}" if newOffset >= @input.size
+		error "Invalid string length: #{number}" if newOffset >= @input.size
 		string = @input[@offset..(newOffset - 1)]
 		@offset = newOffset
 		return string
@@ -124,7 +135,7 @@ class Bencode
 			end
 			@output.concat 'e'
 		else
-			raise "Encountered an invalid type: #{unit.class}"
+			error "Encountered an invalid type: #{unit.class}"
 		end
 	end
 	
@@ -133,29 +144,24 @@ class Bencode
 	end
 	
 	def self.getTorrentName(input)
-		units = nil
-		begin
-			units = Bencode.new(input).units
-		rescue RuntimeError => exception
-			error "Bencode error in torrent file: #{exception.message}"
-		end
+		units = Bencode.new(input).units
 		if units.empty?
-			raise 'Empty torrent file'
+			self.error 'Empty torrent file'
 		end
 		mainDictionary = units[0]
 		if mainDictionary.class != Hash
-			raise 'Torrent data is not a dictionary'
+			self.error 'Torrent data is not a dictionary'
 		end
 		info = mainDictionary['info']
 		if info == nil
-			raise 'The torrent has no info field'
+			self.error 'The torrent has no info field'
 		end
 		if info.class != Hash
-			raise 'The info field is not a dictionary'
+			self.error 'The info field is not a dictionary'
 		end
 		name = info['name']
 		if name == nil
-			raise 'Unable to determine torrent name - field is not specified'
+			self.error 'Unable to determine torrent name - field is not specified'
 		end
 		torrent = "#{name}.torrent"
 		return torrent

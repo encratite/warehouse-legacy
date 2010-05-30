@@ -73,6 +73,8 @@ class UserAPI
 			error "Error: #{exception.message} - #{administrator}."
 		rescue ReleaseData::Error => exception
 			error "An error occured parsing the details: #{exception.message} - #{administrator}."
+		rescue Bencode::Error => exception
+			error "A Bencode error occured: #{exception.message} - #{administrator}."
 		end
 	end
 

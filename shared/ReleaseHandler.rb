@@ -4,6 +4,7 @@ require 'pg'
 require 'nil/file'
 
 require 'shared/ReleaseData'
+require 'shared/Bencode'
 
 class ReleaseHandler
 	def initialize(site)
@@ -156,24 +157,15 @@ class ReleaseHandler
 					output "Unluckily the size of this release exceeds the limit (#{releaseData.size} > #{@sizeLimit})"
 					return
 				end
-				path = releaseData.path
-				torrentMatch = /\/([^\/]+\.torrent)/.match(path)
-				if torrentMatch == nil
-					torrent = "#{release}.torrent"
-				else
-					torrent = torrentMatch[1]
-				end
-				if torrent.index('/') != nil
-					output "Invalid torrent name: #{torrent}"
-					return
-				end
+				output "Downloading #{path}"
+				torrentData = @httpHandler.get(path)
+				torrent = Bencode.getTorrentName(torrentData)
 				torrentPath = File.expand_path(torrent, @torrentPath)
 				if Nil.readFile(torrentPath) != nil
 					output "Collision detected - aborting, #{torrentPath} already exists!"
 					return
 				end
-				output "Downloading #{path}"
-				torrentData = @httpHandler.get(path)
+				
 				Nil.writeFile(torrentPath, torrentData)
 				output "Downloaded #{path} to #{torrentPath}"
 			else
@@ -183,6 +175,8 @@ class ReleaseHandler
 			databaseDown exception
 		rescue ReleaseData::Error => exception
 			output "Error: Unable to parse data of release #{release}: #{exception.message}"
+		rescue Bencode::Error => exception
+			error "A Bencode error occured: #{exception.message}"
 		end
 	end
 end

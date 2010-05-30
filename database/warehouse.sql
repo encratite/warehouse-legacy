@@ -115,3 +115,16 @@ create table torrentleech_data
 );
 
 create index torrentleech_name_index on torrentleech_data(name);
+
+drop table if exists user_notification;
+
+create table user_notification
+(
+	id serial primary key,
+	user_id integer references user_data(id) not null,
+	notification_time timestamp default now(),
+	--this is just a string
+	notification_type text not null,
+	--this is JSON data
+	content text not null
+);

@@ -1,10 +1,12 @@
+require 'net/http'
+
+require 'etc'
+
 require 'nil/file'
 require 'nil/string'
 require 'nil/environment'
 
-require 'net/http'
-
-require 'etc'
+require 'shared/Bencode'
 
 class UserAPI
 	def prepareTorrentDownload(site, target)
@@ -41,32 +43,35 @@ class UserAPI
 				
 				releaseData = SceneAccessReleaseData.new data
 				httpPath = releaseData.path
-				
-				torrentMatch = /\/([^\/]+\.torrent)/.match(httpPath)
-				raise 'Unable to extract the filename from the details' if torrentMatch == nil
-				torrent = torrentMatch[1]
 			else
 				httpPath = data[:torrent_path]
-				torrent = data[:name] + '.torrent'
 			end
 			
-			if torrent.index('/') != nil
-				error "Invalid torrent name - #{administrator}."
-			end
-			
-			torrentPath = File.expand_path(torrent, @torrentPath)
-			
-			if Nil.readFile(torrentPath) != nil
-				#use notifications?
-				#warning 'This release had already been queued, overwriting it'
-			end
-			
-			#use notifications?
-			#debug "Downloading path #{httpPath} from site #{site.name}"
 			data = site.httpHandler.get(httpPath)
 			if data == nil
 				error "HTTP error: Unable to queue release - #{administrator}"
 			end
+			
+			torrent = nil
+			begin
+				units = Bencode.new(data).units
+				if units.empty?
+					error 'Empty torrent file'
+				end
+				dictionary = units[0]
+				if dictionary.class != Hash
+					error 'Torrent data is not a dictionary'
+				end
+				name = dictionary['name']
+				if name == nil
+					error 'Unable to determine torrent name - field is not specified'
+				end
+				torrent = "#{name}.torrent"
+			rescue RuntimeError => exception
+				error "Bencode error in torrent file: #{exception.message}"
+			end
+			
+			torrentPath = File.expand_path(torrent, @torrentPath)
 			
 			begin
 				Nil.writeFile(torrentPath, data)

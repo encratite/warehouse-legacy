@@ -135,7 +135,7 @@ class Bencode
 	def self.getTorrentName(input)
 		units = nil
 		begin
-			units = Bencode.new(data).units
+			units = Bencode.new(input).units
 		rescue RuntimeError => exception
 			error "Bencode error in torrent file: #{exception.message}"
 		end

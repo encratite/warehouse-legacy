@@ -110,9 +110,13 @@ class Cleaner
 	end
 	
 	def processTorrents
-		torrents = @api.getTorrents
-		torrents = removeGhostTorrents(torrents)
-		checkForUnseededTorrents(torrents)
+		begin
+			torrents = @api.getTorrents
+			torrents = removeGhostTorrents(torrents)
+			checkForUnseededTorrents(torrents)
+		rescue RuntimeError => exception
+			output "Torrent processing error: #{exception.message}"
+		end
 	end
 	
 	def removeGhostTorrents(torrents)

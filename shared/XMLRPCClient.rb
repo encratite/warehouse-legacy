@@ -12,10 +12,10 @@ class XMLRPCClient
 		tries = 2
 		message = nil
 		tries.times do
-			if @client == nil
-				@client = XMLRPC::Client.new(@host, @path, @port)
-			end
 			begin
+				if @client == nil
+					@client = XMLRPC::Client.new(@host, @path, @port)
+				end				
 				return yield(block)
 			rescue Errno::EPIPE
 				@client = nil

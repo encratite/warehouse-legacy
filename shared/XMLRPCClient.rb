@@ -26,9 +26,12 @@ class XMLRPCClient
 			rescue Timeout::Error
 				@client = nil
 				message = 'Timeout'
+			rescue => error
+				@client = nil
+				message = "#{error.class}: #{error.message}"
 			end
 		end
-		raise 'Broken pipe'
+		raise message
 	end
 	
 	def call(*arguments)

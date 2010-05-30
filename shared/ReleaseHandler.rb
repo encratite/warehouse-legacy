@@ -157,6 +157,7 @@ class ReleaseHandler
 					output "Unluckily the size of this release exceeds the limit (#{releaseData.size} > #{@sizeLimit})"
 					return
 				end
+				path = releaseData.path
 				output "Downloading #{path}"
 				torrentData = @httpHandler.get(path)
 				torrent = Bencode.getTorrentName(torrentData)

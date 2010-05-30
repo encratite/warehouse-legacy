@@ -52,25 +52,7 @@ class UserAPI
 				error "HTTP error: Unable to queue release - #{administrator}"
 			end
 			
-			torrent = nil
-			begin
-				units = Bencode.new(data).units
-				if units.empty?
-					error 'Empty torrent file'
-				end
-				dictionary = units[0]
-				if dictionary.class != Hash
-					error 'Torrent data is not a dictionary'
-				end
-				name = dictionary['name']
-				if name == nil
-					error 'Unable to determine torrent name - field is not specified'
-				end
-				torrent = "#{name}.torrent"
-			rescue RuntimeError => exception
-				error "Bencode error in torrent file: #{exception.message}"
-			end
-			
+			torrent = Bencode.getTorrentName(data)
 			torrentPath = File.expand_path(torrent, @torrentPath)
 			
 			begin
@@ -88,7 +70,7 @@ class UserAPI
 				end
 			end
 		rescue RuntimeError => exception
-			error "HTTP error: #{exception.message} - #{administrator}."
+			error "Error: #{exception.message} - #{administrator}."
 		rescue ReleaseData::Error => exception
 			error "An error occured parsing the details: #{exception.message} - #{administrator}."
 		end

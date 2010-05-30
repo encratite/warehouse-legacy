@@ -131,4 +131,33 @@ class Bencode
 	def writeNumber(unit)
 		@output.concat "i#{unit}e"
 	end
+	
+	def self.getTorrentName(input)
+		units = nil
+		begin
+			units = Bencode.new(data).units
+		rescue RuntimeError => exception
+			error "Bencode error in torrent file: #{exception.message}"
+		end
+		if units.empty?
+			raise 'Empty torrent file'
+		end
+		mainDictionary = units[0]
+		if mainDictionary.class != Hash
+			raise 'Torrent data is not a dictionary'
+		end
+		info = mainDictionary['info']
+		if info == nil
+			raise 'The torrent has no info field'
+		end
+		if info.class != Hash
+			raise 'The info field is not a dictionary'
+		end
+		name = info['name']
+		if name == nil
+			raise 'Unable to determine torrent name - field is not specified'
+		end
+		torrent = "#{name}.torrent"
+		return torrent
+	end
 end

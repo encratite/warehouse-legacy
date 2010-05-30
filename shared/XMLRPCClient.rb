@@ -23,6 +23,9 @@ class XMLRPCClient
 			rescue EOFError
 				@client = nil
 				message = 'End of file'
+			rescue Timeout::Error
+				@client = nil
+				message = 'Timeout'
 			end
 		end
 		raise 'Broken pipe'

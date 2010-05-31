@@ -42,6 +42,7 @@ class Cleaner
 			while true
 				break if !freeSomeSpace || Debugging
 			end
+			GC.start
 			sleep @checkDelay
 		end
 	end

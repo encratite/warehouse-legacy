@@ -36,6 +36,8 @@ class Cleaner
 	
 	def run
 		while true
+			#experimental memory usage reduction test
+			GC.start
 			processTorrents
 			while true
 				break if !freeSomeSpace || Debugging

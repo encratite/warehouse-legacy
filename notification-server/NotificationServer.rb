@@ -1,8 +1,9 @@
 require 'openssl'
 
-require 'shared/ipc'
-
 require 'nil/file'
+
+require 'shared/ipc'
+require 'notification-server/NotificationClient'
 
 class NotificationServer < Nil::IPCServer
 	def initialize(configuration, connections)
@@ -58,12 +59,13 @@ class NotificationServer < Nil::IPCServer
 	def runServer
 		while true
 			client = @sslServer.accept
-			@clientMutex.synchronize { @clients << client }
 			Thread.new { handleClient(client) }
 		end
 	end
 	
 	def handleClient(client)
+		clientObject = NotificationClient.new(client)
+		@clientMutex.synchronize { @clients << clientObject }
 	end
 	
 	def notify(user, type, message)

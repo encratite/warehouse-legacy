@@ -91,4 +91,17 @@ module Configuration
 	module API
 		ChangeOwnershipPath = '/bin/change-ownership'
 	end
+	
+	module Notification
+		#address unused by TCPServer?
+		Address = '0.0.0.0'
+		Port = 43841
+		Socket = '/home/void/code/warehouse/notification-server/socket/socket'
+		
+		module TLS
+			CertificateAuthority = '/etc/warehouse/keys/certificate-authority.crt'
+			ServerCertificate = '/etc/warehouse/keys/server.crt'
+			ServerKey = '/etc/warehouse/keys/server.key'
+		end
+	end
 end

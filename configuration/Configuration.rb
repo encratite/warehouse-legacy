@@ -11,11 +11,7 @@ module Configuration
 	end
 	
 	module Torrent
-		def self.pick(unix, windows)
-			return Nil.getOS == :windows ? windows : unix
-		end
-		
-		module LinuxPath
+		module Path
 			UserBind = '/all'
 			Filtered = 'filtered'
 			Own = 'own'
@@ -25,19 +21,6 @@ module Configuration
 			DownloadDone = '/home/void/torrent/complete'
 			User = '/home/warehouse/user'
 		end
-		
-		module WindowsPath
-			UserBind = 'G:\Warehouse\void\all'
-			Filtered = 'filtered'
-			Own = 'own'
-			Manual = 'manual'
-			Torrent = 'G:\Torrent'
-			Download = 'G:\BTTemp'
-			DownloadDone = 'G:\BTTemp'
-			User = 'G:\Warehouse'
-		end
-		
-		Path = self.pick(LinuxPath, WindowsPath)
 			
 		Gigabyte = 2**30
 		SizeLimit = 25 * Gigabyte
@@ -96,7 +79,10 @@ module Configuration
 		#address unused by TCPServer?
 		Address = '0.0.0.0'
 		Port = 43841
-		Socket = '/home/void/code/warehouse/notification-server/socket/socket'
+		Socket =
+			Nil.getHostname == 'perelman' ?
+			'/home/void/socket' :
+			'/home/void/code/warehouse/notification-server/socket/socket'
 		
 		module TLS
 			CertificateAuthority = '/etc/warehouse/keys/certificate-authority.crt'

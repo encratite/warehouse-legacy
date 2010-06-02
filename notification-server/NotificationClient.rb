@@ -3,6 +3,6 @@ class NotificationClient
 	
 	def initialize(socket, database)
 		@socket = client
-		#socket.peer_cert
+		puts @socket.peer_cert
 	end
 end

@@ -1,14 +1,16 @@
 require 'openssl'
+require 'fileutils'
 
 require 'nil/file'
+require 'nil/ipc'
 
-require 'shared/ipc'
 require 'notification-server/NotificationClient'
 
 class NotificationServer < Nil::IPCServer
 	def initialize(configuration, connections)
-		@address = configuration::Address
 		@port = configuration::Port
+		path = configuration::Socket
+		FileUtils.mkdir_p(File.dirname(path))
 		super(path)
 		@database = connections.sqlDatabase
 		@methods += [:notify]
@@ -30,11 +32,11 @@ class NotificationServer < Nil::IPCServer
 		[
 			[:CertificateAuthority, x509],
 			[:ServerCertificate, x509],
-			[:PrivateKey, lambda { |data| OpenSSL::PKey::RSA.new(data) }]
+			[:ServerKey, lambda { |data| OpenSSL::PKey::RSA.new(data) }]
 		]
 		
 		tlsData.each do |symbol, function|
-			path = configuration.const_get(symbol)
+			path = configuration::TLS.const_get(symbol)
 			symbolString = symbol.to_s
 			localSymbol = ('@' + symbolString[0].downcase + symbolString[1..-1]).to_sym
 			tlsObject = loadData(path) { |data| function.call(data) }
@@ -42,7 +44,7 @@ class NotificationServer < Nil::IPCServer
 		end
 		
 		@ctx = OpenSSL::SSL::SSLContext.new()
-		@ctx.key = @privateKey
+		@ctx.key = @serverKey
 		@ctx.cert = @serverCertificate
 		@ctx.verify_mode = OpenSSL::SSL::VERIFY_PEER | OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
 		@ctx.ca_path = @certificateAuthority

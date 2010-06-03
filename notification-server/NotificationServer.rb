@@ -19,35 +19,20 @@ class NotificationServer < Nil::IPCServer
 		initialiseTLS(configuration)
 	end
 	
-	def loadData(path, &block)
-		data = Nil.readFile(path)
-		raise "Unable to load TLS data from #{path}" if data == nil
-		return yield(data)
-	end
-	
 	def initialiseTLS(configuration)
-		x509 = lambda { |data| OpenSSL::X509::Certificate.new(data) }
+		certificatePath = configuration::TLS::ServerCertificate
+		keyPath = configuration::TLS::ServerKey
+		caPath = configuration::TLS::CertificateAuthority
 		
-		tlsData =
-		[
-			[:CertificateAuthority, x509],
-			[:ServerCertificate, x509],
-			[:ServerKey, lambda { |data| OpenSSL::PKey::RSA.new(data) }]
-		]
-		
-		tlsData.each do |symbol, function|
-			path = configuration::TLS.const_get(symbol)
-			symbolString = symbol.to_s
-			localSymbol = ('@' + symbolString[0].downcase + symbolString[1..-1]).to_sym
-			tlsObject = loadData(path) { |data| function.call(data) }
-			instance_variable_set(localSymbol, tlsObject)
-		end
+		puts "Using certificate #{certificatePath}"
+		puts "Using key #{keyPath}"
+		puts "Using certificate authority #{caPath}"
 		
 		@ctx = OpenSSL::SSL::SSLContext.new()
-		@ctx.key = @serverKey
-		@ctx.cert = @serverCertificate
+		@ctx.cert = OpenSSL::X509::Certificate.new(File::read(certificatePath))
+		@ctx.key = OpenSSL::PKey::RSA.new(File::read(keyPath))
 		@ctx.verify_mode = OpenSSL::SSL::VERIFY_PEER | OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
-		@ctx.ca_path = @certificateAuthority
+		@ctx.ca_file = caPath
 	end
 	
 	def run
@@ -60,13 +45,17 @@ class NotificationServer < Nil::IPCServer
 	
 	def runServer
 		while true
-			client = @sslServer.accept
-			Thread.new { handleClient(client) }
+			begin
+				client = @sslServer.accept
+				Thread.new { handleClient(client) }
+			rescue OpenSSL::SSL::SSLError => exception
+				puts "An SSL exception occured: #{exception.message}"
+			end
 		end
 	end
 	
 	def handleClient(client)
-		clientObject = NotificationClient.new(client)
+		clientObject = NotificationClient.new(client, @database)
 		@clientMutex.synchronize { @clients << clientObject }
 	end
 	

@@ -1,6 +1,6 @@
 require 'user-api/UserAPI'
 
-class JSONAPI
+class JSONRPCAPI
 	attr_reader :requestHandlers
 	
 	class Error < Exception

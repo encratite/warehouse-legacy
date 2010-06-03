@@ -61,7 +61,6 @@ module Configuration
 	end
 	
 	module JSONRPCServer
-		SessionCookie = 'session'
 		Log = 'rpc.log'
 	end
 	

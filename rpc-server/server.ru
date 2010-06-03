@@ -1,7 +1,9 @@
-require 'json/JSONServer'
+require 'nil/file'
+require 'json/JSONRPCHTTPServer'
 require 'configuration/Configuration'
 
-server = JSONServer.new(Configuration)
+log = Nil.joinPaths(configuration::Logging::Path, Configuration::JSONRPCServer::Log)
+server = JSONRPCHTTPServer.new(log)
 
 handler = lambda do |environment|
 	server.processRequest(environment)

@@ -3,7 +3,7 @@ require 'cgi'
 
 require 'www-library/HTTPRequest'
 
-class JSONRequest < HTTPRequest
+class JSONRPCHTTPRequest < HTTPRequest
 	attr_reader :jsonRequests, :commonName, :name, :serial, :isMultiCall
 		
 	SubjectData =

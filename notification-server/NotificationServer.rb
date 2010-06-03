@@ -9,16 +9,25 @@ require 'shared/user'
 require 'notification-server/NotificationClient'
 
 class NotificationServer < Nil::IPCServer
+	TypeHandlers =
+	[
+		'rpc' => :rpcHandler
+	]
+	
 	def initialize(configuration, connections)
 		@port = configuration::Port
 		path = configuration::Socket
 		FileUtils.mkdir_p(File.dirname(path))
 		super(path)
 		@database = connections.sqlDatabase
-		@methods += [:notify]
 		@clientMutex = Mutex.new
 		@clients = []
+		initialiseIPC
 		initialiseTLS(configuration)
+	end
+	
+	def initialiseIPC
+		@methods += [:notify]
 	end
 	
 	def initialiseTLS(configuration)
@@ -72,11 +81,78 @@ class NotificationServer < Nil::IPCServer
 	end
 	
 	def processClientCommunication(client)
+		name = client.user.name
+		puts "User #{name} connected"
 		while true
+			result = client.receiveData
+			if result.connectionClosed
+				puts "User #{name} disconnected"
+				return
+			end
 			
+			input = client.value
+			begin
+				processClientInput(client, input)
+			rescue RuntimeError => exception
+				clientError(client, exception.message)
+			end
 		end
 	end
 	
-	def notify(user, type, message)
+	def processClientInput(client, input)
+		raise "Expected an associative array, got #{input.class} instead" if input.class != Hash
+		
+		type = input['type']
+		data = input['data']
+		
+		raise 'Your request does not contain a type' if type == nil
+		raise "Your type should be a string, got #{type.class} instead" if type.class != String
+		raise 'Your request does not contain any data associated with the type' if data == nil
+		
+		handler = TypeHandlers[type]
+		raise "Unknown type \"#{type}\"" if handler == nil
+		
+		function = method(handler)
+		function.call(client, data)
+	end
+	
+	def rpcHandler(client, input)
+	end
+	
+	def clientError(client, message)
+		error = createUnit('error', message)
+		client.sendData(error)
+	end
+	
+	def createUnit(type, data)
+		unit =
+		{
+			'type' => type,
+			'data' => data
+		}
+		
+		return unit
+	end
+	
+	def notificationUnit(type, content)
+		data =
+		{
+			'time' => Time.now.utc.to_i,
+			'type' => type,
+			'content' => content
+		}
+		
+		output = createUnit('notification', data)
+		return output
+	end
+	
+	def notify(username, type, content)
+		unit = notificationUnit(type, content)
+		@clientMutex.synchronize do
+			@clients.each do |client|
+				next if client.user.name != username
+				client.sendData(notificationUnit)
+			end
+		end
 	end
 end

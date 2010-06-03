@@ -1,28 +1,20 @@
 require 'json'
 
-require 'nil/file'
-
-require 'json/JSONRequest'
-require 'json/JSONAPI'
+require 'json/JSONRPCHTTPRequest'
+require 'json/JSONRPCAPI'
 
 require 'shared/OutputHandler'
 require 'shared/ConnectionContainer'
 require 'shared/User'
 
-require 'www-library/RequestManager'
-require 'www-library/RequestHandler'
-require 'www-library/HTTPReply'
-
 require 'user-api/UserAPI'
 
 require 'xmlrpc/client'
 
-class JSONServer
+class JSONRPCHandler
 	WarehousePath = 'warehouse'
 	
-	def initialize(configuration)
-		log = Nil.joinPaths(configuration::Logging::Path, Configuration::JSONRPCServer::Log)
-		@sessionCookie = configuration::JSONRPCServer::SessionCookie
+	def initialize(log)
 		@output = OutputHandler.new(log)
 		
 		@connections = ConnectionContainer.new
@@ -32,7 +24,7 @@ class JSONServer
 	end
 	
 	def initialiseRequestManager
-		@requestManager = RequestManager.new(JSONRequest)
+		@requestManager = RequestManager.new(JSONRPCHTTPRequest)
 		
 		indexHandler = RequestHandler.new(nil)
 		indexHandler.setHandler(method(:indexHandler))
@@ -80,7 +72,7 @@ class JSONServer
 	
 	def indexHandler(request)
 		user = getUser(request)
-		jsonApi = JSONAPI.new(@configuration, @database, user)
+		jsonApi = JSONRPCAPI.new(@configuration, @database, user)
 		output(request, "Index request from user #{user.name} from #{request.address}")
 		content = "Methods available on /#{WarehousePath}:\n\n"
 		jsonApi.requestHandlers.each do |name, value|
@@ -105,7 +97,7 @@ class JSONServer
 	
 	def warehouseHandler(request)
 		user = getUser(request)
-		jsonApi = JSONAPI.new(@configuration, @connections, user)
+		jsonApi = JSONRPCAPI.new(@configuration, @connections, user)
 		replies = []
 		request.jsonRequests.each do |jsonRequest|
 			string = nil
@@ -119,7 +111,7 @@ class JSONServer
 				outputData('JSON-RPC call', user, request, jsonRequest.inspect)
 				reply = jsonApi.processJSONRPCRequest(jsonRequest)
 				replies << reply
-			rescue JSONAPI::Error => exception
+			rescue JSONRPCAPI::Error => exception
 				outputError('JSON-RPC API exception', user, request, exception.message, id, replies)
 			rescue UserAPI::Error => exception
 				outputError('User API exception', user, request, exception.message, id, replies)

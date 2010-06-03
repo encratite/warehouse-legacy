@@ -119,7 +119,7 @@ This system introduces a few methods which are not available in the old pure JSO
 ------------------------------
 
 Method: "getNewNotifications"
-Arguments: p[]
+Arguments: []
 Return value: Array of notifications ([NotificationData1, NotificationData2, ...])
 
 Description:
@@ -156,11 +156,20 @@ Return value: null
 Description:
 This call will simply "echo" back the notification to the client for debugging purposes so the developer can test if their notification processing works as intended.
 
-5. Actual examples
+5. Error handling
+-----------------
+
+Should the client send invalid data (containing unrecognised types/data and such) to the server it will respond with:
+
+{"type": "error", "data": <a string with an error message describing the nature of the error that occured>}
+
+Mind you - this is NOT for JSON RPC error handling - that will occur within the JSON RPC layer using "rpcResult" as described in section 3 of this document.
+
+6. Actual examples
 ------------------
 
 At first the client connects via TLS. The user is identified based on the N field in the subject of their certificate.
-Newlines are NOT part of the data sent over the wire.
+Newlines are NOT part of the data sent on the wire.
 
 Client to server:
 

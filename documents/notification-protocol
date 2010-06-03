@@ -168,7 +168,7 @@ Client to server:
 
 Server to client, immediately after the RPC invocation:
 
-201:{"type": "rpcResult", "data": {"id": 1, "error": null, "result": {"time": 12774537, "type": "serviceMessage", "content": {"severity": "debug", "message": "This is just a test. Calm down, everyone."}}}}
+201:{"type": "rpcResult", "data": {"id": 1, "error": null, "result": [{"time": 12774537, "type": "serviceMessage", "content": {"severity": "debug", "message": "This is just a test. Calm down, everyone."}}]}}
 
 Server to client, at a later point in time (the ReleaseData was shortened - too long) when a release is queued by one of the automatic services:
 

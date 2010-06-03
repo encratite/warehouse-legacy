@@ -4,7 +4,6 @@ require 'json/JSONRPCHTTPRequest'
 require 'json/JSONRPCAPI'
 
 require 'shared/OutputHandler'
-require 'shared/ConnectionContainer'
 require 'shared/User'
 
 require 'user-api/UserAPI'
@@ -12,29 +11,12 @@ require 'user-api/UserAPI'
 require 'xmlrpc/client'
 
 class JSONRPCHandler
-	WarehousePath = 'warehouse'
-	
-	def initialize(log)
-		@output = OutputHandler.new(log)
+	def initialize(connections, outputHandler)
+		@output = outputHandler
 		
-		@connections = ConnectionContainer.new
+		@connections = connections
 		@database = @connections.sqlDatabase
 		@configuration = configuration
-		initialiseRequestManager
-	end
-	
-	def initialiseRequestManager
-		@requestManager = RequestManager.new(JSONRPCHTTPRequest)
-		
-		indexHandler = RequestHandler.new(nil)
-		indexHandler.setHandler(method(:indexHandler))
-		@requestManager.addHandler(indexHandler)
-		
-		warehouseHandler = RequestHandler.new(WarehousePath)
-		warehouseHandler.setHandler(method(:warehouseHandler))
-		@requestManager.addHandler(warehouseHandler)
-		
-		@requestManager.exceptionMessageHandler = method(:exceptionMessageHandler)
 	end
 	
 	def output(request, line)
@@ -43,21 +25,6 @@ class JSONRPCHandler
 	
 	def exceptionMessageHandler(message)
 		@output.output("Exception: #{message}")
-	end
-	
-	def processRequest(environment)
-		@requestManager.handleRequest(environment)
-	end
-	
-	def getUser(request)
-		dataset = @database[:user_data]
-		results = dataset.where(name: request.name).all
-		if results.size != 1
-			raise "Unable to find user #{request.name} in database"
-		end
-		userData = results[0]
-		user = User.new(userData)
-		return user
 	end
 	
 	def error(message, id)
@@ -69,21 +36,7 @@ class JSONRPCHandler
 		
 		return reply
 	end
-	
-	def indexHandler(request)
-		user = getUser(request)
-		jsonApi = JSONRPCAPI.new(@configuration, @database, user)
-		output(request, "Index request from user #{user.name} from #{request.address}")
-		content = "Methods available on /#{WarehousePath}:\n\n"
-		jsonApi.requestHandlers.each do |name, value|
-			method, arguments = value
-			content.concat "#{name}: #{arguments.inspect}\n"
-		end
-		reply = HTTPReply.new(content)
-		reply.contentType = MIMEType::Plain
-		return reply
-	end
-	
+
 	def outputData(type, user, request, message)
 		output(request, "#{type} from user #{user.name} from #{request.address}: #{message}")
 		return
@@ -95,11 +48,10 @@ class JSONRPCHandler
 		return
 	end
 	
-	def warehouseHandler(request)
-		user = getUser(request)
+	def processRPCRequests(user, requests)
 		jsonApi = JSONRPCAPI.new(@configuration, @connections, user)
 		replies = []
-		request.jsonRequests.each do |jsonRequest|
+		requests.each do |jsonRequest|
 			string = nil
 			id = jsonRequest['id']
 			if id == nil
@@ -129,8 +81,6 @@ class JSONRPCHandler
 			jsonOutput = replies[0]
 		end
 		content = JSON.unparse(jsonOutput)
-		reply = HTTPReply.new(content)
-		reply.contentType = 'application/json-rpc'
-		return reply
+		return content
 	end
 end

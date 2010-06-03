@@ -82,6 +82,7 @@ module Configuration
 			Nil.getHostname == 'perelman' ?
 			'/home/void/socket' :
 			'/home/void/code/warehouse/notification-server/socket/socket'
+		Log = 'notification.log'
 		
 		module TLS
 			CertificateAuthority = '/etc/warehouse/keys/certificate-authority.crt'

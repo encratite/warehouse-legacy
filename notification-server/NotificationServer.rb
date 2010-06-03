@@ -8,6 +8,8 @@ require 'shared/user'
 
 require 'notification-server/NotificationClient'
 
+require 'json/JSONRPCHandler'
+
 class NotificationServer < Nil::IPCServer
 	TypeHandlers =
 	[
@@ -15,19 +17,31 @@ class NotificationServer < Nil::IPCServer
 	]
 	
 	def initialize(configuration, connections)
-		@port = configuration::Port
-		path = configuration::Socket
+		path = configuration::Notification::Socket
 		FileUtils.mkdir_p(File.dirname(path))
+		
 		super(path)
+		
+		@port = configuration::Notification::Port
+		@connections = connections
 		@database = connections.sqlDatabase
 		@clientMutex = Mutex.new
 		@clients = []
+		
+		log = Nil.joinPaths(configuration::Logging::Path, configuration::Notification::Log)
+		@output = OutputHandler.new(log)
+		
 		initialiseIPC
-		initialiseTLS(configuration)
+		initialiseRPC
+		initialiseTLS(configuration::Notification)
 	end
 	
 	def initialiseIPC
 		@methods += [:notify]
+	end
+	
+	def initialiseRPC
+		@rpc = JSONRPCHandler.new(@connections, @output)
 	end
 	
 	def initialiseTLS(configuration)
@@ -35,6 +49,7 @@ class NotificationServer < Nil::IPCServer
 		keyPath = configuration::TLS::ServerKey
 		caPath = configuration::TLS::CertificateAuthority
 		
+		puts 'TLS initialisation:'
 		puts "Using certificate #{certificatePath}"
 		puts "Using key #{keyPath}"
 		puts "Using certificate authority #{caPath}"
@@ -44,6 +59,10 @@ class NotificationServer < Nil::IPCServer
 		@ctx.key = OpenSSL::PKey::RSA.new(File::read(keyPath))
 		@ctx.verify_mode = OpenSSL::SSL::VERIFY_PEER | OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
 		@ctx.ca_file = caPath
+	end
+	
+	def output(line)
+		@output.output(line)
 	end
 	
 	def run
@@ -60,9 +79,9 @@ class NotificationServer < Nil::IPCServer
 				client = @sslServer.accept
 				Thread.new { handleClient(client) }
 			rescue OpenSSL::SSL::SSLError => exception
-				puts "An SSL exception occured: #{exception.message}"
+				output "An SSL exception occured: #{exception.message}"
 			rescue RuntimeError => exception
-				puts "Runtime error: #{exception.message}"
+				output "Runtime error: #{exception.message}"
 			end
 		end
 	end
@@ -82,11 +101,11 @@ class NotificationServer < Nil::IPCServer
 	
 	def processClientCommunication(client)
 		name = client.user.name
-		puts "User #{name} connected"
+		output "User #{name} connected"
 		while true
 			result = client.receiveData
 			if result.connectionClosed
-				puts "User #{name} disconnected"
+				output "User #{name} disconnected"
 				return
 			end
 			
@@ -117,6 +136,12 @@ class NotificationServer < Nil::IPCServer
 	end
 	
 	def rpcHandler(client, input)
+		if input.class == Array
+			requests = input
+		else
+			requests = [input]
+		end
+		@rpc.processRPCRequests(client.user, requests)
 	end
 	
 	def clientError(client, message)

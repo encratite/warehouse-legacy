@@ -1,0 +1,155 @@
+===============================
+Warehouse Notification Protocol
+===============================
+
+1. Encoding
+-----------
+
+The bidirectional notification protocol of the warehouse incorporates both RPC and also push based notifications which are sent to clients without previous requests.
+The serialisation over TCP is achieved using a simple plain text method where each unit is encoded like this:
+
+<decimal digits representing the length of the JSON data after the colon>:<JSON data>
+
+The actual units are JSON encoded data.
+
+2. Standard data types
+----------------------
+
+2.1 NotificationData
+--------------------
+
+This data type is used in the "data" component of notifications as described in section "3.0 Notifications":
+
+{"time": <UNIX timestamp associated with this event (UTC!)>, "type": <string describing the nature of the notification>, "content": <arbitrary JSON data suited for this type of notification>}
+
+2.2 ReleaseData
+---------------
+
+In the following section (3. Notifications) concerning the format of notifications you will frequently encounter the ReleaseData data type which is the same as the corresponding serialised version of the internal SearchResult data from the User API which you might already know from the JSON RPC interface of the Warehouse.
+Details can be found in user-api/SearchResult.rb. Each member (prefixed by '@' in Ruby, excluding @descriptions) will result in one field in the associative array in the JSON data, with the same name.
+
+3. Notifications
+----------------
+
+Notifications are sent by the server to the client to inform users about events which occured this very instant (it's a push based approach).
+No previous call is made by the client to retrieve these notifications.
+This is their format:
+
+{"type": "notification", "data": NotificationData}
+
+Here is a list of types of notifications currently implemented (or planned) in the system:
+
+3.1 Queued
+----------
+
+Type: "queued"
+Content type: ReleaseData
+
+Description:
+Occurs when a new release is queued for downloading because it matches one or multiple filters of the user
+
+3.2 Downloaded
+--------------
+
+Type: "downloaded"
+Content type: ReleaseData
+
+Description:
+Occurs when a new release is done downloading and is ready to be retrieved via FTPS/SFTP.
+
+3.3 Download error
+------------------
+
+Type: "downloadError"
+Content type: {"release": ReleaseData, "message": String}
+
+Description:
+Occurs when a release which was either queued manually by the user or queued due to one of their filters could not be downloaded and was cancelled/deleted because the download could not be finished in time or because no seeds could be found.
+The "message" string describes the nature of the error that occured.
+
+3.4 Download deleted
+--------------------
+
+Type: "downloadDeleted"
+Content type: ReleaseData
+
+Description:
+Occurs when a download associated with the user (manual or filtered) is removed from the server because the cleaner needs to free up disk space.
+
+3.5 Service message
+-------------------
+
+Type: "serviceMessage"
+Content type: {"severity": String, "message": String}
+
+Description:
+This notification is sent to administrators only.
+Occurs when one of the warehouse services reports information on its status. It may be neutral information, warnings or even fatal errors - this depends on the "severity" specified in the content.
+The severity may be one of the following values:
+
+"information": This is just neutral runtime information.
+"debug": Debugging data for developers.
+"warning": A minor hiccup occured in one of the services - might be worth investigating.
+"error": A fatal error occured and the service had to be terminated - immediate intervention is necessary.
+
+3. Remote procedure calls (RPC)
+-------------------------------
+
+As already mentioned in section 1 of this document, this protocol also supports RPC. The JSON data used to achieve this it look as follows:
+
+For calls:
+
+{"type": "rpc", "data": <conventional JSON RPC method invocation>}
+
+For results:
+
+{"type": "rpcResult", "data": <conventional JSON RPC result>}
+
+For the first time the IDs in the JSON RPC data actually become important because this system is basically intended to return results asynchronously/out of order to guarantee early delivery of results.
+On the long run I might actually integrate the entire regular JSON RPC API into this system - I am not sure yet.
+
+4. Notification system specific remote procedure calls
+------------------------------------------------------
+
+This system introduces a few methods which are not available in the old pure JSON RPC interface.
+
+4.1 Retrieve new notifications
+------------------------------
+
+Method: "getNewNotifications"
+Arguments: {}
+Return value: Array of notifications ({NotificationData1, NotificationData2, ...})
+
+Description:
+This method is invoked in order to retrieve notifications which were stored for the user while their notification processing client was offline.
+
+4.2 Retrieve number of notifications stored in the archive
+----------------------------------------------------------
+
+Method: "getNotificationCount"
+Arguments: {}
+Return value: Number of notifications stored for this user.
+
+Description:
+This is intended to be used in combination with getOldNotification to retrieve a range of old notifications.
+
+4.3 Retrieve old notifications
+------------------------------
+
+Method: "getOldNotifications"
+Arguments: {Int, Int} - the integers represent zero based indices into the stored notifications for this user
+Return value: Array of notifications ({NotificationData1, NotificationData2, ...})
+
+Description:
+Returns a range of notifications from the stored notifications for this user. The first argument represents the first index into the archive, the second one represents the last index.
+For example, getOldNotifications(0, 9) will return the 10 first notifications stored for this user (assuming there are at least 10 notifications overall).
+
+4.4 Generate notification for debugging purposes
+------------------------------------------------
+
+Method: "generateNotification"
+Arguments: {NotificationData}
+Return value: null
+
+Description:
+This call will simply "echo" back the notification to the client for debugging purposes so the developer can test if their notification processing works as intended.

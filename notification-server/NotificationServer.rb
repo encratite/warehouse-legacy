@@ -4,6 +4,8 @@ require 'fileutils'
 require 'nil/file'
 require 'nil/ipc'
 
+require 'shared/user'
+
 require 'notification-server/NotificationClient'
 
 class NotificationServer < Nil::IPCServer
@@ -50,13 +52,29 @@ class NotificationServer < Nil::IPCServer
 				Thread.new { handleClient(client) }
 			rescue OpenSSL::SSL::SSLError => exception
 				puts "An SSL exception occured: #{exception.message}"
+			rescue RuntimeError => exception
+				puts "Runtime error: #{exception.message}"
 			end
 		end
 	end
 	
-	def handleClient(client)
-		clientObject = NotificationClient.new(client, @database)
+	def handleClient(socket)
+		name = extractCertificateName(OpenSSL::X509::Certificate.new(socket.peer_cert).subject)
+		dataset = @database[:user_data].where(name: name).all
+		if dataset.empty?
+			raise "Encountered an unknown user: #{name}"
+		end
+		user = User.new(dataset.first)
+		client = NotificationClient.new(socket, user)
 		@clientMutex.synchronize { @clients << clientObject }
+		
+		processClientCommunication client
+	end
+	
+	def processClientCommunication(client)
+		while true
+			
+		end
 	end
 	
 	def notify(user, type, message)

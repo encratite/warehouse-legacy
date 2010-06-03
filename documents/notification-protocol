@@ -12,6 +12,8 @@ The serialisation over TCP is achieved using a simple plain text method where ea
 
 The actual units are JSON encoded data.
 
+As usual, all TCP traffic is encrypted using TLS. Users are identified based on their certificates.
+
 2. Standard data types
 ----------------------
 
@@ -117,8 +119,8 @@ This system introduces a few methods which are not available in the old pure JSO
 ------------------------------
 
 Method: "getNewNotifications"
-Arguments: {}
-Return value: Array of notifications ({NotificationData1, NotificationData2, ...})
+Arguments: p[]
+Return value: Array of notifications ([NotificationData1, NotificationData2, ...])
 
 Description:
 This method is invoked in order to retrieve notifications which were stored for the user while their notification processing client was offline.
@@ -127,7 +129,7 @@ This method is invoked in order to retrieve notifications which were stored for 
 ----------------------------------------------------------
 
 Method: "getNotificationCount"
-Arguments: {}
+Arguments: []
 Return value: Number of notifications stored for this user.
 
 Description:
@@ -137,8 +139,8 @@ This is intended to be used in combination with getOldNotification to retrieve a
 ------------------------------
 
 Method: "getOldNotifications"
-Arguments: {Int, Int} - the integers represent zero based indices into the stored notifications for this user
-Return value: Array of notifications ({NotificationData1, NotificationData2, ...})
+Arguments: [Int, Int] - the integers represent zero based indices into the stored notifications for this user
+Return value: Array of notifications ([NotificationData1, NotificationData2, ...])
 
 Description:
 Returns a range of notifications from the stored notifications for this user. The first argument represents the first index into the archive, the second one represents the last index.
@@ -148,8 +150,26 @@ For example, getOldNotifications(0, 9) will return the 10 first notifications st
 ------------------------------------------------
 
 Method: "generateNotification"
-Arguments: {NotificationData}
+Arguments: [NotificationData]
 Return value: null
 
 Description:
 This call will simply "echo" back the notification to the client for debugging purposes so the developer can test if their notification processing works as intended.
+
+5. Actual examples
+------------------
+
+At first the client connects via TLS. The user is identified based on the N field in the subject of their certificate.
+Newlines are NOT part of the data sent over the wire.
+
+Client to server:
+
+81:{"type": "rpc", "data": {"id": 1, "method": "getNewNotifications", "params": []}}
+
+Server to client, immediately after the RPC invocation:
+
+201:{"type": "rpcResult", "data": {"id": 1, "error": null, "result": {"time": 12774537, "type": "serviceMessage", "content": {"severity": "debug", "message": "This is just a test. Calm down, everyone."}}}}
+
+Server to client, at a later point in time (the ReleaseData was shortened - too long) when a release is queued by one of the automatic services:
+
+156:{"type": "notification", "data": {"time": 12775484, "type": "queued", "content": {"id": 123456, "site": "SceneAccess", "name": "Some.Scene.Release-GROUP"}}}

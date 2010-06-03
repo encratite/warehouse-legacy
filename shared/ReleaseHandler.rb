@@ -160,6 +160,10 @@ class ReleaseHandler
 				path = releaseData.path
 				output "Downloading #{path}"
 				torrentData = @httpHandler.get(path)
+				if torrentData == nil
+					output "HTTP error: Unable to retrieve path #{path}"
+					return
+				end
 				torrent = Bencode.getTorrentName(torrentData)
 				torrentPath = File.expand_path(torrent, @torrentPath)
 				if Nil.readFile(torrentPath) != nil

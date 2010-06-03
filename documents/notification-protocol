@@ -22,13 +22,25 @@ As usual, all TCP traffic is encrypted using TLS. Users are identified based on 
 
 This data type is used in the "data" component of notifications as described in section "3.0 Notifications":
 
-{"time": <UNIX timestamp associated with this event (UTC!)>, "type": <string describing the nature of the notification>, "content": <arbitrary JSON data suited for this type of notification>}
+{
+	"time": <Int, UNIX timestamp associated with this event (UTC!)>,
+	"type": <String describing the nature of the notification>,
+	"content": <String, arbitrary JSON data suited for this type of notification>
+}
 
 2.2 ReleaseData
 ---------------
 
-In the following section (3. Notifications) concerning the format of notifications you will frequently encounter the ReleaseData data type which is the same as the corresponding serialised version of the internal SearchResult data from the User API which you might already know from the JSON RPC interface of the Warehouse.
-Details can be found in user-api/SearchResult.rb. Each member (prefixed by '@' in Ruby, excluding @descriptions) will result in one field in the associative array in the JSON data, with the same name.
+In the following section (3. Notifications) concerning the format of notifications you will frequently encounter the ReleaseData data type which represents the format of the table download_queue in database/warehouse.sql:
+
+{
+	"site": <String, a site name like "SceneAccess" from which the release was queued>,
+	"siteId": <Int, the numeric ID of the torrent on that site>,
+	"name": <String, name of the release>,
+	"time": <Int, the time at which the release was queued>,
+	"size": <Int, size of the release in octets>,
+	"isManual": <Bool, is true if and only if this release was queued manually by one user - otherwise it is a result of automatic filter matches>
+}
 
 3. Notifications
 ----------------
@@ -37,7 +49,10 @@ Notifications are sent by the server to the client to inform users about events 
 No previous call is made by the client to retrieve these notifications.
 This is their format:
 
-{"type": "notification", "data": NotificationData}
+{
+	"type": "notification",
+	"data": <NotificationData, actual notification data>
+}
 
 Here is a list of types of notifications currently implemented (or planned) in the system:
 

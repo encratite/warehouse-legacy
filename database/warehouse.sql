@@ -6,7 +6,8 @@ create table user_data
 (
 	id serial primary key,
 	name text unique not null,
-	is_administrator boolean not null default false
+	is_administrator boolean not null default false,
+	last_notification timestamp default now()
 );
 
 drop table if exists user_release_filter cascade;
@@ -125,6 +126,32 @@ create table user_notification
 	notification_time timestamp default now(),
 	--this is just a string
 	notification_type text not null,
-	--this is JSON data
+	--this is serialised JSON data as a string
 	content text not null
+);
+
+drop table if exists download_queue;
+
+--keep a cache of stuff currently queued in here with copies of values from the big tables in order to reduce lookup times
+
+create table download_queue
+(
+	id serial primary key,
+	--a string like 'SceneAccess'
+	site text not null,
+	--refers to the site_id column in one of the release tables
+	site_id integer not null,
+	name text not null,
+	queue_time timestamp default now() not null,
+	release_size bigint not null,
+	is_manual boolean not null
+);
+
+drop table if exists download_queue_user;
+
+create table download_queue_user
+(
+	id serial primary key,
+	user_id integer references user_data(id) not null,
+	queue_id integer references download_queue(id) not null
 );

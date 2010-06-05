@@ -153,5 +153,6 @@ create table download_queue_user
 (
 	id serial primary key,
 	user_id integer references user_data(id) not null on delete cascade,
-	queue_id integer references download_queue(id) not null on delete cascade
+	queue_id integer references download_queue(id) not null on delete cascade,
+	constraint unique_user_id_queue_id_constraint unique(user_id, queue_id)
 );

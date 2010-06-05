@@ -12,6 +12,7 @@ require 'shared/User'
 	'download',
 	'rtorrent',
 	'notifications',
+	'queue',
 ].each do |name|
 	require "user-api/UserAPI/#{name}"
 end

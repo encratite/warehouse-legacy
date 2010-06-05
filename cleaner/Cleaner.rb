@@ -4,6 +4,7 @@ require 'sequel'
 require 'nil/string'
 require 'nil/file'
 require 'nil/time'
+require 'nil/ipc'
 
 require 'user-api/UserAPI'
 require 'user-api/TorrentData'
@@ -12,6 +13,7 @@ require 'shared/OutputHandler'
 
 class Cleaner
 	Debugging = false
+	TorrentExtension = '.torrent'
 	
 	def initialize(configuration, connections)
 		torrentData = configuration::Torrent
@@ -34,19 +36,28 @@ class Cleaner
 		@filteredPath = pathData::Filtered
 		
 		@api = UserAPI.new(configuration, connections)
+		
+		@database = connections.sqlDatabase
+		@queue = @database[:download_queue]
+		
+		@notification = connections.notificationClient
 	end
 	
 	def run
 		while true
-			#experimental memory usage reduction test
-			GC.start
-			processTorrents
-			removeOldQueueEntries
-			while true
-				break if !freeSomeSpace || Debugging
+			begin
+				#experimental memory usage reduction test
+				GC.start
+				processTorrents
+				removeOldQueueEntries
+				while true
+					break if !freeSomeSpace || Debugging
+				end
+				GC.start
+				sleep @checkDelay
+			rescue Nil::IPCError => exception
+				output "An IPC error occured: #{exception.message}"
 			end
-			GC.start
-			sleep @checkDelay
 		end
 	end
 	
@@ -110,6 +121,27 @@ class Cleaner
 		return
 	end
 	
+	def notifyUsersAboutDeletionOfTorrent(release, type, content)
+		users = @api.getQueueEntryUsers(release)
+		if users == nil
+			output "Unable to retrieve users for release #{release}"
+			return false
+		end
+		
+		users.each do |user|
+			output "Notifying user #{user}: #{type}: #{content}"
+			@notification.notify(user.name, type, content)
+		end
+		return true
+	end
+	
+	def deleteTorrent(path, message, type = 'downloadDeleted')
+		release = getReleaseNameFromPath(path)
+		notifyUsersAboutDeletionOfTorrent(release, type, message)
+		removeQueueEntry(release)
+		deleteFile(path)
+	end
+	
 	def deleteFile(path)
 		output "Deleting file #{path}"
 		FileUtils.rm_f path if !Debugging
@@ -159,9 +191,10 @@ class Cleaner
 			end
 			timeTorrentWentUnseeded = Time.now - info.timeCreated
 			if timeTorrentWentUnseeded > @unseededTorrentRemovalDelay
-				downloadPath = Nil.joinPaths(@downloadPath, torrent.name)
-				output "Getting rid of unseeded torrent #{torrent.name}"
-				deleteFile(torrentPath)
+				name = torrent.name
+				downloadPath = Nil.joinPaths(@downloadPath, name)
+				output "Getting rid of unseeded torrent #{name}"
+				deleteTorrent(torrentPath, "Removed unseeded release #{name}", 'downloadError')
 				deleteDirectory(downloadPath)
 			end
 		end
@@ -188,7 +221,17 @@ class Cleaner
 	
 	def removeOldQueueEntries
 		limit = (Time.now - @queueEntryAgeMaximum).to_i.to_s.lit
-		@database[:download_queue].filter{|x| x.queue_time <= limit}.delete
+		@queue.filter{|x| x.queue_time <= limit}.delete
+	end
+	
+	def getReleaseNameFromPath(path)
+		torrent = File.basename(path)
+		release = torrent[0..(torrent.size - TorrentExtension.size - 1)]
+		return release
+	end
+	
+	def removeQueueEntry(release)
+		@queue.where(name: release).delete
 	end
 	
 	def getFreeSpace
@@ -204,8 +247,9 @@ class Cleaner
 		end
 		target = entries[0]
 		deleteDirectory target.path
-		torrentFile = File.expand_path(target.name + '.torrent', @torrentPath)
-		deleteFile torrentFile
+		name = target.name
+		torrentFile = File.expand_path(name + TorrentExtension, @torrentPath)
+		deleteTorrent(torrentFile, "Removed release #{name} because there was not enough space left on the disk")
 		return true
 	end
 	

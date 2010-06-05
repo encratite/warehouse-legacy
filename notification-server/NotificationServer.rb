@@ -141,15 +141,15 @@ class NotificationServer < Nil::IPCServer
 		else
 			requests = [input]
 		end
-		@rpc.processRPCRequests(client.user, requests)
+		@rpc.processRPCRequests(client, requests)
 	end
 	
 	def clientError(client, message)
-		error = createUnit('error', message)
+		error = self.createUnit('error', message)
 		client.sendData(error)
 	end
 	
-	def createUnit(type, data)
+	def self.createUnit(type, data)
 		unit =
 		{
 			'type' => type,
@@ -159,7 +159,7 @@ class NotificationServer < Nil::IPCServer
 		return unit
 	end
 	
-	def notificationUnit(type, content)
+	def self.notificationUnit(type, content)
 		data =
 		{
 			'time' => Time.now.utc.to_i,
@@ -167,17 +167,17 @@ class NotificationServer < Nil::IPCServer
 			'content' => content
 		}
 		
-		output = createUnit('notification', data)
+		output = self.createUnit('notification', data)
 		return output
 	end
 	
 	def notify(username, type, content)
-		unit = notificationUnit(type, content)
+		unit = self.notificationUnit(type, content)
 		isOnline = false
 		@clientMutex.synchronize do
 			@clients.each do |client|
 				next if client.user.name != username
-				client.sendData(notificationUnit)
+				client.sendData(unit)
 				isOnline = true
 			end
 		end

@@ -49,7 +49,11 @@ class JSONRPCHandler
 	end
 	
 	def processRPCRequests(user, requests)
-		jsonApi = JSONRPCAPI.new(@configuration, @connections, user)
+		jsonAPI = JSONRPCAPI.new(@configuration, @connections, user)
+		return processRPCRequestsByAPI(user, requests, jsonAPI)
+	end
+	
+	def processRPCRequestsByAPI(user, requests, jsonAPI)
 		replies = []
 		requests.each do |jsonRequest|
 			string = nil
@@ -61,7 +65,7 @@ class JSONRPCHandler
 			end
 			begin
 				outputData('JSON-RPC call', user, request, jsonRequest.inspect)
-				reply = jsonApi.processJSONRPCRequest(jsonRequest)
+				reply = jsonAPI.processJSONRPCRequest(jsonRequest)
 				replies << reply
 			rescue JSONRPCAPI::Error => exception
 				outputError('JSON-RPC API exception', user, request, exception.message, id, replies)

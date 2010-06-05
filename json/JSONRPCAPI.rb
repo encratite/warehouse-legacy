@@ -1,4 +1,5 @@
 require 'user-api/UserAPI'
+require 'notification-server/NotificationData'
 
 class JSONRPCAPI
 	attr_reader :requestHandlers
@@ -11,8 +12,7 @@ class JSONRPCAPI
 		initialiseHandlers
 	end
 	
-	def initialiseHandlers
-		@localHandlers =
+	def getLocalHandlers
 		{
 			#just for testing purposes
 			sum: [Fixnum, Fixnum],
@@ -28,9 +28,13 @@ class JSONRPCAPI
 			
 			#rtorrent
 			getTorrents: [],
+			
+			#notifications
+			getNewNotifications: [],
 		}
-		
-		@apiHandlers =
+	end
+	
+	def getAPIHandlers
 		{
 			#category
 			assignCategoryToFilters: [String, [Fixnum]],
@@ -63,7 +67,16 @@ class JSONRPCAPI
 			getTorrentFileCount: [String],
 			getTorrentSize: [String],
 			getTorrentBytesDone: [String],
+			
+			#notifications
+			getNotificationCount: []
 		}
+	end
+	
+	def initialiseHandlers
+		@localHandlers = getLocalHandlers
+		
+		@apiHandlers = getAPIHandlers
 		
 		@requestHandlers = {}
 		
@@ -172,5 +185,15 @@ class JSONRPCAPI
 	def getTorrents
 		torrents = @api.getTorrents.map{|x| x.serialise}
 		return torrents
+	end
+	
+	def getNewNotifications
+		notifications = @api.getNewNotifications.map{|x| x.serialise}
+		return notifications
+	end
+	
+	def getOldNotifications(first, last)
+		notifications = @api.getOldNotifications(first, last).map{|x| x.serialise}
+		return notifications
 	end
 end

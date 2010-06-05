@@ -1,8 +1,9 @@
+require 'fileutils'
+require 'sequel'
+
 require 'nil/string'
 require 'nil/file'
 require 'nil/time'
-
-require 'fileutils'
 
 require 'user-api/UserAPI'
 require 'user-api/TorrentData'
@@ -24,6 +25,7 @@ class Cleaner
 		@freeSpaceMinimum = cleanerData::FreeSpaceMinimum
 		@checkDelay = cleanerData::CheckDelay
 		@unseededTorrentRemovalDelay = cleanerData::UnseededTorrentRemovalDelay
+		@queueEntryAgeMaximum = cleanerData::QueueEntryAgeMaximum
 		
 		logPath = Nil.joinPaths(configuration::Logging::Path, cleanerData::Log)
 		@output = OutputHandler.new(logPath)
@@ -39,6 +41,7 @@ class Cleaner
 			#experimental memory usage reduction test
 			GC.start
 			processTorrents
+			removeOldQueueEntries
 			while true
 				break if !freeSomeSpace || Debugging
 			end
@@ -181,6 +184,11 @@ class Cleaner
 			end
 		end
 		return nil
+	end
+	
+	def removeOldQueueEntries
+		limit = (Time.now - @queueEntryAgeMaximum).to_i.to_s.lit
+		@database[:download_queue].filter{|x| x.queue_time <= limit}.delete
 	end
 	
 	def getFreeSpace

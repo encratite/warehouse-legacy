@@ -10,6 +10,6 @@ class ConnectionContainer
 	def initialize
 		@sqlDatabase = getSQLDatabase
 		@xmlRPCClient = getXMLRPCClient
-		@notificationClient = NotificationClient.new(Configuration::Notification::Path)
+		@notificationClient = NotificationClient.new(Configuration::Notification::Socket)
 	end
 end

@@ -18,7 +18,7 @@ create type filter_type as enum ('name', 'nfo', 'genre');
 create table user_release_filter
 (
 	id serial primary key,
-	user_id integer references user_data(id) not null,
+	user_id integer references user_data(id) not null on delete cascade,
 	filter text not null,
 	release_filter_type filter_type not null,
 	--may be null if no category is set
@@ -30,7 +30,7 @@ drop table if exists user_command_log;
 create table user_command_log
 (
 	id serial primary key,
-	user_id integer references user_data(id) not null,
+	user_id integer references user_data(id) not null on delete cascade,
 	command_time timestamp default now() not null,
 	command text not null
 );
@@ -122,7 +122,7 @@ drop table if exists user_notification;
 create table user_notification
 (
 	id serial primary key,
-	user_id integer references user_data(id) not null,
+	user_id integer references user_data(id) not null on delete cascade,
 	notification_time timestamp default now(),
 	--this is just a string
 	notification_type text not null,
@@ -152,6 +152,6 @@ drop table if exists download_queue_user;
 create table download_queue_user
 (
 	id serial primary key,
-	user_id integer references user_data(id) not null,
-	queue_id integer references download_queue(id) not null
+	user_id integer references user_data(id) not null on delete cascade,
+	queue_id integer references download_queue(id) not null on delete cascade
 );

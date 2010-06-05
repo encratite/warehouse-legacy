@@ -7,6 +7,7 @@ require 'nil/ipc'
 require 'shared/user'
 
 require 'notification-server/NotificationClient'
+require 'notification-server/NotificationProtocol'
 
 require 'json/JSONRPCHandler'
 
@@ -145,34 +146,12 @@ class NotificationServer < Nil::IPCServer
 	end
 	
 	def clientError(client, message)
-		error = self.createUnit('error', message)
+		error = NotificationProtocol.createUnit('error', message)
 		client.sendData(error)
 	end
 	
-	def self.createUnit(type, data)
-		unit =
-		{
-			'type' => type,
-			'data' => data
-		}
-		
-		return unit
-	end
-	
-	def self.notificationUnit(type, content)
-		data =
-		{
-			'time' => Time.now.utc.to_i,
-			'type' => type,
-			'content' => content
-		}
-		
-		output = self.createUnit('notification', data)
-		return output
-	end
-	
 	def notify(username, type, content)
-		unit = self.notificationUnit(type, content)
+		unit = NotificationProtocol.notificationUnit(type, content)
 		isOnline = false
 		@clientMutex.synchronize do
 			@clients.each do |client|

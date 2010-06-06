@@ -35,9 +35,9 @@ create table user_command_log
 	command text not null
 );
 
-drop table if exists scene_access_data cascade;
+drop table if exists sceneaccess_data cascade;
 
-create table scene_access_data
+create table sceneaccess_data
 (
 	id serial primary key,
 	site_id integer unique not null,
@@ -59,7 +59,7 @@ create table scene_access_data
 	leecher_count integer not null
 );
 
-create index scene_access_data_name_index on scene_access_data(name);
+create index sceneaccess_data_name_index on sceneaccess_data(name);
 
 drop table if exists torrentvault_data;
 

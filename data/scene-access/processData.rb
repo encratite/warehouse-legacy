@@ -99,7 +99,7 @@ end
 
 class DataExtractor
 	def initialize(database, pattern)
-		@dataset = database[:scene_access_data]
+		@dataset = database[:sceneaccess_data]
 		@pattern = pattern
 	end
 

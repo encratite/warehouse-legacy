@@ -138,7 +138,7 @@ class Cleaner
 	def deleteTorrent(path, message, type = 'downloadDeleted')
 		release = getReleaseNameFromPath(path)
 		notifyUsersAboutDeletionOfTorrent(release, type, message)
-		removeQueueEntry(release)
+		removeQueueEntry(File.basename(path))
 		deleteFile(path)
 	end
 	
@@ -230,8 +230,8 @@ class Cleaner
 		return release
 	end
 	
-	def removeQueueEntry(release)
-		@queue.where(name: release).delete
+	def removeQueueEntry(torrent)
+		@queue.where(torrent: torrent).delete
 	end
 	
 	def getFreeSpace

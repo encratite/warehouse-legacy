@@ -53,13 +53,15 @@ class UserAPI
 			end
 			
 			torrent = Bencode.getTorrentName(data)
-			torrentPath = File.expand_path(torrent, @torrentPath)
+			torrentPath = Nil.joinPaths(@torrentPath, torrent)
 			
 			begin
 				Nil.writeFile(torrentPath, data)
 			rescue Errno::EACCES
 				error 'Failed to overwrite file - access denied.'
 			end
+			
+			insertQueueEntry(site.name, data[:site_id], data[:name], torrent, data[:release_size], true, [@user.id])
 			
 			if @user.name != Nil.getUser
 				commandLine = "#{@changeOwnershipPath} #{@user.name} #{torrentPath}"

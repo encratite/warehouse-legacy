@@ -21,4 +21,28 @@ class UserAPI
 		users = results.map{|x| User.new(x)}
 		return users
 	end
+	
+	def insertQueueEntry(site, siteId, name, torrent, releaseSize, isManual, userIds)
+		queueData =
+		{
+			site: site.name,
+			site_id: siteId,
+			name: name,
+			torrent: torrent,
+			release_size: releaseSize,
+			is_manual: isManual,
+		}
+		
+		@database.transaction do
+			queueId = @database[:download_queue].insert(queueData)
+			userIds.each do |id|
+				queueUserData =
+				{
+					user_id: id,
+					queue_id: queueId,
+				}
+				@database[:download_queue_user].insert(queueUserData)
+			end
+		end
+	end
 end

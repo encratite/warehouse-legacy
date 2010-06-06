@@ -142,6 +142,8 @@ create table download_queue
 	--refers to the site_id column in one of the release tables
 	site_id integer not null,
 	name text not null,
+	--the name of the torrent has to be extracted from the bencoded data so you cannot deducde it from the `name` column only
+	torrent text not null,
 	queue_time timestamp default now() not null,
 	release_size bigint not null,
 	is_manual boolean not null

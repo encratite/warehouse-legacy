@@ -1,5 +1,6 @@
 require 'sequel'
 require 'pg'
+require 'set'
 
 require 'nil/file'
 
@@ -27,10 +28,10 @@ class ReleaseHandler
 		exit
 	end
 	
-	def isReleaseOfInterestType(releaseData, type)
+	def getMatchingUserIdsForFilterType(releaseData, type)
 		release = releaseData.name
 		
-		select = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.release_filter_type as release_filter_type from user_release_filter, user_data'
+		select = 'select user_data.id as id, user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.release_filter_type as release_filter_type from user_release_filter, user_data'
 		regexp = '? ~* user_release_filter.filter'
 		
 		typeString = type.to_s
@@ -51,8 +52,7 @@ class ReleaseHandler
 		target = releaseData.instance_variable_get(symbol)
 		results = @database["#{select} where #{regexpCondition} and #{filterCondition} and #{idCondition}", target, typeString]
 		matchCount = results.count
-		isOfInterest = matchCount > 0
-		if isOfInterest
+		if matchCount > 0
 			output "Matches for release #{release}: #{matchCount}"
 			filterDictionary = {}
 			results.each do |row|
@@ -65,10 +65,11 @@ class ReleaseHandler
 				output "#{name}: #{filters.inspect}"
 			end
 		end
-		return isOfInterest
+		userIds = results.map{|x| x[:id]}
+		return userIds
 	end
 	
-	def isReleaseOfInterest(releaseData)
+	def getMatchingFilterUserIds(releaseData)
 		types =
 		[
 			:name,
@@ -76,12 +77,16 @@ class ReleaseHandler
 			:genre
 		]
 		
-		isOfInterest = false
+		idSet = Set.new
+		
 		types.each do |type|
-			isOfInterest = isReleaseOfInterestType(releaseData, type) || isOfInterest
+			newIds = getMatchingUserIdsForFilterType(releaseData, type)
+			newIds.each do |id|
+				idSet << id
+			end
 		end
 		
-		return isOfInterest
+		return idSet.to_a
 	end
 	
 	def insertData(releaseData)
@@ -147,9 +152,11 @@ class ReleaseHandler
 			end
 			releaseData = @releaseDataClass.new(input)
 			isOfInterest = false
+			matchingUserIds = nil
 			@database.transaction do
 				insertData(releaseData)
-				isOfInterest = isReleaseOfInterest(releaseData)
+				matchingUserIds = getMatchingFilterUserIds(releaseData)
+				isOfInterest = !matchingUserIds.empty?
 			end
 			if isOfInterest
 				output "Discovered a release of interest: #{release}"
@@ -165,7 +172,7 @@ class ReleaseHandler
 					return
 				end
 				torrent = Bencode.getTorrentName(torrentData)
-				torrentPath = File.expand_path(torrent, @torrentPath)
+				torrentPath = Nil.joinPaths(@torrentPath, torrent)
 				if Nil.readFile(torrentPath) != nil
 					output "Collision detected - aborting, #{torrentPath} already exists!"
 					return
@@ -173,6 +180,8 @@ class ReleaseHandler
 				
 				Nil.writeFile(torrentPath, torrentData)
 				output "Downloaded #{path} to #{torrentPath}"
+				
+				insertQueueEntry(site.name, releaseData.siteId, releaseData.name, torrent, torrent.releaseSize, false, matchingUserIds)
 			else
 				output "#{release} is not a release of interest"
 			end

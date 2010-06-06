@@ -1,14 +1,12 @@
 To do:
 
-the creation of new users should add them to the database in the first place instead of this non-sense:
-	the notification server API should be able to initialise users, too
-	the JSON RPC API should be able to initialise users, too
-
+the creation of new users should add them to the database in the first place (currently only the shell does it)
 add proper handling of torrents which consist of single files instead of folders (this breaks the cleaner and the categoriser I think)
 possible future issue: store NFOs with newlines instead of raping them (solved in the case of TL)
 move the type specifications from configuration/ to site/
-add a seed check for TV downloads?
-add more customisation features to the search results in the shell
+
+Work in progress:
+
 solve the on-download notification problem
 
 Problematic:
@@ -17,6 +15,7 @@ symlinks should get updated when you add/remove a filter? - frequently you do no
 
 Done:
 
+add a seed check for downloads (well, the cleaner simply removes unseeded stuff after a while now and notifies the user(s) in question)
 The JSON RPC server is one central process, unlike the shell, so the files it creates will have the wrong user (this will result in missing 'own' symlinks when using the download API)
 need status stuff, XMLRPC data from rtorrent
 add genre filters for TorrentVault
@@ -30,3 +29,7 @@ the categoriser should check what user issued a download, creating a symlink in 
 implement filter categories with symbolic links
 HTTP URL should be retrieved from details, not from the DB
 script which cleans up the disk on a regular basis (might not be working though)
+
+Thrown out:
+
+add more customisation features to the search results in the shell (irrelevant now that the shell is marginalised by the JSON RPC/notification-RPC protocol

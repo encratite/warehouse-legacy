@@ -7,13 +7,20 @@ require 'nil/environment'
 
 require 'shared/sites'
 
+require 'notification-server/NotificationReleaseData'
+
 class Categoriser
 	def initialize(configuration, connections)
 		@userBind = configuration::Torrent::Path::UserBind
 		@filteredPath = configuration::Torrent::Path::Filtered
 		@ownPath = configuration::Torrent::Path::Own
 		@userPath = configuration::Torrent::Path::User
+		
 		@database = connections.sqlDatabase
+		@queue = @database[:download_queue]
+		
+		@notification = connections.notificationClient
+		
 		@connections = connections
 		@log = File.open(configuration::Logging::CategoriserLog, 'ab')
 		@shellGroup = configuration::Torrent::User::ShellGroup
@@ -68,6 +75,31 @@ class Categoriser
 			return
 		end
 		setupPermissions(symlink)
+		processQueueAndNotifications(release)
+	end
+	
+	def processQueueAndNotifications(release)
+		torrent = "#{release}.torrent"
+		result = @queue.where(torrent: torrent).all
+		if result.empty?
+			output "Error: Unable to find a queue entry for release #{release}"
+			return
+		end
+		queueData = result.first
+		releaseData = NotificationReleaseData.new(
+			queueData[:site],
+			queueData[:site_id],
+			queueData[:name],
+			queueData[:size],
+			queueData[:is_manual]
+		)
+		id = queueData[:id]
+		userIds = @database[:download_queue_user].where(queue_id: id).select(user_id).map{|x| x[:user_id]}
+		userIds.each do |id|
+			@notification.downloadedNotification(id, releaseData)
+		end
+		#the release is not longer part of the queue - remove it
+		@queue.where(id: id).delete
 	end
 	
 	def getSpecificReleaseInformation(release)

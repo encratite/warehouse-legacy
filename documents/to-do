@@ -1,6 +1,12 @@
 To do:
 
-notificationClient updates missing in the user API (download/cancel), in the ReleaseHandler and also in the Categoriser
+proper unit testing for all the changes in:
+	-the notification server itself (write a new client?)
+	-user API downloading/queueing/notifications
+	-ReleaseHandler matches/queueing/notifications
+	-cleaner queue/notification handling
+	-categoriser queue entries/notifications
+
 the creation of new users should add them to the database in the first place (currently only the shell does it)
 add proper handling of torrents which consist of single files instead of folders (this breaks the cleaner and the categoriser I think)
 possible future issue: store NFOs with newlines instead of raping them (solved in the case of TL)
@@ -16,6 +22,7 @@ symlinks should get updated when you add/remove a filter? - frequently you do no
 
 Done:
 
+notificationClient updates missing in the user API (download/cancel), in the ReleaseHandler and also in the Categoriser
 add a seed check for downloads (well, the cleaner simply removes unseeded stuff after a while now and notifies the user(s) in question)
 The JSON RPC server is one central process, unlike the shell, so the files it creates will have the wrong user (this will result in missing 'own' symlinks when using the download API)
 need status stuff, XMLRPC data from rtorrent

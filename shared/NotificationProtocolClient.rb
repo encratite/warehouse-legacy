@@ -8,10 +8,18 @@ class NotificationProtocolClient
 		@client = nil
 	end
 	
-	def notify(username, type, content)
+	def notify(target, type, content)
 		if @client == nil
 			@client = Nil::IPCClient.new(@path)
 		end
-		return @client.notify(username, type, JSON.unparse(content))
+		return @client.notify(target, type, JSON.unparse(content))
+	end
+	
+	def queuedNotification(target, releaseData)
+		notify(target, 'queued', releaseData.serialise)
+	end
+	
+	def downloadedNotification(target, releaseData)
+		notify(target, 'downloaded', releaseData.serialise)
 	end
 end

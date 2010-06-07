@@ -8,6 +8,8 @@ require 'nil/environment'
 
 require 'shared/Bencode'
 
+require 'notification-server/NotificationReleaseData'
+
 class UserAPI
 	def prepareTorrentDownload(site, target)
 		table = site.table.to_s
@@ -61,8 +63,6 @@ class UserAPI
 				error 'Failed to overwrite file - access denied.'
 			end
 			
-			@queue.insertQueueEntry(site.name, data[:site_id], data[:name], torrent, data[:release_size], true, [@user.id])
-			
 			if @user.name != Nil.getUser
 				commandLine = "#{@changeOwnershipPath} #{@user.name} #{torrentPath}"
 				message = `#{commandLine}`
@@ -71,6 +71,11 @@ class UserAPI
 					raise "Failed to transfer ownership of torrent #{torrentPath} to #{@user.name}: #{message}"
 				end
 			end
+			
+			releaseData = NotificationReleaseData.new(site.name, data[:site_id], data[:name], data[:release_size], true)
+			@queue.insertQueueEntry(releaseData, torrent, [@user.id])
+			@notification.queuedNotification(@user.id, releaseData)
+			
 		rescue RuntimeError => exception
 			error "Error: #{exception.message} - #{administrator}."
 		rescue ReleaseData::Error => exception

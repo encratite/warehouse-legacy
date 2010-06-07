@@ -150,21 +150,27 @@ class NotificationServer < Nil::IPCServer
 		client.sendData(error)
 	end
 	
-	def notify(username, type, content)
+	#user may be either a username or a user ID
+	def notify(user, type, content)
+		isId = user.class == Fixnum
 		unit = NotificationProtocol.notificationUnit(type, content)
 		isOnline = false
 		@clientMutex.synchronize do
 			@clients.each do |client|
-				next if client.user.name != username
+				next if client.user != user
 				client.sendData(unit)
 				isOnline = true
 			end
 		end
 		
 		if !isOnline
-			result = @database[:user_data].where(name: username).all
-			return Nil.IPCError.new("No such user: #{username}") if result.empty?
-			id = result.first[:id]
+			if isId
+				id = user
+			else
+				result = @database[:user_data].where(name: username).all
+				return Nil.IPCError.new("No such user: #{username}") if result.empty?
+				id = result.first[:id]
+			end
 			data =
 			{
 				'user_id' => id,

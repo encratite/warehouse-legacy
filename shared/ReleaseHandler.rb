@@ -8,6 +8,8 @@ require 'shared/ReleaseData'
 require 'shared/Bencode'
 require 'shared/QueueHandler'
 
+require 'notification-server/NotificationReleaseData'
+
 class ReleaseHandler
 	def initialize(site)
 		@site = site
@@ -17,7 +19,9 @@ class ReleaseHandler
 		#regular ReleaseSites don't have this member
 		@downloadDelay = site.instance_variable_get(:@downloadDelay) || 0
 		
-		@database = site.database
+		@connections = site.connections
+		@database = @connections.sqlDatabase
+		@notification = @connections.notificationClient
 		
 		@torrentPath = site.torrentPath
 		@sizeLimit = site.releaseSizeLimit
@@ -186,7 +190,11 @@ class ReleaseHandler
 				Nil.writeFile(torrentPath, torrentData)
 				output "Downloaded #{path} to #{torrentPath}"
 				
-				@queue.insertQueueEntry(@site.name, releaseData.id, releaseData.name, torrent, releaseData.size, false, matchingUserIds)
+				releaseData = NotificationReleaseData.new(@site.name, releaseData.id, releaseData.name, releaseData.size, false)
+				@queue.insertQueueEntry(releaseData, torrent, matchingUserIds)
+				matchingUserIds.each do |id|
+					@notification.queuedNotification(id, releaseData)
+				end
 			else
 				output "#{release} is not a release of interest"
 			end

@@ -28,15 +28,15 @@ class QueueHandler
 		return users
 	end
 	
-	def insertQueueEntry(site, siteId, name, torrent, releaseSize, isManual, userIds)
+	def insertQueueEntry(releaseData, torrent, userIds)
 		queueData =
 		{
-			site: site,
-			site_id: siteId,
-			name: name,
+			site: releaseData.site,
+			site_id: releaseData.siteId,
+			name: releaseData.name,
 			torrent: torrent,
-			release_size: releaseSize,
-			is_manual: isManual,
+			release_size: releaseData.releaseSize,
+			is_manual: releaseData.isManual,
 		}
 		
 		@database.transaction do

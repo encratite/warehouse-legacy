@@ -1,8 +1,8 @@
 require 'shared/http/HTTPReleaseSite'
 
 class TorrentLeechSite < HTTPReleaseSite
-	def initialize(siteData, torrentData, database)
-		super(siteData, torrentData, database)
+	def initialize(siteData, torrentData, connections)
+		super(siteData, torrentData, connections)
 		@nfoPath = siteData::HTTP::NFOPath
 	end
 	

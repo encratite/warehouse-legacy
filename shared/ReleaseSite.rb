@@ -7,21 +7,23 @@ require 'shared/irc/IRCData'
 require 'shared/logging'
 
 class ReleaseSite
-	attr_reader :log, :table, :name, :abbreviation, :database
+	#database/connections reader required by the ReleaseHandler
+	attr_reader :log, :table, :name, :abbreviation, :database, :connections
 	attr_reader :httpHandler, :outputHandler, :releaseHandler
 	
 	#Used by ReleaseHandler
 	attr_reader :torrentPath, :releaseSizeLimit, :releaseDataClass
 	
-	def initialize(siteData, torrentData, database)
+	def initialize(siteData, torrentData, connections)
 		"""
 		Dependencies:
 		HTTPHandler: None
 		OutputHandler: None
 		ReleaseHandler: HTTPHandler, OutputHandler
 		"""
-
-		@database = database
+		
+		@connections = connections
+		@database = connections.sqlDatabase
 		@log = getSiteLogPath(siteData::Log)
 		@table = siteData::Table
 		@name = siteData::Name

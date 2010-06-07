@@ -14,4 +14,18 @@ class User
 			@id, @name, @isAdministrator = arguments
 		end
 	end
+	
+	def ==(other)
+		if other.class == String
+			return @name == other
+		elsif other.class == Fixnum
+			return @id == other
+		else
+			raise 'Invalid user comparison'
+		end
+	end
+	
+	def !=(other)
+		return !(self == other)
+	end
 end

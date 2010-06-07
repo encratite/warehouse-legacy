@@ -1,5 +1,6 @@
 To do:
 
+notificationClient updates missing in the user API (download/cancel), in the ReleaseHandler and also in the Categoriser
 the creation of new users should add them to the database in the first place (currently only the shell does it)
 add proper handling of torrents which consist of single files instead of folders (this breaks the cleaner and the categoriser I think)
 possible future issue: store NFOs with newlines instead of raping them (solved in the case of TL)

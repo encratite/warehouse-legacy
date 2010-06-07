@@ -30,6 +30,7 @@ class UserAPI
 		@connections = connections
 		@database = connections.sqlDatabase
 		@rpc = connections.xmlRPCClient
+		@notification = connections.notificationClient
 		
 		processUser(user)
 		

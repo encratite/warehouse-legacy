@@ -1,5 +1,5 @@
 require 'configuration/Configuration'
-require 'notification-server/NotificationServer'
+require 'notifiation/NotificationServer'
 require 'shared/ConnectionContainer'
 
 server = NotificationServer.new(Configuration, ConnectionContainer.new)

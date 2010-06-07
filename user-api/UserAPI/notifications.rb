@@ -1,5 +1,5 @@
 require 'user-api/NotificationData'
-require 'notification-server/NotificationServer'
+require 'notifiation/NotificationServer'
 
 class UserAPI
 	#internal use only

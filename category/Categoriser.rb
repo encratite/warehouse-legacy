@@ -7,7 +7,7 @@ require 'nil/environment'
 
 require 'shared/sites'
 
-require 'notification-server/NotificationReleaseData'
+require 'notifiation/NotificationReleaseData'
 
 class Categoriser
 	def initialize(configuration, connections)

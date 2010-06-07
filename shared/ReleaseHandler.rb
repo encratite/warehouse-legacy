@@ -8,7 +8,7 @@ require 'shared/ReleaseData'
 require 'shared/Bencode'
 require 'shared/QueueHandler'
 
-require 'notification-server/NotificationReleaseData'
+require 'notifiation/NotificationReleaseData'
 
 class ReleaseHandler
 	def initialize(site)

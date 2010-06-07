@@ -8,7 +8,7 @@ require 'nil/environment'
 
 require 'shared/Bencode'
 
-require 'notification-server/NotificationReleaseData'
+require 'notifiation/NotificationReleaseData'
 
 class UserAPI
 	def prepareTorrentDownload(site, target)

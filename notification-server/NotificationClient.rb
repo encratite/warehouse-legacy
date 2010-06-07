@@ -5,7 +5,7 @@ require 'nil/communication'
 
 require 'shared/ssl'
 
-class NotificationClient < SerialisedCommunication
+class NotificationClient < Nil::SerialisedCommunication
 	attr_reader :socket
 	
 	def initialize(socket, user)

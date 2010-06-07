@@ -1,5 +1,6 @@
 class ReleaseData
-	attr_reader :name, :path, :size, :nfo, :genre
+	#id, name, size are used by the ReleaseHandler
+	attr_reader :id, :name, :path, :size, :nfo, :genre
 	
 	class Error < StandardError
 	end

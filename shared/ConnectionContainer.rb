@@ -1,6 +1,6 @@
 require 'shared/sqlDatabase'
 require 'shared/xmlRPC'
-require 'shared/NotificationClient'
+require 'shared/NotificationProtocolClient'
 
 require 'configuration/Configuration'
 
@@ -10,6 +10,6 @@ class ConnectionContainer
 	def initialize
 		@sqlDatabase = getSQLDatabase
 		@xmlRPCClient = getXMLRPCClient
-		@notificationClient = NotificationClient.new(Configuration::Notification::Socket)
+		@notificationClient = NotificationProtocolClient.new(Configuration::Notification::Socket)
 	end
 end

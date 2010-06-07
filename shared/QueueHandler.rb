@@ -2,12 +2,18 @@ require 'sequel'
 
 require 'shared/User'
 
-class UserAPI
+class QueueHandler
+	def initialize(database)
+		@database = database
+		@queue = @database[:download_queue]
+		@queueUser = @database[:download_queue_user]
+	end
+	
 	def getQueueEntryUsers(name)
-		result = @database[:download_queue].where(name: name).select(:id).all
+		result = @queue.where(name: name).select(:id).all
 		return nil if result.empty?
 		id = result.first[:id]
-		results = @database[:download_queue_user].join(:user_data, :id => :user_id)
+		results = @queueUser.join(:user_data, :id => :user_id)
 		results = results.where(download_queue_user__queue_id: id)
 		
 		selection =
@@ -25,7 +31,7 @@ class UserAPI
 	def insertQueueEntry(site, siteId, name, torrent, releaseSize, isManual, userIds)
 		queueData =
 		{
-			site: site.name,
+			site: site,
 			site_id: siteId,
 			name: name,
 			torrent: torrent,
@@ -34,15 +40,24 @@ class UserAPI
 		}
 		
 		@database.transaction do
-			queueId = @database[:download_queue].insert(queueData)
+			queueId = @queue.insert(queueData)
 			userIds.each do |id|
 				queueUserData =
 				{
 					user_id: id,
 					queue_id: queueId,
 				}
-				@database[:download_queue_user].insert(queueUserData)
+				@queueUser.insert(queueUserData)
 			end
 		end
+	end
+	
+	def removeOldQueueEntries(maximumAge)
+		limit = (Time.now - maximumAge).to_i.to_s.lit
+		@queue.filter{|x| x.queue_time <= limit}.delete
+	end
+	
+	def removeQueueEntry(torrent)
+		@queue.where(torrent: torrent).delete
 	end
 end

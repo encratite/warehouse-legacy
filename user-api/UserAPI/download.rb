@@ -61,7 +61,7 @@ class UserAPI
 				error 'Failed to overwrite file - access denied.'
 			end
 			
-			insertQueueEntry(site.name, data[:site_id], data[:name], torrent, data[:release_size], true, [@user.id])
+			@queue.insertQueueEntry(site.name, data[:site_id], data[:name], torrent, data[:release_size], true, [@user.id])
 			
 			if @user.name != Nil.getUser
 				commandLine = "#{@changeOwnershipPath} #{@user.name} #{torrentPath}"

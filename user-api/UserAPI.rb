@@ -3,6 +3,7 @@ require 'nil/environment'
 
 require 'shared/sites'
 require 'shared/User'
+require 'shared/QueueHandler'
 
 [
 	'general',
@@ -12,7 +13,6 @@ require 'shared/User'
 	'download',
 	'rtorrent',
 	'notifications',
-	'queue',
 ].each do |name|
 	require "user-api/UserAPI/#{name}"
 end
@@ -52,6 +52,8 @@ class UserAPI
 		@sites = getReleaseSites(@database)
 		
 		@changeOwnershipPath = configuration::API::ChangeOwnershipPath
+		
+		@queue = QueueHandler.new(@database)
 	end
 	
 	def processUser(user)

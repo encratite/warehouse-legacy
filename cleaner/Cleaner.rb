@@ -10,6 +10,7 @@ require 'user-api/UserAPI'
 require 'user-api/TorrentData'
 
 require 'shared/OutputHandler'
+require 'shared/QueueHandler'
 
 class Cleaner
 	Debugging = false
@@ -38,7 +39,7 @@ class Cleaner
 		@api = UserAPI.new(configuration, connections)
 		
 		@database = connections.sqlDatabase
-		@queue = @database[:download_queue]
+		@queue = QueueHandler.new(@database)
 		
 		@notification = connections.notificationClient
 	end
@@ -49,7 +50,7 @@ class Cleaner
 				#experimental memory usage reduction test
 				GC.start
 				processTorrents
-				removeOldQueueEntries
+				removeOldQueueEntries(@queueEntryAgeMaximum)
 				while true
 					break if !freeSomeSpace || Debugging
 				end
@@ -122,7 +123,7 @@ class Cleaner
 	end
 	
 	def notifyUsersAboutDeletionOfTorrent(release, type, content)
-		users = @api.getQueueEntryUsers(release)
+		users = @queue.getQueueEntryUsers(release)
 		if users == nil
 			output "Unable to retrieve users for release #{release}"
 			return false
@@ -138,7 +139,7 @@ class Cleaner
 	def deleteTorrent(path, message, type = 'downloadDeleted')
 		release = getReleaseNameFromPath(path)
 		notifyUsersAboutDeletionOfTorrent(release, type, message)
-		removeQueueEntry(File.basename(path))
+		@queue.removeQueueEntry(File.basename(path))
 		deleteFile(path)
 	end
 	
@@ -219,19 +220,10 @@ class Cleaner
 		return nil
 	end
 	
-	def removeOldQueueEntries
-		limit = (Time.now - @queueEntryAgeMaximum).to_i.to_s.lit
-		@queue.filter{|x| x.queue_time <= limit}.delete
-	end
-	
 	def getReleaseNameFromPath(path)
 		torrent = File.basename(path)
 		release = torrent[0..(torrent.size - TorrentExtension.size - 1)]
 		return release
-	end
-	
-	def removeQueueEntry(torrent)
-		@queue.where(torrent: torrent).delete
 	end
 	
 	def getFreeSpace

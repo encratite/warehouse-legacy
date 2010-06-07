@@ -2,7 +2,7 @@ require 'json'
 require 'nil/ipc'
 require 'notification-server/NotificationProtocol'
 
-class NotificationClient
+class NotificationProtocolClient
 	def initialize(path)
 		@path = path
 		@client = nil

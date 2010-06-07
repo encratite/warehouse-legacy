@@ -6,9 +6,12 @@ require 'nil/file'
 
 require 'shared/ReleaseData'
 require 'shared/Bencode'
+require 'shared/QueueHandler'
 
 class ReleaseHandler
 	def initialize(site)
+		@site = site
+		
 		@httpHandler = site.httpHandler
 		@outputHandler = site.outputHandler
 		#regular ReleaseSites don't have this member
@@ -21,6 +24,8 @@ class ReleaseHandler
 		
 		@releaseTableSymbol = site.table
 		@releaseDataClass = site.releaseDataClass
+		
+		@queue = QueueHandler.new(@database)
 	end
 	
 	def databaseDown(exception)
@@ -181,7 +186,7 @@ class ReleaseHandler
 				Nil.writeFile(torrentPath, torrentData)
 				output "Downloaded #{path} to #{torrentPath}"
 				
-				insertQueueEntry(site.name, releaseData.siteId, releaseData.name, torrent, torrent.releaseSize, false, matchingUserIds)
+				@queue.insertQueueEntry(@site.name, releaseData.id, releaseData.name, torrent, releaseData.size, false, matchingUserIds)
 			else
 				output "#{release} is not a release of interest"
 			end

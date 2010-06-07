@@ -1,5 +1,5 @@
 require 'user-api/UserAPI'
-require 'notification-server/NotificationData'
+require 'user-api/NotificationData'
 
 class JSONRPCAPI
 	attr_reader :requestHandlers

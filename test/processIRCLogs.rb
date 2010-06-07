@@ -1,13 +1,13 @@
 require 'nil/file'
 
-require 'SCCObserver'
+require 'site/sceneaccess/SceneAccessSite'
+require 'configuration/SceneAccess'
 require 'configuration/Configuration'
+require 'shared/sqlDatabase'
 
-Dir.chdir '../observer/scene-access'
+site = SceneAccessSite.new(SceneAccessConfiguration, Configuration::Torrent, getSQLDatabase)
 
-lines = Nil.readLines('../../test/data/scc.log')
-observer = SCCObserver.new(Configuration)
+lines = Nil.readLines('test/input/sceneaccess.log')
 lines.each do |line|
-	next if line.empty?
-	observer.irc.irc.processLine(line)
+	site.ircHandler.irc.processLine(line)
 end

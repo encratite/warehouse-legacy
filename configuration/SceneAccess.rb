@@ -1,22 +1,22 @@
-require 'site/scene-access/SceneAccessReleaseData'
-require 'site/scene-access/SceneAccessIRCHandler'
+require 'site/sceneaccess/SceneAccessReleaseData'
+require 'site/sceneaccess/SceneAccessIRCHandler'
 
 require 'secret/SceneAccess'
 
 module SceneAccessConfiguration
 	module HTTP
-		Server = 'scene-access.org'
+		Server = 'sceneaccess.org'
 		#Cookies are secret
 	end
 	
 	module IRC
-		Server = 'irc.scene-access.org'
+		Server = 'irc.sceneaccess.org'
 		Port = 6667
 		#Nick is secret
 		Channels = ['#scc-announce']
 		Bots =
 		[
-			{nick: 'SCC', host: 'csops.scene-access.org'}
+			{nick: 'SCC', host: 'csops.sceneaccess.org'}
 		]
 		
 		module Regexp
@@ -25,7 +25,7 @@ module SceneAccessConfiguration
 		end
 	end
 	
-	Log = 'scene-access.log'
+	Log = 'sceneaccess.log'
 	Table = :sceneaccess_data
 	Name = 'SceneAccess'
 	Abbreviation = 'SCC'

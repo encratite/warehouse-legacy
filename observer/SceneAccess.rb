@@ -1,4 +1,4 @@
-require 'site/scene-access/SceneAccessSite'
+require 'site/sceneaccess/SceneAccessSite'
 require 'configuration/SceneAccess'
 require 'configuration/Configuration'
 require 'shared/sqlDatabase'

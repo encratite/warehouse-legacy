@@ -15,6 +15,10 @@ drop table if exists user_release_filter cascade;
 drop type if exists filter_type;
 create type filter_type as enum ('name', 'nfo', 'genre');
 
+--\d user_release_filter
+--alter table user_release_filter drop constraint user_release_filter_user_id_fkey;
+--alter table user_release_filter add constraint user_id_deletion foreign key (user_id) references user_data(id) on delete cascade;
+
 create table user_release_filter
 (
 	id serial primary key,
@@ -27,6 +31,10 @@ create table user_release_filter
 
 drop table if exists user_command_log;
 
+--\d user_command_log
+--alter table user_command_log drop constraint user_command_log_user_id_fkey;
+--alter table user_command_log add constraint user_id_deletion foreign key (user_id) references user_data(id) on delete cascade;
+
 create table user_command_log
 (
 	id serial primary key,
@@ -36,6 +44,9 @@ create table user_command_log
 );
 
 drop table if exists sceneaccess_data cascade;
+
+--alter table scene_access_data rename to sceneaccess_data;
+--alter index scene_access_data_name_index rename to sceneaccess_data_name_index;
 
 create table sceneaccess_data
 (
@@ -122,7 +133,7 @@ drop table if exists user_notification;
 create table user_notification
 (
 	id serial primary key,
-	user_id integer references user_data(id) not null on delete cascade,
+	user_id integer references user_data(id) on delete cascade not null,
 	notification_time timestamp default now(),
 	--this is just a string
 	notification_type text not null,
@@ -154,7 +165,7 @@ drop table if exists download_queue_user;
 create table download_queue_user
 (
 	id serial primary key,
-	user_id integer references user_data(id) not null on delete cascade,
-	queue_id integer references download_queue(id) not null on delete cascade,
-	constraint unique_user_id_queue_id_constraint unique(user_id, queue_id)
+	user_id integer references user_data(id) on delete cascade not null,
+	queue_id integer references download_queue(id) on delete cascade not null,
+	unique(user_id, queue_id)
 );

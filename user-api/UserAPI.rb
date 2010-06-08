@@ -4,6 +4,7 @@ require 'nil/environment'
 require 'shared/sites'
 require 'shared/User'
 require 'shared/QueueHandler'
+require 'shared/OwnershipHandler'
 
 [
 	'general',
@@ -52,9 +53,9 @@ class UserAPI
 		
 		@sites = getReleaseSites(@database)
 		
-		@changeOwnershipPath = configuration::API::ChangeOwnershipPath
-		
 		@queue = QueueHandler.new(@database)
+		
+		@ownership = OwnershipHandler.new(configuration::API)
 	end
 	
 	def processUser(user)

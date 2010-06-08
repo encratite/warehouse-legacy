@@ -64,12 +64,7 @@ class UserAPI
 			end
 			
 			if @user.name != Nil.getUser
-				commandLine = "#{@changeOwnershipPath} #{@user.name} #{torrentPath}"
-				message = `#{commandLine}`
-				returnCode = $?.to_i
-				if returnCode != 0
-					raise "Failed to transfer ownership of torrent #{torrentPath} to #{@user.name}: #{message}"
-				end
+				@ownership.changeOwnership(@user.name, torrentPath)
 			end
 			
 			releaseData = NotificationReleaseData.new(site.name, data[:site_id], data[:name], data[:release_size], true)

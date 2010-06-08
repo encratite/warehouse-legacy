@@ -8,13 +8,13 @@ class IRCReleaseSite < ReleaseSite
 	#Used by IRCHandler
 	attr_reader :ircData
 	
-	def initialize(siteData, torrentData, connections)
+	def initialize(siteData, torrentData, connections, configuration)
 		"""
 		Dependencies:
 		IRCHandler: OutputHandler, ReleaseHandler
 		ConsoleHandler: IRCHandler
 		"""
-		super(siteData, torrentData, connections)
+		super(siteData, torrentData, connections, configuration)
 		
 		@ircHandlerClass = siteData::IRCHandlerClass
 		

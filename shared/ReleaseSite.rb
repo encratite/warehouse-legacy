@@ -14,7 +14,7 @@ class ReleaseSite
 	#Used by ReleaseHandler
 	attr_reader :torrentPath, :releaseSizeLimit, :releaseDataClass
 	
-	def initialize(siteData, torrentData, connections)
+	def initialize(siteData, torrentData, connections, configuration)
 		"""
 		Dependencies:
 		HTTPHandler: None
@@ -38,7 +38,7 @@ class ReleaseSite
 		http = siteData::HTTP
 		@httpHandler = HTTPHandler.new(http::Server, http::Cookies)
 		@outputHandler = OutputHandler.new(@log)
-		@releaseHandler = ReleaseHandler.new(self)
+		@releaseHandler = ReleaseHandler.new(self, connections, configuration::API)
 	end
 	
 	def ==(abbreviation)

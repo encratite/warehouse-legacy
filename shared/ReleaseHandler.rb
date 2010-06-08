@@ -7,11 +7,12 @@ require 'nil/file'
 require 'shared/ReleaseData'
 require 'shared/Bencode'
 require 'shared/QueueHandler'
+require 'shared/OwnershipHandler'
 
 require 'notifiation/NotificationReleaseData'
 
 class ReleaseHandler
-	def initialize(site)
+	def initialize(site, connections, configuration)
 		@site = site
 		
 		@httpHandler = site.httpHandler
@@ -19,9 +20,8 @@ class ReleaseHandler
 		#regular ReleaseSites don't have this member
 		@downloadDelay = site.instance_variable_get(:@downloadDelay) || 0
 		
-		@connections = site.connections
-		@database = @connections.sqlDatabase
-		@notification = @connections.notificationClient
+		@database = connections.sqlDatabase
+		@notification = connections.notificationClient
 		
 		@torrentPath = site.torrentPath
 		@sizeLimit = site.releaseSizeLimit
@@ -30,6 +30,8 @@ class ReleaseHandler
 		@releaseDataClass = site.releaseDataClass
 		
 		@queue = QueueHandler.new(@database)
+		
+		@ownership = OwnershipHandler.new(configuration)
 	end
 	
 	def databaseDown(exception)
@@ -37,7 +39,7 @@ class ReleaseHandler
 		exit
 	end
 	
-	def getMatchingUserIdsForFilterType(releaseData, type)
+	def getMatchingUsersForFilterType(releaseData, type)
 		release = releaseData.name
 		
 		select = 'select user_data.id as id, user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.release_filter_type as release_filter_type from user_release_filter, user_data'
@@ -74,11 +76,12 @@ class ReleaseHandler
 				output "#{name}: #{filters.inspect}"
 			end
 		end
-		userIds = results.map{|x| x[:id]}
-		return userIds
+		#need the user name, too, to change the ownership
+		users = results.map{|x| [x[:id], x[:user_name]]}
+		return users
 	end
 	
-	def getMatchingFilterUserIds(releaseData)
+	def getMatchingFilterUsers(releaseData)
 		types =
 		[
 			:name,
@@ -86,16 +89,16 @@ class ReleaseHandler
 			:genre
 		]
 		
-		idSet = Set.new
+		userSet = Set.new
 		
 		types.each do |type|
-			newIds = getMatchingUserIdsForFilterType(releaseData, type)
-			newIds.each do |id|
-				idSet << id
+			newUsers = getMatchingUsersForFilterType(releaseData, type)
+			newUsers.each do |user|
+				userSet << user
 			end
 		end
 		
-		return idSet.to_a
+		return userSet.to_a
 	end
 	
 	def insertData(releaseData)
@@ -161,11 +164,11 @@ class ReleaseHandler
 			end
 			releaseData = @releaseDataClass.new(input)
 			isOfInterest = false
-			matchingUserIds = nil
+			matchingUsers = nil
 			@database.transaction do
 				insertData(releaseData)
-				matchingUserIds = getMatchingFilterUserIds(releaseData)
-				isOfInterest = !matchingUserIds.empty?
+				matchingUsers = getMatchingFilterUserIds(releaseData)
+				isOfInterest = !matchingUsers.empty?
 			end
 			if isOfInterest
 				output "Discovered a release of interest: #{release}"
@@ -190,9 +193,16 @@ class ReleaseHandler
 				Nil.writeFile(torrentPath, torrentData)
 				output "Downloaded #{path} to #{torrentPath}"
 				
+				if matchingUsers.size == 1
+					#release was queued for one user only so we can change the filesystem ownership to reflect this
+					#this will permit the user to cancel the download and the association with the user is clear in ls -l
+					id, name = matchingUsers.first
+					@ownership.changeOwnership(name, torrentPath)
+				end
+				
 				releaseData = NotificationReleaseData.new(@site.name, releaseData.id, releaseData.name, releaseData.size, false)
-				@queue.insertQueueEntry(releaseData, torrent, matchingUserIds)
-				matchingUserIds.each do |id|
+				@queue.insertQueueEntry(releaseData, torrent, matchingUsers)
+				matchingUsers.each do |id, name|
 					@notification.queuedNotification(id, releaseData)
 				end
 			else

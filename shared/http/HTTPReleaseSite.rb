@@ -3,8 +3,8 @@ require 'shared/ReleaseSite'
 class HTTPReleaseSite < ReleaseSite
 	attr_reader :downloadDelay
 	
-	def initialize(siteData, torrentData, connections)
-		super(siteData, torrentData, connections)
+	def initialize(siteData, torrentData, connections, configuration)
+		super(siteData, torrentData, connections, configuration)
 		
 		@browsePath = siteData::HTTP::BrowsePath
 		@detailsPath = siteData::HTTP::DetailsPath

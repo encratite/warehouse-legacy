@@ -3,6 +3,10 @@ require 'nil/network'
 
 require 'user-api/SiteStatistics'
 
+require 'shared/torrent'
+
+require 'notification/NotificationReleaseData'
+
 class UserAPI
 	def getSiteStatistics(site)
 		table = @database[site.table]
@@ -33,12 +37,17 @@ class UserAPI
 		return output
 	end
 	
-	#this function should not be exposed to the JSON RPC API yet until the username issue is fixed
+	#WARNING: this function actually deals with base names within the filesystem and not the abstract release names from HTTP sources!
+	#These names correspond to the entries within the bencoded data in the torrent files
+	#Users may only delete releases that were queued manually by themselves
+	
+	#This function should not be exposed to the JSON RPC API until the username issue is fixed!
+	
 	def deleteTorrent(target)
-		filename = target + '.torrent'
-		if isIllegalName(filename)
+		if isIllegalName(target)
 			error 'You have specified an invalid release name.'
 		end
+		filename = Torrent.getTorrentName(target)
 		torrent = Nil.joinPaths(@torrentPath, filename)
 		begin
 			stat = File.stat(torrent)
@@ -47,6 +56,13 @@ class UserAPI
 				error "#{filename} is owned by another user - ask the administrator for help."
 			end
 			FileUtils.rm(torrent)
+			@database.transaction do
+				#notify the user about the removal of the torrent
+				releaseData = NotificationReleaseData.fromTable(target, @database)
+				@notification.deletedNotification(@user.id, releaseData)
+				#remove the corresponding entry from the queue
+				@queue.removeQueueEntry(target)
+			end
 		rescue Errno::EACCES
 			error "You do not have the permission to remove #{filename}."
 		rescue Errno::ENOENT

@@ -22,4 +22,8 @@ class NotificationProtocolClient
 	def downloadedNotification(target, releaseData)
 		notify(target, 'downloaded', releaseData.serialise)
 	end
+	
+	def deletedNotification(target, releaseData)
+		notify(target, 'downloadDeleted', releaseData.serialise)
+	end
 end

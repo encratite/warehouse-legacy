@@ -6,6 +6,7 @@ require 'nil/file'
 require 'nil/environment'
 
 require 'shared/sites'
+require 'shared/torrent'
 
 require 'notifiation/NotificationReleaseData'
 
@@ -79,24 +80,10 @@ class Categoriser
 	end
 	
 	def processQueueAndNotifications(release)
-		torrent = "#{release}.torrent"
-		result = @queue.where(torrent: torrent).all
-		if result.empty?
-			output "Error: Unable to find a queue entry for release #{release}"
-			return
-		end
-		queueData = result.first
-		releaseData = NotificationReleaseData.new(
-			queueData[:site],
-			queueData[:site_id],
-			queueData[:name],
-			queueData[:size],
-			queueData[:is_manual]
-		)
-		id = queueData[:id]
-		userIds = @database[:download_queue_user].where(queue_id: id).select(user_id).map{|x| x[:user_id]}
-		userIds.each do |id|
-			@notification.downloadedNotification(id, releaseData)
+		releaseData = NotificationReleaseData.fromTable(release, database)
+		rows = @database[:download_queue_user].where(queue_id: releaseData.id).select(user_id)
+		rows.each do |data|
+			@notification.downloadedNotification(data[:user_id], releaseData)
 		end
 		#the release is not longer part of the queue - remove it
 		@queue.where(id: id).delete
@@ -187,7 +174,7 @@ class Categoriser
 			
 			#always create a symlink for manually queued releases
 			begin
-				torrentName = "#{release}.torrent"
+				torrentName = Torrent.getTorrentName(release)
 				torrentPath = Nil.joinPaths(@torrentPath, torrentName)
 				user, group = getUserAndGroup torrentPath
 				if group == @shellGroup

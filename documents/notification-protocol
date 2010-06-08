@@ -91,7 +91,7 @@ Type: "downloadDeleted"
 Content type: ReleaseData
 
 Description:
-Occurs when a download associated with the user (manual or filtered) is removed from the server because the cleaner needs to free up disk space.
+Occurs when a download associated with the user (manual or filtered) is removed from the server because the cleaner needs to free up disk space or because the user cancelled/deleted it manually.
 
 3.5 Service message
 -------------------

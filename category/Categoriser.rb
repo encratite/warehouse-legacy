@@ -45,6 +45,7 @@ class Categoriser
 		FileUtils.chmod(0775, path)
 	end
 	
+	#returns if the release was queued manually or not
 	def processMatch(release, user, category, filter, type = nil)
 		category = @ownPath if category == nil
 		userPath = Nil.joinPaths(@userPath, user)
@@ -62,11 +63,15 @@ class Categoriser
 		end
 		symlink = Nil.joinPaths(categoryPath, release)
 		target = Nil.joinPaths(@userBind, release)
-		if filter == nil
+		
+		releaseData = NotificationReleaseData.fromTable(release, database)
+		
+		if releaseData.isManual
 			output "Creating symlink #{symlink} to release #{target} because user #{user} manually downloaded this release"
 		else
 			output "Creating symlink #{symlink} to release #{target} because of filter \"#{filter}\" [#{type}] of user #{user}"
 		end
+		
 		begin
 			Nil.symbolicLink(target, symlink)
 		rescue Errno::EEXIST
@@ -76,17 +81,14 @@ class Categoriser
 			return
 		end
 		setupPermissions(symlink)
-		processQueueAndNotifications(release)
-	end
-	
-	def processQueueAndNotifications(release)
-		releaseData = NotificationReleaseData.fromTable(release, database)
+		
 		rows = @database[:download_queue_user].where(queue_id: releaseData.id).select(user_id)
 		rows.each do |data|
 			@notification.downloadedNotification(data[:user_id], releaseData)
 		end
 		#the release is not longer part of the queue - remove it
 		@queue.where(id: id).delete
+		return releaseData.isManual
 	end
 	
 	def getSpecificReleaseInformation(release)
@@ -115,15 +117,18 @@ class Categoriser
 		return output
 	end
 	
+	#returns if one of the releases was queued manually (in that case there should be only one really)
 	def processResults(results, release, type)
+		isManual = false
 		results.each do |result|
 			user = result[:user_name]
 			category = result[:category]
 			filter = result[:filter]
 			[@ownPath, category].compact.each do |currentCategory|
-				processMatch(release, user, currentCategory, filter, type)
+				isManual = processMatch(release, user, currentCategory, filter, type) || isManual
 			end
 		end
+		return isManual
 	end
 	
 	def getUserAndGroup(path)
@@ -144,50 +149,51 @@ class Categoriser
 	def performQuery(release, type, data)
 		query = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.category as category from user_data inner join user_release_filter on (user_data.id = user_release_filter.user_id) where ? ~* user_release_filter.filter'
 		results = @database["#{query} and #{getFilterCondition type}", data]
-		processResults(results, release, type)
+		return processResults(results, release, type)
 	end
 	
 	def categorise(release)
-		begin
-			output "Categorising release #{release}"
-			#process filter matches by name
-			performQuery(release, 'name', release)
-			
-			infoHash = getSpecificReleaseInformation release
-			
-			#process filter matches by NFO content
-			nfo = infoHash[:nfo]
-			if nfo != nil
-				output "Found an NFO of #{nfo.size} bytes in size for release #{release}"
-				performQuery(release, 'nfo', nfo)
-			else
-				output "Found no NFO for release #{release}"
-			end
-			
-			genre = infoHash[:genre]
-			if genre != nil
-				output "#{release} appears to be a release of genre #{genre}"
-				performQuery(release, 'genre', genre)
-			else
-				output "No genre was specified for release #{release}"
-			end
-			
-			#always create a symlink for manually queued releases
+		@database.transaction do
 			begin
-				torrentName = Torrent.getTorrentName(release)
-				torrentPath = Nil.joinPaths(@torrentPath, torrentName)
-				user, group = getUserAndGroup torrentPath
-				if group == @shellGroup
-					processMatch(release, user, @manualPath, nil)
+				output "Categorising release #{release}"
+				#process filter matches by name
+				isManual = performQuery(release, 'name', release)
+				
+				infoHash = getSpecificReleaseInformation release
+				
+				#process filter matches by NFO content
+				nfo = infoHash[:nfo]
+				if nfo != nil
+					output "Found an NFO of #{nfo.size} bytes in size for release #{release}"
+					performQuery(release, 'nfo', nfo)
+				else
+					output "Found no NFO for release #{release}"
 				end
-			rescue Errno::ENOENT
-				output "No such path: #{torrentPath}"
+				
+				genre = infoHash[:genre]
+				if genre != nil
+					output "#{release} appears to be a release of genre #{genre}"
+					performQuery(release, 'genre', genre)
+				else
+					output "No genre was specified for release #{release}"
+				end
+				
+				#always create a symlink for manually queued releases
+				begin
+					torrentName = Torrent.getTorrentName(release)
+					torrentPath = Nil.joinPaths(@torrentPath, torrentName)
+					if isManual
+						processMatch(release, user, @manualPath, nil)
+					end
+				rescue Errno::ENOENT
+					output "No such path: #{torrentPath}"
+				end
+			rescue => exception
+				message = "An exception of type #{exception.class} occured: #{exception.message}\n"
+				message += exception.backtrace.join("\n")
+				output message
+				exit
 			end
-		rescue => exception
-			message = "An exception of type #{exception.class} occured: #{exception.message}\n"
-			message += exception.backtrace.join("\n")
-			output message
-			exit
 		end
 	end
 end

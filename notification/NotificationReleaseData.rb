@@ -6,6 +6,8 @@ class NotificationReleaseData < JSONObject
 	#required for self.fromTable/Categoriser usage
 	attr_accessor :id
 	
+	attr_reader :site, :siteId, :name, :time, :size, :isManual
+	
 	def initialize(site, siteId, name, size, isManual)
 		super([:@id])
 		@site = site

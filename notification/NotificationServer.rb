@@ -9,7 +9,7 @@ require 'shared/user'
 require 'notification/NotificationClient'
 require 'notification/NotificationProtocol'
 
-require 'json/JSONRPCHandler'
+require 'json/JSONRPCNotificationHandler'
 
 class NotificationServer < Nil::IPCServer
 	TypeHandlers =
@@ -33,7 +33,7 @@ class NotificationServer < Nil::IPCServer
 		@output = OutputHandler.new(log)
 		
 		initialiseIPC
-		initialiseRPC
+		initialiseRPC(configuration)
 		initialiseTLS(configuration::Notification)
 	end
 	
@@ -41,8 +41,8 @@ class NotificationServer < Nil::IPCServer
 		@methods += [:notify]
 	end
 	
-	def initialiseRPC
-		@rpc = JSONRPCHandler.new(@connections, @output)
+	def initialiseRPC(configuration)
+		@rpc = JSONRPCNotificationHandler.new(configuration, @connections, @output)
 	end
 	
 	def initialiseTLS(configuration)

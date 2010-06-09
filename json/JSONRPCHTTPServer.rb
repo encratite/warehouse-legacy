@@ -7,9 +7,9 @@ require 'www-library/HTTPReply'
 class JSONRPCHTTPServer < JSONRPCHandler
 	WarehousePath = 'warehouse'
 	
-	def initialize(connections, log)
+	def initialize(configuration, connections, log)
 		output = OutputHandler.new(log)
-		super(connections, output)
+		super(configuration, connections, output)
 		initialiseRequestManager
 	end
 	

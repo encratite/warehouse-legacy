@@ -201,7 +201,8 @@ class ReleaseHandler
 				end
 				
 				releaseData = NotificationReleaseData.new(@site.name, releaseData.id, releaseData.name, releaseData.size, false)
-				@queue.insertQueueEntry(releaseData, torrent, matchingUsers)
+				userIds = matchingUsers.map{|id, name| id}
+				@queue.insertQueueEntry(releaseData, torrent, userIds)
 				matchingUsers.each do |id, name|
 					@notification.queuedNotification(id, releaseData)
 				end

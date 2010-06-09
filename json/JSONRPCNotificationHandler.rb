@@ -2,8 +2,8 @@ require 'json/JSONRPCHandler'
 require 'json/JSONRPCNotificationAPI'
 
 class JSONRPCNotificationHandler < JSONRPCHandler
-	def initialize(connections, outputHandler)
-		super(connections, outputHandler, JSONRPCNotificationAPI)
+	def initialize(configuration, connections, outputHandler)
+		super(configuration, connections, outputHandler, JSONRPCNotificationAPI)
 	end
 	
 	def processRPCRequests(client, requests)

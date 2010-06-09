@@ -11,12 +11,13 @@ require 'user-api/UserAPI'
 require 'xmlrpc/client'
 
 class JSONRPCHandler
-	def initialize(connections, outputHandler)
+	def initialize(configuration, connections, outputHandler, apiClass = JSONRPCAPI)
 		@output = outputHandler
 		
 		@connections = connections
-		@database = @connections.sqlDatabase
+		@database = connections.sqlDatabase
 		@configuration = configuration
+		@apiClass = apiClass
 	end
 	
 	def output(request, line)
@@ -49,7 +50,7 @@ class JSONRPCHandler
 	end
 	
 	def processRPCRequests(user, requests)
-		jsonAPI = JSONRPCAPI.new(@configuration, @connections, user)
+		jsonAPI = @apiClass.new(@configuration, @connections, user)
 		return processRPCRequestsByAPI(user, requests, jsonAPI)
 	end
 	

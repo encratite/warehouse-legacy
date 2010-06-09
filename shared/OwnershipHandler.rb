@@ -4,7 +4,7 @@ class OwnershipHandler
 	end
 	
 	def changeOwnership(user, path)
-		commandLine = "#{@binary} #{user} #{path}"
+		commandLine = "\"#{@binary}\" \"#{user}\" \"#{path}\""
 		message = `#{commandLine}`
 		returnCode = $?.to_i
 		if returnCode != 0

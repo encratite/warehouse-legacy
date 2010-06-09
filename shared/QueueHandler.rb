@@ -35,7 +35,7 @@ class QueueHandler
 			site_id: releaseData.siteId,
 			name: releaseData.name,
 			torrent: torrent,
-			release_size: releaseData.releaseSize,
+			release_size: releaseData.size,
 			is_manual: releaseData.isManual,
 		}
 		

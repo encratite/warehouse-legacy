@@ -4,7 +4,7 @@ require 'fileutils'
 require 'nil/file'
 require 'nil/ipc'
 
-require 'shared/user'
+require 'shared/User'
 
 require 'notification/NotificationClient'
 require 'notification/NotificationProtocol'
@@ -151,29 +151,35 @@ class NotificationServer < Nil::IPCServer
 	end
 	
 	#user may be either a username or a user ID
-	def notify(user, type, content)
-		isId = user.class == Fixnum
+	def notify(target, type, content)
+		isId = target.class == Fixnum
+		userData = @database[:user_data]
+		if isId
+			result = userData.where(id: target)
+		else
+			result = userData.where(name: target)
+		end
+		result = result.all
+		return Nil.IPCError.new("No such user: #{username}") if result.empty?
+		user = User.new(result.first)
+		
 		unit = NotificationProtocol.notificationUnit(type, content)
 		isOnline = false
 		@clientMutex.synchronize do
 			@clients.each do |client|
-				next if client.user != user
+				next if client.user.id != user.id
 				client.sendData(unit)
 				isOnline = true
 			end
 		end
 		
-		if !isOnline
-			if isId
-				id = user
-			else
-				result = @database[:user_data].where(name: username).all
-				return Nil.IPCError.new("No such user: #{username}") if result.empty?
-				id = result.first[:id]
-			end
+		if isOnline
+			output "Notification for user \"#{user.name}\" of type \"#{type}\": #{content}"
+		else
+			output "Storing notification for offline user #{user.name} of type \"#{type}\": #{content}"
 			data =
 			{
-				'user_id' => id,
+				'user_id' => user.id,
 				'notification_type' => type,
 				'content' => content
 			}

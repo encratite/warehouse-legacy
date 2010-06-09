@@ -13,7 +13,7 @@ class NotificationReleaseData < JSONObject
 		@site = site
 		@siteId = siteId
 		@name = name
-		@time = Time.now
+		@time = Time.now.utc
 		@size = size
 		@isManual = isManual
 	end

@@ -8,7 +8,7 @@ require 'nil/environment'
 require 'shared/sites'
 require 'shared/torrent'
 
-require 'notifiation/NotificationReleaseData'
+require 'notification/NotificationReleaseData'
 
 class Categoriser
 	def initialize(configuration, connections)

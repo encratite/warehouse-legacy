@@ -9,7 +9,7 @@ require 'shared/Bencode'
 require 'shared/QueueHandler'
 require 'shared/OwnershipHandler'
 
-require 'notifiation/NotificationReleaseData'
+require 'notification/NotificationReleaseData'
 
 class ReleaseHandler
 	def initialize(site, connections, configuration)
@@ -167,7 +167,7 @@ class ReleaseHandler
 			matchingUsers = nil
 			@database.transaction do
 				insertData(releaseData)
-				matchingUsers = getMatchingFilterUserIds(releaseData)
+				matchingUsers = getMatchingFilterUsers(releaseData)
 				isOfInterest = !matchingUsers.empty?
 			end
 			if isOfInterest

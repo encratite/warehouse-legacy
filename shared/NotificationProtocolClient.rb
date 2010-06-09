@@ -1,6 +1,6 @@
 require 'json'
 require 'nil/ipc'
-require 'notifiation/NotificationProtocol'
+require 'notification/NotificationProtocol'
 
 class NotificationProtocolClient
 	def initialize(path)

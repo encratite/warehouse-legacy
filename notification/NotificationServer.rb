@@ -6,8 +6,8 @@ require 'nil/ipc'
 
 require 'shared/user'
 
-require 'notifiation/NotificationClient'
-require 'notifiation/NotificationProtocol'
+require 'notification/NotificationClient'
+require 'notification/NotificationProtocol'
 
 require 'json/JSONRPCHandler'
 

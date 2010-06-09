@@ -6,7 +6,7 @@ module Configuration
 		Socket =
 			Nil.getHostname == 'perelman' ?
 			'/home/void/socket' :
-			'/home/void/code/warehouse/notifiation/socket/socket'
+			'/home/void/code/warehouse/notification/socket/socket'
 		Log = 'notification.log'
 		
 		module TLS

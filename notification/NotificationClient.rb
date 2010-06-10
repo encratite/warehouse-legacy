@@ -6,7 +6,7 @@ require 'nil/communication'
 require 'shared/ssl'
 
 class NotificationClient < Nil::SerialisedCommunication
-	attr_reader :socket
+	attr_reader :socket, :user
 	
 	def initialize(socket, user)
 		super(socket, JSON::ParserError)

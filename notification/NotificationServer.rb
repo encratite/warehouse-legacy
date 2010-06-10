@@ -13,9 +13,9 @@ require 'json/JSONRPCNotificationHandler'
 
 class NotificationServer < Nil::IPCServer
 	TypeHandlers =
-	[
+	{
 		'rpc' => :rpcHandler
-	]
+	}
 	
 	def initialize(configuration, connections)
 		path = configuration::Notification::Socket
@@ -77,11 +77,12 @@ class NotificationServer < Nil::IPCServer
 	def runServer
 		while true
 			begin
-				client = @sslServer.accept
-				Thread.new { handleClient(client) }
+				socket = @sslServer.accept
+				Thread.new { handleClient(socket) }
 			rescue OpenSSL::SSL::SSLError => exception
 				output "An SSL exception occured: #{exception.message}"
 			rescue RuntimeError => exception
+				socket.close
 				output "Runtime error: #{exception.message}"
 			end
 		end
@@ -95,7 +96,7 @@ class NotificationServer < Nil::IPCServer
 		end
 		user = User.new(dataset.first)
 		client = NotificationClient.new(socket, user)
-		@clientMutex.synchronize { @clients << clientObject }
+		@clientMutex.synchronize { @clients << client }
 		
 		processClientCommunication client
 	end
@@ -110,7 +111,7 @@ class NotificationServer < Nil::IPCServer
 				return
 			end
 			
-			input = client.value
+			input = result.value
 			begin
 				processClientInput(client, input)
 			rescue RuntimeError => exception

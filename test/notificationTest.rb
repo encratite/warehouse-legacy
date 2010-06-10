@@ -1,10 +1,42 @@
 require 'socket'
 require 'openssl'
 
+require 'notification/NotificationClient'
+
 require 'configuration/Configuration'
 
-certificatePath = '/home/void/keys/client.crt'
-keyPath = '/home/void/keys/client.key'
+def readData(client)
+	while true
+		data = client.receiveData
+		if data.connectionClosed
+			puts 'Disconnected'
+			return
+		end
+		puts data.inspect
+	end
+end
+
+def getJSONRPCData(*parameters)
+	function = parameters[0]
+	arguments = parameters[1..-1]
+	
+	jsonRPCData =
+	{
+		'id' => 1,
+		'method' => function,
+		'params' => arguments
+	}
+	
+	unitData = {
+		'type' => 'rpc',
+		'data' => jsonRPCData
+	}
+	
+	return unitData
+end
+
+certificatePath = '/home/void/keys/void.crt'
+keyPath = '/home/void/keys/void.key'
 caPath = Configuration::Notification::TLS::CertificateAuthority
 
 puts "Using certificate #{certificatePath}"
@@ -24,12 +56,20 @@ begin
 	sslSocket.connect
 
 	puts 'Connected!'
-
-	"""
-	while true
-		STDIN.readline
-	end
-	"""
+	
+	STDIN.readline
+	
+	puts 'Sending data...'
+	
+	client = NotificationClient.new(sslSocket, nil)
+	jsonData = getJSONRPCData('getNewNotifications')
+	client.sendData(jsonData)
+	
+	STDIN.readline
+	
+	puts 'Reading data...'
+	
+	readData(client)
 rescue OpenSSL::SSL::SSLError => exception
 	puts "An SSL exception occured: #{exception.message}"
 end

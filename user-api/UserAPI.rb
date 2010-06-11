@@ -51,7 +51,7 @@ class UserAPI
 		
 		@filters = @database[:user_release_filter]
 		
-		@sites = getReleaseSites(@database)
+		@sites = getReleaseSites(connections)
 		
 		@queue = QueueHandler.new(@database)
 		

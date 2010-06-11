@@ -28,7 +28,7 @@ class Categoriser
 		@user = Nil.getUser
 		@torrentPath = configuration::Torrent::Path::Torrent
 		@manualPath = configuration::Torrent::Path::Manual
-		@sites = getReleaseSites(@database)
+		@sites = getReleaseSites(connections)
 	end
 	
 	def output(line)

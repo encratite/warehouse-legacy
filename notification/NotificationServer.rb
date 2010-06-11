@@ -115,6 +115,9 @@ class NotificationServer < Nil::IPCServer
 			begin
 				processClientInput(client, input)
 			rescue RuntimeError => exception
+				backtrace = exception.backtrace.join "\n"
+				puts "An exception of type #{exception.class} occured:"
+				puts backtrace
 				clientError(client, exception.message)
 			end
 		end

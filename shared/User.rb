@@ -20,6 +20,8 @@ class User
 			return @name == other
 		elsif other.class == Fixnum
 			return @id == other
+		elsif other == nil
+			return false
 		else
 			raise 'Invalid user comparison'
 		end

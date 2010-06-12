@@ -104,7 +104,6 @@ class Categoriser
 				#only TorrentVault has genres for MP3/TV releases right now
 				actualTargets += [:genre]
 			end
-			puts release
 			results = @database[table].where(name: release).select(*actualTargets)
 			results = results.all
 			next if results.empty?

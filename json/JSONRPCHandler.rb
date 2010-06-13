@@ -38,20 +38,42 @@ class JSONRPCHandler
 		return reply
 	end
 
-	def outputData(type, user, request, message)
-		output(request, "#{type} from user #{user.name} from #{request.address}: #{message}")
+	def outputData(type, user, message)
+		output(request, "#{type} from user #{user.name} from #{user.address}: #{message}")
 		return
 	end
 	
-	def outputError(type, user, request, message, id, replies)
-		outputData(type, user, request, message)
+	def outputError(type, user, message, id, replies)
+		outputData(type, user, message)
 		replies << error(message, id)
 		return
 	end
 	
+	#these two functions take a user which has the address field set
 	def processRPCRequests(user, requests)
 		jsonAPI = @apiClass.new(@configuration, @connections, user)
 		return processRPCRequestsByAPI(user, requests, jsonAPI)
+	end
+	
+	def processRPCError(error, user, id, replies)
+		messages =
+		{
+			JSONRPCAPI::Error => 'JSON-RPC API exception',
+			UserAPI::Error => 'User API exception',
+			XMLRPC::FaultException => 'XML RPC exception',
+			RuntimeError => 'Runtime error',
+			Errno::ECONNREFUSED => ['Connection error', "The server refused the connection (the HTTP proxy for the XML RPC interface probably isn't running)"]
+		}
+		
+		messageData = messages[error.class]
+		raise error if messageData == nil
+		if messageData.class == Array
+			type, message = messageData
+		else
+			type = messageData
+			message = error.message
+		end
+		outputError(type, user, message, id, replies)
 	end
 	
 	def processRPCRequestsByAPI(user, requests, jsonAPI)
@@ -68,16 +90,8 @@ class JSONRPCHandler
 				outputData('JSON-RPC call', user, request, jsonRequest.inspect)
 				reply = jsonAPI.processJSONRPCRequest(jsonRequest)
 				replies << reply
-			rescue JSONRPCAPI::Error => exception
-				outputError('JSON-RPC API exception', user, request, exception.message, id, replies)
-			rescue UserAPI::Error => exception
-				outputError('User API exception', user, request, exception.message, id, replies)
-			rescue XMLRPC::FaultException => exception
-				outputError('XML RPC exception', user, request, exception.message, id, replies)
-			rescue RuntimeError => exception
-				outputError('Runtime error', user, request, exception.message, id, replies)
-			rescue Errno::ECONNREFUSED
-				outputError('Connection error', user, request, "The server refused the connection (the HTTP proxy for the XML RPC interface probably isn't running)", id, replies)
+			rescue => error
+				processRPCError(error, user, id, replies)
 			end
 		end
 		if request.isMultiCall

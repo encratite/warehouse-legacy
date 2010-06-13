@@ -2,6 +2,9 @@ class User
 	attr_reader :id, :name, :isAdministrator
 	attr_writer :lastNotification
 	
+	#not always available I think - added for the JSON RPC stuff
+	attr_accessor :address
+	
 	def initialize(*arguments)
 		#overloaded constructor hack
 		if arguments.size == 1

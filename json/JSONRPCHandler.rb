@@ -20,10 +20,6 @@ class JSONRPCHandler
 		@apiClass = apiClass
 	end
 	
-	def output(request, line)
-		@output.output("#{request.address}: #{line}")
-	end
-	
 	def exceptionMessageHandler(message)
 		@output.output("Exception: #{message}")
 	end
@@ -39,7 +35,7 @@ class JSONRPCHandler
 	end
 
 	def outputData(type, user, message)
-		output(request, "#{type} from user #{user.name} from #{user.address}: #{message}")
+		@output.output("#{type} from user #{user.name} from #{user.address}: #{message}")
 		return
 	end
 	
@@ -49,10 +45,11 @@ class JSONRPCHandler
 		return
 	end
 	
-	#these two functions take a user which has the address field set
-	def processRPCRequests(user, requests)
+	#processRPCRequests and processRPCRequestsByAPI take a user which has the address field set
+	#input may be either a single request or an array of requests
+	def processRPCRequests(user, input)
 		jsonAPI = @apiClass.new(@configuration, @connections, user)
-		return processRPCRequestsByAPI(user, requests, jsonAPI)
+		return processRPCRequestsByAPI(user, input, jsonAPI)
 	end
 	
 	def processRPCError(error, user, id, replies)
@@ -76,25 +73,32 @@ class JSONRPCHandler
 		outputError(type, user, message, id, replies)
 	end
 	
-	def processRPCRequestsByAPI(user, requests, jsonAPI)
+	def processRPCRequestsByAPI(user, input, jsonAPI)
+		isMultiCall = input.class == Array
+		if isMultiCall
+			requests = input
+		else
+			requests = [input]
+		end
 		replies = []
 		requests.each do |jsonRequest|
 			string = nil
 			id = jsonRequest['id']
 			if id == nil
 				errorMessage = 'Missing ID in call'
-				outputData(errorMessage, user, request, jsonRequest.inspect)
-				content = errorMessage
+				outputData(errorMessage, user, jsonRequest.inspect)
+				#not sure how to handle this properly - terminate connection with some error message?
+				replies << nil
 			end
 			begin
-				outputData('JSON-RPC call', user, request, jsonRequest.inspect)
+				outputData('JSON-RPC call', user, jsonRequest.inspect)
 				reply = jsonAPI.processJSONRPCRequest(jsonRequest)
 				replies << reply
 			rescue => error
 				processRPCError(error, user, id, replies)
 			end
 		end
-		if request.isMultiCall
+		if isMultiCall
 			jsonOutput = replies
 		else
 			jsonOutput = replies[0]

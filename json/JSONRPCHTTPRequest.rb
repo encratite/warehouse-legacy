@@ -4,7 +4,7 @@ require 'cgi'
 require 'www-library/HTTPRequest'
 
 class JSONRPCHTTPRequest < HTTPRequest
-	attr_reader :jsonRequests, :commonName, :name, :serial, :isMultiCall
+	attr_reader :jsonInput, :commonName, :name, :serial, :isMultiCall
 		
 	SubjectData =
 	{
@@ -15,11 +15,7 @@ class JSONRPCHTTPRequest < HTTPRequest
 	def initialize(environment)
 		super(environment)
 		
-		@jsonRequests = JSON.parse(@rawInput)
-		@isMultiCall = @jsonRequests.class == Array
-		if !@isMultiCall
-			@jsonRequests = [@jsonRequests]
-		end
+		@jsonInput = JSON.parse(@rawInput)
 		
 		subject = environment['HTTP_SSL_SUBJECT']
 		parseSubject(subject)

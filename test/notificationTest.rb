@@ -57,7 +57,7 @@ begin
 
 	puts 'Connected!'
 	
-	STDIN.readline
+	#STDIN.readline
 	
 	puts 'Sending data...'
 	
@@ -65,7 +65,7 @@ begin
 	jsonData = getJSONRPCData('getNewNotifications')
 	client.sendData(jsonData)
 	
-	STDIN.readline
+	#STDIN.readline
 	
 	puts 'Reading data...'
 	

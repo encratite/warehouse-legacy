@@ -14,7 +14,7 @@ class UserAPI
 	def getNewNotifications
 		@database.transaction do
 			notifications = @database[:user_notification].select(:notification_time, :notification_type, :content)
-			notifications = notifications.where(user_id: @user.id).filter{|x| x >= @user.lastNotification}.all
+			notifications = notifications.where(user_id: @user.id).filter{|x| x.notification_time > @user.lastNotification}.all
 			newTime = Time.now.utc
 			@user.lastNotification = newTime
 			#update the time of the last notification for this user to the current timestamp

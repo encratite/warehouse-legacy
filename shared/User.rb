@@ -1,6 +1,6 @@
 class User
 	attr_reader :id, :name, :isAdministrator
-	attr_writer :lastNotification
+	attr_accessor :lastNotification
 	
 	#not always available I think - added for the JSON RPC stuff
 	attr_accessor :address
@@ -13,6 +13,9 @@ class User
 			@name = data[:name]
 			@isAdministrator = data[:is_administrator]
 			@lastNotification = data[:last_notification]
+			if @lastNotification == nil
+				raise "Last notification is not set for user #{@name}"
+			end
 		else
 			@id, @name, @isAdministrator = arguments
 		end

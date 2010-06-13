@@ -2,6 +2,8 @@ set client_min_messages = warning;
 
 drop table if exists user_data cascade;
 
+--alter table user_data add column last_notification timestamp default now();
+
 create table user_data
 (
 	id serial primary key,

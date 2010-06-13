@@ -141,14 +141,9 @@ class NotificationServer < Nil::IPCServer
 	end
 	
 	def rpcHandler(client, input)
-		if input.class == Array
-			requests = input
-		else
-			requests = [input]
-		end
 		user = client.user
 		user.address = client.socket.peeraddr
-		@rpc.processRPCRequests(user, requests)
+		return @rpc.processRPCRequests(client, input)
 	end
 	
 	def clientError(client, message)

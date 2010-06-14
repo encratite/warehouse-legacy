@@ -1,5 +1,7 @@
 To do:
 
+take care of the "unfinished chunks error" by enforcing rehashing somehow
+
 proper unit testing for all the changes in:
 	-the notification server itself (write a new client?)
 	-user API downloading/canceling queueing/notifications

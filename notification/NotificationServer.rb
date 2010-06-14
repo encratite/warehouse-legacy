@@ -142,7 +142,7 @@ class NotificationServer < Nil::IPCServer
 	
 	def rpcHandler(client, input)
 		user = client.user
-		user.address = client.socket.peeraddr
+		user.address = client.socket.peeraddr[3]
 		return @rpc.processRPCRequests(client, input)
 	end
 	

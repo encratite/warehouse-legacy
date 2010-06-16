@@ -1,3 +1,5 @@
+require 'json'
+
 require 'json/JSONRPCHandler'
 
 require 'www-library/RequestManager'
@@ -59,7 +61,7 @@ class JSONRPCHTTPServer < JSONRPCHandler
 	def warehouseHandler(request)
 		user = getUser(request)
 		user.address = request.address
-		content = processRPCRequests(user, request.jsonInput)
+		content = JSON::unparse(processRPCRequests(user, request.jsonInput))
 		reply = HTTPReply.new(content)
 		reply.contentType = 'application/json-rpc'
 		return reply

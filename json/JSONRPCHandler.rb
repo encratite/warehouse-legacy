@@ -1,5 +1,3 @@
-require 'json'
-
 require 'json/JSONRPCHTTPRequest'
 require 'json/JSONRPCAPI'
 
@@ -103,7 +101,6 @@ class JSONRPCHandler
 		else
 			jsonOutput = replies[0]
 		end
-		content = JSON.unparse(jsonOutput)
-		return content
+		return jsonOutput
 	end
 end

@@ -30,6 +30,7 @@ class JSONRPCAPI
 			
 			#notifications
 			getNewNotifications: [],
+			getOldNotifications: [Fixnum, Fixnum],
 		}
 	end
 	

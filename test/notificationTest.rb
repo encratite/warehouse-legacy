@@ -5,14 +5,22 @@ require 'notification/NotificationClient'
 
 require 'configuration/Configuration'
 
-def readData(client)
-	while true
-		data = client.receiveData
+class TestClient < NotificationClient
+	def rpc(*arguments)
+		puts "Executing #{arguments.inspect}:"
+		jsonData = getJSONRPCData(*arguments)
+		sendData(jsonData)
+		readAndPrint
+	end
+	
+	def readAndPrint
+		data = receiveData
 		if data.connectionClosed
 			puts 'Disconnected'
-			return
+			exit
 		end
-		puts data.inspect
+		value = data.value
+		puts value.inspect
 	end
 end
 
@@ -52,24 +60,18 @@ ctx.ca_file = caPath
 begin
 	socket = TCPSocket.new('127.0.0.1', Configuration::Notification::Port)
 	sslSocket = OpenSSL::SSL::SSLSocket.new(socket, ctx)
+	
 	puts 'Connecting...'
+	
 	sslSocket.connect
 
 	puts 'Connected!'
 	
-	#STDIN.readline
-	
-	puts 'Sending data...'
-	
-	client = NotificationClient.new(sslSocket, nil)
-	jsonData = getJSONRPCData('getNewNotifications')
-	client.sendData(jsonData)
-	
-	#STDIN.readline
-	
-	puts 'Reading data...'
-	
-	readData(client)
+	client = TestClient.new(sslSocket, nil)
+	client.rpc('getNotificationCount')
+	client.rpc('getNewNotifications')
+	client.rpc('getOldNotifications', 0, 5)
+	client.rpc('generateNotification', 'test', 'test')	
 rescue OpenSSL::SSL::SSLError => exception
 	puts "An SSL exception occured: #{exception.message}"
 end

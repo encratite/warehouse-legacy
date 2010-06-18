@@ -1,5 +1,5 @@
 require 'user-api/NotificationData'
-require 'notification/NotificationServer'
+require 'notification/NotificationProtocol'
 
 class UserAPI
 	#internal use only
@@ -39,13 +39,13 @@ class UserAPI
 		if last < first
 			first, last = last, first
 		end
-		notifications = getUserNotifications.select(last - first + 1, getNotificationCount - first)
+		notifications = @database[:user_notification].where(user_id: @user.id).reverse_order(:notification_time).limit(last - first + 1, first).all
 		return convertNotifications(notifications)
 	end
 	
 	#cannot be used directly either - requires a local function
 	def generateNotification(client, type, content)
-		unit = NotificationServer.notificationUnit(type, content)
+		unit = NotificationProtocol.notificationUnit(type, content)
 		client.sendData(unit)
 	end
 end

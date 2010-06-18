@@ -10,7 +10,7 @@ class TestClient < NotificationClient
 		puts "Executing #{arguments.inspect}:"
 		jsonData = getJSONRPCData(*arguments)
 		sendData(jsonData)
-		readAndPrint
+		return readAndPrint
 	end
 	
 	def readAndPrint
@@ -21,6 +21,7 @@ class TestClient < NotificationClient
 		end
 		value = data.value
 		puts value.inspect
+		return value
 	end
 end
 
@@ -70,7 +71,9 @@ begin
 	client = TestClient.new(sslSocket, nil)
 	client.rpc('getNotificationCount')
 	client.rpc('getNewNotifications')
-	client.rpc('getOldNotifications', 0, 5)
+	notifications = client.rpc('getOldNotifications', 0, 5)
+	puts "Notification count: #{notifications.size}"
+	notifications = client.rpc('getOldNotifications', -1, 100)
 	client.rpc('generateNotification', 'test', 'test')	
 rescue OpenSSL::SSL::SSLError => exception
 	puts "An SSL exception occured: #{exception.message}"

@@ -1,3 +1,5 @@
+require 'sequel'
+
 require 'user-api/NotificationData'
 require 'notification/NotificationProtocol'
 
@@ -35,12 +37,13 @@ class UserAPI
 	end
 	
 	#needs to be serialised in the JSON RPC API
-	def getOldNotifications(first, last)
-		if last < first
-			first, last = last, first
+	def getOldNotifications(offset, count)
+		begin
+			notifications = @database[:user_notification].where(user_id: @user.id).reverse_order(:notification_time).limit(count, offset).all
+			return convertNotifications(notifications)
+		rescue Sequel::Error
+			error "Invalid offset/count arguments: #{offset}, #{count}"
 		end
-		notifications = @database[:user_notification].where(user_id: @user.id).reverse_order(:notification_time).limit(last - first + 1, first).all
-		return convertNotifications(notifications)
 	end
 	
 	#cannot be used directly either - requires a local function

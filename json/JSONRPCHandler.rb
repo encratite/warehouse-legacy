@@ -92,9 +92,7 @@ class JSONRPCHandler
 				outputData('JSON-RPC call', user, jsonRequest.inspect)
 				reply = jsonAPI.processJSONRPCRequest(jsonRequest)
 				replies << reply
-			rescue JSONRPCAPI::Error => error
-				processRPCError(error, user, id, replies)
-			rescue => error
+			rescue JSONRPCAPI::Error, UserAPI::Error, RuntimeError => error
 				processRPCError(error, user, id, replies)
 			end
 		end

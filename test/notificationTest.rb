@@ -69,10 +69,14 @@ begin
 	puts 'Connected!'
 	
 	client = TestClient.new(sslSocket, nil)
+	while true
+		client.readAndPrint
+	end
+	
 	client.rpc('getNotificationCount')
 	client.rpc('getNewNotifications')
 	notifications = client.rpc('getOldNotifications', 0, 5)
-	puts "Notification count: #{notifications.size}"
+	puts "Notification count: #{notifications['result'].size}"
 	notifications = client.rpc('getOldNotifications', -1, 100)
 	client.rpc('generateNotification', 'test', 'test')	
 rescue OpenSSL::SSL::SSLError => exception

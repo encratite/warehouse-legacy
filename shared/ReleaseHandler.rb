@@ -204,6 +204,7 @@ class ReleaseHandler
 				userIds = matchingUsers.map{|id, name| id}
 				@queue.insertQueueEntry(releaseData, torrent, userIds)
 				matchingUsers.each do |id, name|
+					puts "Notifying user #{name} (ID: #{id}) about release #{releaseData.name}"
 					@notification.queuedNotification(id, releaseData)
 				end
 			else

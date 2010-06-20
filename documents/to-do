@@ -6,7 +6,7 @@ proper unit testing for all the changes in:
 	-the notification server itself (write a new client?)
 	-user API downloading/canceling queueing/notifications
 	-ReleaseHandler matches/queueing/notifications
-	-cleaner queue/notification handling
+	-cleaner queue/notification handling (unluckily this is difficult to test locally)
 	-categoriser queue entries/notifications
 
 the creation of new users should add them to the database in the first place (currently only the shell does it)

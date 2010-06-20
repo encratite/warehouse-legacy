@@ -5,8 +5,8 @@ module Configuration
 		Port = 43841
 		Socket =
 			Nil.getHostname == 'perelman' ?
-			'/home/void/socket' :
-			'/home/void/code/warehouse/notification/socket/socket'
+			User.getPath('socket') :
+			User.getPath('code/warehouse/notification/socket/socket')
 		Log = 'notification.log'
 		
 		module TLS

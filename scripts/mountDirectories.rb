@@ -1,4 +1,6 @@
-source = '/home/void/torrent/complete'
+require 'configuration/Configuration'
+
+source = Configuration::User.getPath('torrent/complete')
 target = '/home/warehouse/user/'
 directory = 'all'
 

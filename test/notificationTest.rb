@@ -44,8 +44,8 @@ def getJSONRPCData(*parameters)
 	return unitData
 end
 
-certificatePath = '/home/void/keys/void.crt'
-keyPath = '/home/void/keys/void.key'
+certificatePath = Configuration::User.getPath('keys', "#{Configuration::User::WarehouseUser}.crt")
+keyPath = Configuration::User.getPath('keys', "#{Configuration::User::WarehouseUser}.key")
 caPath = Configuration::Notification::TLS::CertificateAuthority
 
 puts "Using certificate #{certificatePath}"

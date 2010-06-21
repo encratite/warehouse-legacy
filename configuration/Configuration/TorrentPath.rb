@@ -5,10 +5,25 @@ module Configuration
 			Filtered = 'filtered'
 			Own = 'own'
 			Manual = 'manual'
-			Torrent = User.getPath('torrent/torrent')
-			Download = User.getPath('torrent/download')
-			DownloadDone = User.getPath('torrent/complete')
+			
 			User = '/home/warehouse/user'
+			
+			#need separate path constants for the setup script - otherwise they would be nil
+			module RelativePaths
+				Torrent = 'torrent/torrent'
+				Download = 'torrent/download'
+				DownloadDone = 'torrent/complete'
+			end
+			
+			def setPaths
+				RelativePaths.constants.each do |symbol|
+					value = RelativePaths.const_get(symbol)
+					value = User.getPath(value)
+					const_set(symbol, value)
+				end
+			end
+			
+			setPaths
 		end
 	end
 end

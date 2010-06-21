@@ -5,5 +5,8 @@ module Configuration
 		User = 'void'
 		Password = ''
 		SQLDatabase = 'warehouse'
+		
+		#this script is only used by the setup script
+		Script = 'database/warehouse.sql'
 	end
 end

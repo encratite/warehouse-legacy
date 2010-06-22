@@ -49,15 +49,73 @@ def createDirectories(directories)
 	end
 end
 
+def initialiseSQLUserAndDatabase(user, database)
+	#this works for PostgreSQL with a standard setup only
+	commandLine = 'su -c - postgres psql'
+	begin
+		IO.popen(commandLine, 'r+') do |pipe|
+		
+			pipe.puts "create role #{user};"
+			output = pipe.readline
+			if output == 'CREATE ROLE'
+				puts "Created SQL user #{user}"
+			elsif output.include?('already exists')
+				puts "SQL user #{user} already exists"
+			else
+				raise "SQL user creation error: #{output}"
+			end
+			
+			pipe.puts "create database #{database} with owner #{user};"
+			output = pipe.readline
+			if output == 'CREATE DATABASE'
+				puts "Created database #{database}"
+			elsif output.include?('already exists')
+				puts "Database #{database} already exists"
+			else
+				raise "SQL database creation error: #{output}"
+			end
+		end
+	rescue EOFError
+		raise 'psql execution failed'
+	rescue Errno::ENOENT
+		raise "Unable to execute \"#{commandLine}\" - no such path"
+	end
+end
+
 def getSQLStatements(script)
 	lines = Nil.readLines(script)
+	
+	#get rid of the comments
 	lines.map! do |line|
-		
+		#not exactly the right way to do it put it'll do the job for now
+		tokens = line.split('--')
+		tokens[0]
 	end
+	
+	#this is improper, too
+	replacements =
+	[
+		[/[\r\t]/, ''],
+		['( ', '('],
+		[' )', ')'],
+	]
+	data = lines.join(' ')
+	replacements.each do |target, replacement|
+		data.gsub!(target, replacement)
+	end
+	
+	statements = data.split(';')
+	return statements
 end
 
 def createTables(script)
 	database = getSQLDatabase
+	statements = getSQLStatements
+	statements.each do |statement|
+		#this actually deletes existing tables - possibly not a good idea...
+		puts "Executing #{statement}"
+		database[statement]
+	end
 end
 
 def runSetup
@@ -86,8 +144,9 @@ def runSetup
 	
 	createDirectories(directories)
 	
-	#
-	createTables(Configuration::SQLDatabase::Script)
+	sqlData = Configuration::SQLDatabase
+	initialiseSQLUserAndDatabase(sqlData::User, sqlData::SQLDatabase)
+	createTables(sqlData::Script)
 end
 
 begin

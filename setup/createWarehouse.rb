@@ -39,12 +39,18 @@ def createUser(user)
 	end
 end
 
-def createDirectories(directories)
-	directories.each do |path|
-		if File.exists?(path)
-			puts "Directory #{path} already exists"
-		else
-			puts "Creating directory #{path}"
+def createDirectory(directory, user = nil, group = nil, mode = nil)
+	if File.exists?(path)
+		puts "Directory #{path} already exists"
+	else
+		puts "Creating directory #{path}"
+		if user != nil && group != nil
+			puts "Changing the ownership of #{path} to #{user}:#{group}"
+			FileUtils.chown(user, group, path)
+		end
+		if mode != nil
+			modeString = sprintf('0%o', mode)
+			puts "Changing the mode of #{path} to #{modeString}"
 		end
 	end
 end

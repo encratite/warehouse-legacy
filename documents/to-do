@@ -1,5 +1,8 @@
 To do:
 
+add session directory creation in the setup
+add a function to remove the SSH key
+
 take care of the "unfinished chunks error" by enforcing rehashing somehow
 
 proper unit testing for all the changes in:

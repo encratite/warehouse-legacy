@@ -28,6 +28,8 @@ class UserShell
 		@logs = @database[:user_command_log]
 		
 		@sites = getReleaseSites(@database)
+		
+		@sshKeyMaximum = configuration::Shell::SSHKeyMaximum
 	end
 		
 	def padEntries(input)

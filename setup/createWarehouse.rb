@@ -136,19 +136,38 @@ def runSetup
 	]
 	createGroups(groups)
 	
-	createUser(userData::WarehouseUser)
+	user = userData::WarehouseUser
+	userGroup = Etc.getgrgid(Etc.getpwnam(user).gid).name
+	createUser(user)
 	
 	pathData = Configuration::Torrent::Path
 	relativePathData = pathData::RelativePaths
 	
-	#torrent directories
-	directories = relativePathData.constants.map do |symbol|
-		Configuration::User.getPath(relativePathData.const_get(symbol))
-	end
-	#warehouse user directory
-	directories << pathData::User
+	directoryData =
+	{
+		#torrent directory must be writable for the warehouse users so the shell processes can write new torrents to the directory
+		Torrent: [user, userData::ShellGroup, 0775],
+		
+		#only regular ownership required for the other torrent directories
+		Download: [user, userGroup],
+		DownloadDone: [user, userGroup],
+	}
 	
-	createDirectories(directories)
+	#convert the symbols to actual paths
+	directories = []
+	directoryData.each do |symbol, permissions|
+		path = Configuration::User.getPath(relativePathData.const_get(symbol))
+		entry = [symbol] + permissions
+		directories << entry
+	end
+	
+	#add the warehouse user directory which is to remain root:root
+	directories << [pathData::User]
+	
+	#attempt to create the directories with the appropriate permissions
+	directories.each do |entry|
+		createDirectory(*entry)
+	end
 	
 	sqlData = Configuration::SQLDatabase
 	initialiseSQLUserAndDatabase(sqlData::User, sqlData::SQLDatabase)

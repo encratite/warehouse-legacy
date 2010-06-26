@@ -15,7 +15,11 @@ class JSONRPCHTTPRequest < HTTPRequest
 	def initialize(environment)
 		super(environment)
 		
-		@jsonInput = JSON.parse(@rawInput)
+		 if @rawInput.empty?
+			@jsonRequests = []
+		else
+			@jsonRequests = JSON.parse(@rawInput)
+		end
 		
 		subject = environment['HTTP_SSL_SUBJECT']
 		parseSubject(subject)

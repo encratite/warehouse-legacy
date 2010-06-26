@@ -80,7 +80,7 @@ class JSONServer
 	
 	def indexHandler(request)
 		user = getUser(request)
-		jsonApi = JSONAPI.new(@configuration, @database, user)
+		jsonApi = JSONAPI.new(@configuration, @connections, user)
 		output(request, "Index request from user #{user.name} from #{request.address}")
 		content = "Methods available on /#{WarehousePath}:\n\n"
 		jsonApi.requestHandlers.each do |name, value|

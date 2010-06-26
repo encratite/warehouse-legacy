@@ -15,7 +15,11 @@ class JSONRequest < HTTPRequest
 	def initialize(environment)
 		super(environment)
 		
-		@jsonRequests = JSON.parse(@rawInput)
+		if @rawInput.empty?
+			@jsonRequests = []
+		else
+			@jsonRequests = JSON.parse(@rawInput)
+		end
 		@isMultiCall = @jsonRequests.class == Array
 		if !@isMultiCall
 			@jsonRequests = [@jsonRequests]

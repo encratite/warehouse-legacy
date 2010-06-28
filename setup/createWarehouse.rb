@@ -39,11 +39,13 @@ def createUser(user)
 	end
 end
 
-def createDirectory(directory, user = nil, group = nil, mode = nil)
+def createDirectory(path, user = nil, group = nil, mode = nil)
 	if File.exists?(path)
 		puts "Directory #{path} already exists"
 	else
 		puts "Creating directory #{path}"
+		#Problem: ~/torrent would be owned by root:root?
+		FileUtils.mkdir_p(path)
 		if user != nil && group != nil
 			puts "Changing the ownership of #{path} to #{user}:#{group}"
 			FileUtils.chown(user, group, path)
@@ -157,7 +159,7 @@ def runSetup
 	directories = []
 	directoryData.each do |symbol, permissions|
 		path = Configuration::User.getPath(relativePathData.const_get(symbol))
-		entry = [symbol] + permissions
+		entry = [path] + permissions
 		directories << entry
 	end
 	

@@ -15,15 +15,15 @@ module Configuration
 				DownloadDone = 'torrent/complete'
 			end
 			
-			def setPaths
+			def self.setPaths
 				RelativePaths.constants.each do |symbol|
 					value = RelativePaths.const_get(symbol)
-					value = User.getPath(value)
+					value = Configuration::User.getPath(value)
 					const_set(symbol, value)
 				end
 			end
 			
-			setPaths
+			self.setPaths
 		end
 	end
 end

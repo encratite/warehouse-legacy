@@ -47,6 +47,8 @@ class UserShell
 				exit
 			rescue Errno::ECONNREFUSED
 				error 'Connection refused!'
+			rescue Sequel::DatabaseError => exception
+				error "Database error: #{exception.message}"
 			end
 		end
 	end

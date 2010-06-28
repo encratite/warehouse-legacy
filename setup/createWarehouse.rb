@@ -7,6 +7,8 @@ require 'configuration/Configuration'
 
 require 'shared/sqlDatabase'
 
+require 'setup/PipeHandler'
+
 def rootCheck
 	if Process.euid != 0
 		raise 'You need to run this script as root.'
@@ -61,23 +63,40 @@ def initialiseSQLUserAndDatabase(user, database)
 	#this works for PostgreSQL with a standard setup only
 	commandLine = 'su -c - postgres psql'
 	begin
-		IO.popen(commandLine, 'r+') do |pipe|
+		Open3.popen3(commandLine) do |stdin, stdout, stderr|
 		
-			pipe.puts "create role #{user};"
-			output = pipe.readline
-			if output == 'CREATE ROLE'
+			readData = lambda do
+				output = stdout.read
+				errorOutput = stderr.readline
+				
+				puts "Output: \"#{output}\""
+				puts "Error output: \"#{errorOutput}\""
+				
+				[output, errorOutput]
+			end
+		
+			stdin.puts "create role #{user};"
+			#stdin.puts "\\q"
+			
+			output, errorOutput = readData.call
+			
+			if output.include?('CREATE ROLE')
 				puts "Created SQL user #{user}"
-			elsif output.include?('already exists')
+			elsif errorOutput.include?('already exists')
 				puts "SQL user #{user} already exists"
+			elsif errorOutput.include?('command not found')
+				puts 'It looks like postgresql is not installed...'
 			else
-				raise "SQL user creation error: #{output}"
+				raise "Unknown SQL user creation error (output: #{output.inspect})"
 			end
 			
-			pipe.puts "create database #{database} with owner #{user};"
-			output = pipe.readline
-			if output == 'CREATE DATABASE'
+			stdin.puts "create database #{database} with owner #{user};"
+			
+			output, errorOutput = readData.call
+			
+			if output.include('CREATE DATABASE')
 				puts "Created database #{database}"
-			elsif output.include?('already exists')
+			elsif errorOutput.include?('already exists')
 				puts "Database #{database} already exists"
 			else
 				raise "SQL database creation error: #{output}"

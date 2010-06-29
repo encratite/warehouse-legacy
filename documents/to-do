@@ -27,6 +27,8 @@ symlinks should get updated when you add/remove a filter? - frequently you do no
 
 Done:
 
+catch RE errors in the User API and not at the upper layers
+
 lack of queue/notification in the user API cancel command - it should no longer be filesystem chown based, it should simply use the queue tables now really...the cancel command currently doesn't kill symlinks either - does the cleaner automatically remove dead symlinks atm?
 there is a problem with this - it will be limited to canceling running downloads I guess since queue data does not persist right now... the categorisers/cleaners would require some changes
 solved by: change-ownership usage in the ReleaseHandler when the number of matching users is only 1

@@ -62,50 +62,29 @@ end
 def initialiseSQLUserAndDatabase(user, database)
 	#this works for PostgreSQL with a standard setup only
 	commandLine = 'su -c - postgres psql'
-	begin
-		Open3.popen3(commandLine) do |stdin, stdout, stderr|
-		
-			readData = lambda do
-				output = stdout.read
-				errorOutput = stderr.readline
-				
-				puts "Output: \"#{output}\""
-				puts "Error output: \"#{errorOutput}\""
-				
-				[output, errorOutput]
-			end
-		
-			stdin.puts "create role #{user};"
-			#stdin.puts "\\q"
-			
-			output, errorOutput = readData.call
-			
-			if output.include?('CREATE ROLE')
-				puts "Created SQL user #{user}"
-			elsif errorOutput.include?('already exists')
-				puts "SQL user #{user} already exists"
-			elsif errorOutput.include?('command not found')
-				puts 'It looks like postgresql is not installed...'
-			else
-				raise "Unknown SQL user creation error (output: #{output.inspect})"
-			end
-			
-			stdin.puts "create database #{database} with owner #{user};"
-			
-			output, errorOutput = readData.call
-			
-			if output.include('CREATE DATABASE')
-				puts "Created database #{database}"
-			elsif errorOutput.include?('already exists')
-				puts "Database #{database} already exists"
-			else
-				raise "SQL database creation error: #{output}"
-			end
+	PipeHandler.new(commandLine) do |handler|
+		handler << "create role #{user};"
+		message = handler.getMessage
+		if message.include?('CREATE ROLE')
+			puts "Created SQL user #{user}"
+		elsif message.include?('already exists')
+			puts "SQL user #{user} already exists"
+		elsif message.include?('command not found')
+			puts 'It looks like postgresql is not installed...'
+		else
+			raise "Unknown SQL user creation error (output: #{message})"
 		end
-	rescue EOFError
-		raise 'psql execution failed'
-	rescue Errno::ENOENT
-		raise "Unable to execute \"#{commandLine}\" - no such path"
+		
+		handler << "create database #{database} with owner #{user};"
+		
+		message = handler.getMessage
+		if message.include?('CREATE DATABASE')
+			puts "Created database #{database}"
+		elsif message.include?('already exists')
+			puts "Database #{database} already exists"
+		else
+			raise "SQL database creation error: #{message}"
+		end
 	end
 end
 
@@ -132,16 +111,17 @@ def getSQLStatements(script)
 	end
 	
 	statements = data.split(';')
+	statements = statements.map{|x| x.strip}
 	return statements
 end
 
 def createTables(script)
 	database = getSQLDatabase
-	statements = getSQLStatements
+	statements = getSQLStatements(script)
 	statements.each do |statement|
 		#this actually deletes existing tables - possibly not a good idea...
 		puts "Executing #{statement}"
-		database[statement]
+		database.execute(statement)
 	end
 end
 

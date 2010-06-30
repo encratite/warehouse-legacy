@@ -1,4 +1,3 @@
-require 'json'
 require 'nil/ipc'
 require 'notification/NotificationProtocol'
 
@@ -12,7 +11,7 @@ class NotificationProtocolClient
 		if @client == nil
 			@client = Nil::IPCClient.new(@path)
 		end
-		return @client.notify(target, type, JSON.unparse(content))
+		return @client.notify(target, type, content)
 	end
 	
 	def queuedNotification(target, releaseData)

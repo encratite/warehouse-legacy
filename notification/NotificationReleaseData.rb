@@ -30,7 +30,7 @@ class NotificationReleaseData < JSONObject
 			queueData[:site],
 			queueData[:site_id],
 			queueData[:name],
-			queueData[:size],
+			queueData[:release_size],
 			queueData[:is_manual]
 		)
 		#for the Categoriser

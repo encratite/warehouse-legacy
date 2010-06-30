@@ -1,6 +1,5 @@
 To do:
 
-add session directory creation in the setup
 add a function to remove the SSH key
 
 take care of the "unfinished chunks error" by enforcing rehashing somehow
@@ -27,6 +26,7 @@ symlinks should get updated when you add/remove a filter? - frequently you do no
 
 Done:
 
+add session directory creation in the setup
 catch RE errors in the User API and not at the upper layers
 
 lack of queue/notification in the user API cancel command - it should no longer be filesystem chown based, it should simply use the queue tables now really...the cancel command currently doesn't kill symlinks either - does the cleaner automatically remove dead symlinks atm?

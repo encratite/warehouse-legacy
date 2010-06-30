@@ -17,11 +17,11 @@ module Configuration
 			end
 		end
 		
-		def self.getPath(path)
+		def self.getPath(*paths)
 			#just return nil for now - useful for running the initial setup because the home is not available at that time yet since the user might not exist
 			base = self.getWarehouseHome
 			return nil if base == nil
-			return Nil.joinPaths(base, path)
+			return Nil.joinPaths(*([base] + paths))
 		end
 	end
 end

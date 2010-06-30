@@ -10,9 +10,11 @@ module Configuration
 			
 			#need separate path constants for the setup script - otherwise they would be nil
 			module RelativePaths
-				Torrent = 'torrent/torrent'
-				Download = 'torrent/download'
-				DownloadDone = 'torrent/complete'
+				Base = 'torrent'
+				Torrent = "#{Base}/torrent"
+				Download = "#{Base}/download"
+				DownloadDone = "#{Base}/complete"
+				Session = "#{Base}/session"
 			end
 			
 			def self.setPaths

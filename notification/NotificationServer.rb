@@ -183,7 +183,7 @@ class NotificationServer < Nil::IPCServer
 			{
 				'user_id' => user.id,
 				'notification_type' => type,
-				'content' => content
+				'content' => content.to_s
 			}
 			@database[:user_notification].insert(data)
 		end

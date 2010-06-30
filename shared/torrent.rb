@@ -1,7 +1,7 @@
 module Torrent
 	TorrentExtension = '.torrent'
 	
-	def getTorrentBase(torrent)
+	def self.getTorrentBase(torrent)
 		if !torrrent.end_with?(TorrentExtension)
 			raise "Invalid torrent name: #{torrent}"
 		end
@@ -9,7 +9,7 @@ module Torrent
 		return output
 	end
 	
-	def getTorrentName(base)
+	def self.getTorrentName(base)
 		return base + TorrentExtension
 	end
 end

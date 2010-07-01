@@ -62,6 +62,11 @@ class Cleaner
 		end
 	end
 	
+	def removeOldQueueEntries(ageMaximum)
+		limit = "(now() - '#{ageMaximum} seconds'::interval)".lit
+		@database[:download_queue].filter{|x| x.queue_time <= limit}.delete
+	end
+	
 	def getSortedFiles(path)
 		input = Nil.readDirectory path
 		if input == nil

@@ -4,7 +4,7 @@ require 'configuration/Configuration'
 require 'shared/ConnectionContainer'
 
 log = Nil.joinPaths(Configuration::Logging::Path, Configuration::JSONRPCServer::Log)
-server = JSONRPCHTTPServer.new(ConnectionContainer.new, log)
+server = JSONRPCHTTPServer.new(Configuration, ConnectionContainer.new, log)
 
 handler = lambda do |environment|
 	server.processRequest(environment)

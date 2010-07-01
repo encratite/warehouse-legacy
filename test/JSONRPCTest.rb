@@ -83,14 +83,14 @@ def generalTest(client)
 	reply = client.call(
 		[
 			['sum', 2, 3],
-			['getTorrents']
+			#['getTorrents']
 		]
 	)
 	puts 'Reply:'
 	puts reply
 end
 
-user = 'torment'
+user = 'void'
 serial = '01'
 host = '127.0.0.1'
 port = 59172
@@ -98,5 +98,5 @@ path = '/warehouse'
 
 client = JSONClient.new(user, serial, host, port, path)
 #performanceTest(client)
-#generalTest(client)
-cmdCall(client)
+generalTest(client)
+#cmdCall(client)

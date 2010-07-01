@@ -16,9 +16,9 @@ class JSONRPCHTTPRequest < HTTPRequest
 		super(environment)
 		
 		 if @rawInput.empty?
-			@jsonRequests = []
+			@jsonInput = []
 		else
-			@jsonRequests = JSON.parse(@rawInput)
+			@jsonInput = JSON.parse(@rawInput)
 		end
 		
 		subject = environment['HTTP_SSL_SUBJECT']

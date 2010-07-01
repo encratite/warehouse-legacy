@@ -24,7 +24,7 @@ class Categoriser
 		
 		@connections = connections
 		@log = File.open(configuration::Logging::CategoriserLog, 'ab')
-		@shellGroup = configuration::Torrent::User::ShellGroup
+		@shellGroup = configuration::User::ShellGroup
 		@user = Nil.getUser
 		@torrentPath = configuration::Torrent::Path::Torrent
 		@manualPath = configuration::Torrent::Path::Manual
@@ -46,7 +46,7 @@ class Categoriser
 	end
 	
 	#returns if the release was queued manually or not
-	def processMatch(release, user, category, filter, type = nil)
+	def processMatch(release, user, category, filter, type, releaseData)
 		category = @ownPath if category == nil
 		userPath = Nil.joinPaths(@userPath, user)
 		filterPath = Nil.joinPaths(userPath, @filteredPath)
@@ -64,8 +64,6 @@ class Categoriser
 		symlink = Nil.joinPaths(categoryPath, release)
 		target = Nil.joinPaths(@userBind, release)
 		
-		releaseData = NotificationReleaseData.fromTable(release, database)
-		
 		if releaseData.isManual
 			output "Creating symlink #{symlink} to release #{target} because user #{user} manually downloaded this release"
 		else
@@ -81,14 +79,7 @@ class Categoriser
 			return
 		end
 		setupPermissions(symlink)
-		
-		rows = @database[:download_queue_user].where(queue_id: releaseData.id).select(user_id)
-		rows.each do |data|
-			@notification.downloadedNotification(data[:user_id], releaseData)
-		end
-		#the release is not longer part of the queue - remove it
-		@queue.where(id: id).delete
-		return releaseData.isManual
+		return releaseData
 	end
 	
 	def getSpecificReleaseInformation(release)
@@ -123,8 +114,20 @@ class Categoriser
 			user = result[:user_name]
 			category = result[:category]
 			filter = result[:filter]
-			[@ownPath, category].compact.each do |currentCategory|
-				isManual = processMatch(release, user, currentCategory, filter, type) || isManual
+			categories = [@ownPath, category].compact
+			if !categories.empty?
+				releaseData = NotificationReleaseData.fromTable(release, @database)
+				categories.each do |currentCategory|
+					releaseData = processMatch(release, user, currentCategory, filter, type, releaseData)
+					isManual = releaseData.isManual || isManual
+				end
+				#notify the user(s) (how could it even be more than one? whatever...) about their download
+				rows = @database[:download_queue_user].where(queue_id: releaseData.id).select(:user_id)
+				rows.each do |data|
+					@notification.downloadedNotification(data[:user_id], releaseData)
+				end
+				#the release is not longer part of the queue - remove it
+				@queue.where(id: releaseData.id).delete
 			end
 		end
 		return isManual
@@ -147,7 +150,7 @@ class Categoriser
 	
 	def performQuery(release, type, data)
 		query = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.category as category from user_data inner join user_release_filter on (user_data.id = user_release_filter.user_id) where ? ~* user_release_filter.filter'
-		results = @database["#{query} and #{getFilterCondition type}", data]
+		results = @database["#{query} and #{getFilterCondition type}", data].all
 		return processResults(results, release, type)
 	end
 	
@@ -182,7 +185,8 @@ class Categoriser
 					torrentName = Torrent.getTorrentName(release)
 					torrentPath = Nil.joinPaths(@torrentPath, torrentName)
 					if isManual
-						processMatch(release, user, @manualPath, nil)
+						releaseData = NotificationReleaseData.fromTable(release, @database)
+						processMatch(release, user, @manualPath, nil, nil, releaseData)
 					end
 				rescue Errno::ENOENT
 					output "No such path: #{torrentPath}"

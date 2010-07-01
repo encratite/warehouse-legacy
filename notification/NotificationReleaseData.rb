@@ -22,8 +22,7 @@ class NotificationReleaseData < JSONObject
 		torrent = Torrent.getTorrentName(release)
 		result = database[:download_queue].where(torrent: torrent).all
 		if result.empty?
-			output "Error: Unable to find a queue entry for release #{release}"
-			return
+			raise "Error: Unable to find a queue entry for release #{release}"
 		end
 		queueData = result.first
 		releaseData = NotificationReleaseData.new(
@@ -34,7 +33,7 @@ class NotificationReleaseData < JSONObject
 			queueData[:is_manual]
 		)
 		#for the Categoriser
-		@id = queueData[:id]
+		releaseData.id = queueData[:id]
 		return releaseData
 	end
 end

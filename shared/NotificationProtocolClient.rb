@@ -12,7 +12,7 @@ class NotificationProtocolClient
 			@client = Nil::IPCClient.create(@path)
 			if @client == nil
 				#this should probably get some proper logging etc
-				puts "Unable to create IPC client on socket #{path}"
+				puts "Unable to create IPC client on socket #{@path}"
 				return nil
 			end
 		end

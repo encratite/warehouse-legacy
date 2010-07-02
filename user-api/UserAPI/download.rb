@@ -49,16 +49,16 @@ class UserAPI
 				httpPath = data[:torrent_path]
 			end
 			
-			data = site.httpHandler.get(httpPath)
-			if data == nil
+			httpData = site.httpHandler.get(httpPath)
+			if httpData == nil
 				error "HTTP error: Unable to queue release - #{administrator}"
 			end
 			
-			torrent = Bencode.getTorrentName(data)
+			torrent = Bencode.getTorrentName(httpData)
 			torrentPath = Nil.joinPaths(@torrentPath, torrent)
 			
 			begin
-				Nil.writeFile(torrentPath, data)
+				Nil.writeFile(torrentPath, httpData)
 			rescue Errno::EACCES
 				error 'Failed to overwrite file - access denied.'
 			end
@@ -67,9 +67,12 @@ class UserAPI
 				@ownership.changeOwnership(@user.name, torrentPath)
 			end
 			
+			#(site, siteId, name, size, isManual)
 			releaseData = NotificationReleaseData.new(site.name, data[:site_id], data[:name], data[:release_size], true)
 			@queue.insertQueueEntry(releaseData, torrent, [@user.id])
-			@notification.queuedNotification(@user.id, releaseData)
+			if @notification.queuedNotification(@user.id, releaseData) == nil
+				error 'Unable to perform notification'
+			end
 			
 		rescue RuntimeError => exception
 			error "Error: #{exception.message} - #{administrator}."

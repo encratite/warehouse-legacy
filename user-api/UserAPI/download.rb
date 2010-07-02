@@ -70,9 +70,7 @@ class UserAPI
 			#(site, siteId, name, size, isManual)
 			releaseData = NotificationReleaseData.new(site.name, data[:site_id], data[:name], data[:release_size], true)
 			@queue.insertQueueEntry(releaseData, torrent, [@user.id])
-			if @notification.queuedNotification(@user.id, releaseData) == nil
-				error 'Unable to perform notification'
-			end
+			@notification.queuedNotification(@user.id, releaseData)
 			
 		rescue RuntimeError => exception
 			error "Error: #{exception.message} - #{administrator}."

@@ -2,18 +2,24 @@ require 'nil/ipc'
 require 'notification/NotificationProtocol'
 
 class NotificationProtocolClient
+	attr_writer :throwOnError
+	
 	def initialize(path)
 		@path = path
 		@client = nil
+		@throwOnError = false
 	end
 	
 	def notify(target, type, content)
 		if @client == nil
-			@client = Nil::IPCClient.create(@path)
-			if @client == nil
-				#this should probably get some proper logging etc
-				puts "Unable to create IPC client on socket #{@path}"
-				return nil
+			begin
+				@client = Nil::IPCClient.new(@path)
+			rescue Nil::IPCError => message
+				if @throwOnError
+					raise message
+				else
+					puts "Unable to connect to IPC server to deliver notification: #{message}"
+				end
 			end
 		end
 		return @client.notify(target, type, content)

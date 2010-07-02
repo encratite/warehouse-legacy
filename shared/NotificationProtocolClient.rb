@@ -9,7 +9,12 @@ class NotificationProtocolClient
 	
 	def notify(target, type, content)
 		if @client == nil
-			@client = Nil::IPCClient.new(@path)
+			@client = Nil::IPCClient.create(@path)
+			if @client == nil
+				#this should probably get some proper logging etc
+				puts "Unable to create IPC client on socket #{path}"
+				return nil
+			end
 		end
 		return @client.notify(target, type, content)
 	end

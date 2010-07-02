@@ -128,6 +128,11 @@ class JSONRPCAPI
 		
 		handlerMethod = handlerData[0]
 		handlerArguments = handlerData[1]
+		
+		if arguments.class != Array
+			error("Invalid parameter type: #{arguments.class}")
+		end
+		
 		if arguments.size != handlerArguments.size
 			error("The argument counts for the method \"#{method}\" mismatch (expected: #{handlerArguments.size}, given: #{arguments.size})")
 		end

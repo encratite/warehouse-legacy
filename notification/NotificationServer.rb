@@ -105,7 +105,16 @@ class NotificationServer < Nil::IPCServer
 		name = client.user.name
 		output "User #{name} connected"
 		while true
-			result = client.receiveData
+			begin
+				result = client.receiveData
+			rescue Nil::SerialisedCommunication::CommunicationError => exception
+				output "Erroneous communication with user #{name}: #{exception.message}"
+				begin
+					client.socket.close
+				rescue
+				end
+				return
+			end
 			if result.connectionClosed
 				output "User #{name} disconnected"
 				return
@@ -116,8 +125,7 @@ class NotificationServer < Nil::IPCServer
 				processClientInput(client, input)
 			rescue RuntimeError => exception
 				backtrace = exception.backtrace.join "\n"
-				puts "An exception of type #{exception.class} occured:"
-				puts backtrace
+				output "An exception of type #{exception.class} occured:\nbacktrace"
 				clientError(client, exception.message)
 			end
 		end

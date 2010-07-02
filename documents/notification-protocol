@@ -165,7 +165,7 @@ For example, getOldNotifications(0, 9) will return the 10 first notifications st
 ------------------------------------------------
 
 Method: "generateNotification"
-Arguments: [NotificationData]
+Arguments: [type, content]
 Return value: null
 
 Description:

@@ -35,6 +35,8 @@ class NotificationServer < Nil::IPCServer
 		initialiseIPC
 		initialiseRPC(configuration)
 		initialiseTLS(configuration::Notification)
+		
+		@shellGroup = configuration::User::ShellGroup
 	end
 	
 	def initialiseIPC
@@ -62,6 +64,13 @@ class NotificationServer < Nil::IPCServer
 		@ctx.ca_file = caPath
 	end
 	
+	def initialisePermissions
+		File.chmod(0660, @path)
+		uid = Process.uid
+		gid = Etc.getgrnam(@shellGroup).gid
+		File.chown(uid, gid, @path)
+	end
+	
 	def output(line)
 		@output.output(line)
 	end
@@ -72,6 +81,10 @@ class NotificationServer < Nil::IPCServer
 		@tcpServer = TCPServer.new(@port)
 		@sslServer = OpenSSL::SSL::SSLServer.new(@tcpServer, @ctx)
 		runServer
+	end
+	
+	def socketHook
+		initialisePermissions
 	end
 	
 	def runServer

@@ -23,6 +23,14 @@ class Watchdog
 				program.isActive = true
 			end
 			@programs.each do |program|
+				if program.oldIsActive != program.isActive
+					#a change occured
+					if program.isActive
+						#the process was relaunched
+					else
+						#the process terminated
+					end
+				end
 				program.oldIsActive = program.isActive
 			end
 			sleep @delay

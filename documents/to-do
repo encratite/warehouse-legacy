@@ -1,16 +1,8 @@
 To do:
 
+the categoriser will retrieve the permissions of the target of a symlink instead of the permissions of the symlink itself in its debug output
 add a function to remove the SSH key
-
 take care of the "unfinished chunks error" by enforcing rehashing somehow
-
-proper unit testing for all the changes in:
-	-the notification server itself (write a new client?)
-	-user API downloading/canceling queueing/notifications
-	-ReleaseHandler matches/queueing/notifications
-	-cleaner queue/notification handling (unluckily this is difficult to test locally)
-	-categoriser queue entries/notifications
-
 the creation of new users should add them to the database in the first place (currently only the shell does it)
 add proper handling of torrents which consist of single files instead of folders (this breaks the cleaner and the categoriser I think)
 possible future issue: store NFOs with newlines instead of raping them (solved in the case of TL)
@@ -25,6 +17,13 @@ Problematic:
 symlinks should get updated when you add/remove a filter? - frequently you do not actually want this because you're just removing an old series or whatever
 
 Done:
+
+proper unit testing for all the changes in:
+	-the notification server itself (write a new client?)
+	-user API downloading/canceling queueing/notifications
+	-ReleaseHandler matches/queueing/notifications
+	-cleaner queue/notification handling (unluckily this is difficult to test locally)
+	-categoriser queue entries/notifications
 
 add session directory creation in the setup
 catch RE errors in the User API and not at the upper layers

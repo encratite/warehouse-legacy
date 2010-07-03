@@ -46,7 +46,8 @@ class Categoriser
 	end
 	
 	#returns if the release was queued manually or not
-	def processMatch(release, user, category, filter, type, releaseData)
+	def processMatch(releaseData, user, category, filter, type)
+		release = releaseData.name
 		category = @ownPath if category == nil
 		userPath = Nil.joinPaths(@userPath, user)
 		filterPath = Nil.joinPaths(userPath, @filteredPath)
@@ -79,7 +80,7 @@ class Categoriser
 			return
 		end
 		setupPermissions(symlink)
-		return releaseData
+		return nil
 	end
 	
 	def getSpecificReleaseInformation(release)
@@ -108,17 +109,15 @@ class Categoriser
 	end
 	
 	#returns if one of the releases was queued manually (in that case there should be only one really)
-	def processResults(results, release, type)
-		isManual = false
+	def processResults(results, releaseData, type)
 		results.each do |result|
 			user = result[:user_name]
 			category = result[:category]
 			filter = result[:filter]
 			categories = [@ownPath, category].compact
 			if !categories.empty?
-				releaseData = NotificationReleaseData.fromTable(release, @database)
 				categories.each do |currentCategory|
-					releaseData = processMatch(release, user, currentCategory, filter, type, releaseData)
+					releaseData = processMatch(releaseData, user, currentCategory, filter, type)
 					isManual = releaseData.isManual || isManual
 				end
 				#notify the user(s) (how could it even be more than one? whatever...) about their download
@@ -127,10 +126,11 @@ class Categoriser
 					@notification.downloadedNotification(data[:user_id], releaseData)
 				end
 				#the release is not longer part of the queue - remove it
-				@queue.where(id: releaseData.id).delete
+				#@queue.where(id: releaseData.id).delete
+				#it's better to use the name here, too, sometimes there are duplicates from multiple manual queueing
+				@queue.where(name: releaseData.name).delete
 			end
 		end
-		return isManual
 	end
 	
 	def getUserAndGroup(path)
@@ -148,18 +148,23 @@ class Categoriser
 		return "user_release_filter.release_filter_type = '#{type}'"
 	end
 	
-	def performQuery(release, type, data)
+	def performQuery(releaseData, type, data)
 		query = 'select user_data.name as user_name, user_release_filter.filter as filter, user_release_filter.category as category from user_data inner join user_release_filter on (user_data.id = user_release_filter.user_id) where ? ~* user_release_filter.filter'
 		results = @database["#{query} and #{getFilterCondition type}", data].all
-		return processResults(results, release, type)
+		processResults(results, releaseData, type)
+		return nil
 	end
 	
 	def categorise(release)
 		@database.transaction do
 			begin
 				output "Categorising release #{release}"
+				
+				releaseData = NotificationReleaseData.fromTable(release, @database)
+				#puts "Release data: #{releaseData.inspect}"
+				
 				#process filter matches by name
-				isManual = performQuery(release, 'name', release)
+				performQuery(releaseData, 'name', release)
 				
 				infoHash = getSpecificReleaseInformation release
 				
@@ -167,7 +172,7 @@ class Categoriser
 				nfo = infoHash[:nfo]
 				if nfo != nil
 					output "Found an NFO of #{nfo.size} bytes in size for release #{release}"
-					performQuery(release, 'nfo', nfo)
+					performQuery(releaseData, 'nfo', nfo)
 				else
 					output "Found no NFO for release #{release}"
 				end
@@ -175,21 +180,27 @@ class Categoriser
 				genre = infoHash[:genre]
 				if genre != nil
 					output "#{release} appears to be a release of genre #{genre}"
-					performQuery(release, 'genre', genre)
+					performQuery(releaseData, 'genre', genre)
 				else
 					output "No genre was specified for release #{release}"
 				end
 				
 				#always create a symlink for manually queued releases
-				begin
-					torrentName = Torrent.getTorrentName(release)
-					torrentPath = Nil.joinPaths(@torrentPath, torrentName)
-					if isManual
-						releaseData = NotificationReleaseData.fromTable(release, @database)
-						processMatch(release, user, @manualPath, nil, nil, releaseData)
+				if releaseData.isManual
+					userIds = @database[:download_queue_user].where(queue_id: releaseData.id).select(:user_id).all
+					if userIds.empty?
+						output "Error: Unable to find a user ID associated with queue entry #{queue_id} (#{release})"
+						return
 					end
-				rescue Errno::ENOENT
-					output "No such path: #{torrentPath}"
+					userId = userIds.first[:user_id]
+					users = @database[:user_data].where(id: userId).select(:name).all
+					if users.empty?
+						output "Error: Unable to determine the name of the user associated with ID #{userId}"
+						return
+					end
+					username = users.first[:name]
+					processMatch(releaseData, username, @manualPath, nil, nil)
+					@queue.where(name: releaseData.name).delete
 				end
 			rescue => exception
 				message = "An exception of type #{exception.class} occured: #{exception.message}\n"

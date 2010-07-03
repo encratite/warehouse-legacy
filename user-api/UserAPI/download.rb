@@ -40,10 +40,10 @@ class UserAPI
 		begin
 			if site == 'SCC'
 				detailsPath = "/details.php?id=#{data[:site_id]}"
-				data = site.httpHandler.get(detailsPath)
-				raise 'Unable to retrieve details on this release' if data == nil
+				httpData = site.httpHandler.get(detailsPath)
+				raise 'Unable to retrieve details on this release' if httpData == nil
 				
-				releaseData = SceneAccessReleaseData.new data
+				releaseData = SceneAccessReleaseData.new httpData
 				httpPath = releaseData.path
 			else
 				httpPath = data[:torrent_path]

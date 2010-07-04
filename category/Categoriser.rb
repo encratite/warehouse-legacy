@@ -38,17 +38,20 @@ class Categoriser
 	end
 	
 	def setupPermissions(path)
-		output "Modifying the permissions of #{path}: chown #{@user}:#{@shellGroup}"
+		#output "Modifying the permissions of #{path}: chown #{@user}:#{@shellGroup}"
 		user, group = getUserAndGroup path
-		output "The current user and group of #{path} are #{user}:#{group}"
+		#output "The current user and group of #{path} are #{user}:#{group}"
 		FileUtils.chown(@user, @shellGroup, path)
 		FileUtils.chmod(0775, path)
 	end
 	
 	#returns if the release was queued manually or not
-	def processMatch(releaseData, user, category, filter, type)
+	def processMatch(releaseData, user, category, filter = nil, type = nil)
+		#puts "processMatch: #{[releaseData, user, category, filter, type].inspect}"
+		
+		isOwn = category == @ownPath
+		
 		release = releaseData.name
-		category = @ownPath if category == nil
 		userPath = Nil.joinPaths(@userPath, user)
 		filterPath = Nil.joinPaths(userPath, @filteredPath)
 		categoryPath = filterPath
@@ -65,21 +68,34 @@ class Categoriser
 		symlink = Nil.joinPaths(categoryPath, release)
 		target = Nil.joinPaths(@userBind, release)
 		
-		if releaseData.isManual
-			output "Creating symlink #{symlink} to release #{target} because user #{user} manually downloaded this release"
-		else
-			output "Creating symlink #{symlink} to release #{target} because of filter \"#{filter}\" [#{type}] of user #{user}"
+		if !isOwn
+			if releaseData.isManual
+				output "Creating symlink #{symlink} to release #{target} because user #{user} manually downloaded this release"
+			else
+				output "Creating symlink #{symlink} to release #{target} because of filter \"#{filter}\" [#{type}] of user #{user}"
+			end
 		end
 		
 		begin
 			Nil.symbolicLink(target, symlink)
+			if isOwn
+				output "Created symlink #{symlink} to release #{target}"
+			end
 		rescue Errno::EEXIST
-			output 'Warning: Link already exists'
+			if !isOwn
+				output 'Warning: Link already exists'
+			end
 		rescue NotImplementedError
 			output 'Error: Symlinks not implemented!'
 			return
 		end
 		setupPermissions(symlink)
+		
+		if !isOwn
+			#create the filtered/own link
+			processMatch(releaseData, user, @ownPath)
+		end
+		
 		return nil
 	end
 	
@@ -108,7 +124,6 @@ class Categoriser
 		return output
 	end
 	
-	#returns if one of the releases was queued manually (in that case there should be only one really)
 	def processResults(results, releaseData, type)
 		results.each do |result|
 			user = result[:user_name]
@@ -124,10 +139,6 @@ class Categoriser
 				rows.each do |data|
 					@notification.downloadedNotification(data[:user_id], releaseData)
 				end
-				#the release is not longer part of the queue - remove it
-				#@queue.where(id: releaseData.id).delete
-				#it's better to use the name here, too, sometimes there are duplicates from multiple manual queueing
-				@queue.where(name: releaseData.name).delete
 			end
 		end
 	end
@@ -202,9 +213,10 @@ class Categoriser
 						return
 					end
 					username = users.first[:name]
-					processMatch(releaseData, username, @manualPath, nil, nil)
-					@queue.where(name: releaseData.name).delete
+					processMatch(releaseData, username, @manualPath)
 				end
+				
+				@queue.where(name: releaseData.name).delete
 			rescue => exception
 				message = "An exception of type #{exception.class} occured: #{exception.message}\n"
 				message += exception.backtrace.join("\n")

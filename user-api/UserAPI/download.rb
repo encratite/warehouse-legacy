@@ -49,6 +49,10 @@ class UserAPI
 				httpPath = data[:torrent_path]
 			end
 			
+			if @user.isAdministrator
+				puts "Downlading #{httpPath}"
+			end
+			
 			httpData = site.httpHandler.get(httpPath)
 			if httpData == nil
 				error "HTTP error: Unable to queue release - #{administrator}"

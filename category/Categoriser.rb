@@ -117,8 +117,7 @@ class Categoriser
 			categories = [@ownPath, category].compact
 			if !categories.empty?
 				categories.each do |currentCategory|
-					releaseData = processMatch(releaseData, user, currentCategory, filter, type)
-					isManual = releaseData.isManual || isManual
+					processMatch(releaseData, user, currentCategory, filter, type)
 				end
 				#notify the user(s) (how could it even be more than one? whatever...) about their download
 				rows = @database[:download_queue_user].where(queue_id: releaseData.id).select(:user_id)
@@ -160,8 +159,12 @@ class Categoriser
 			begin
 				output "Categorising release #{release}"
 				
-				releaseData = NotificationReleaseData.fromTable(release, @database)
-				#puts "Release data: #{releaseData.inspect}"
+				begin
+					releaseData = NotificationReleaseData.fromTable(release, @database)
+				rescue RuntimeError => exception
+					puts "Notification release data error: #{exception.message}"
+					return
+				end
 				
 				#process filter matches by name
 				performQuery(releaseData, 'name', release)
@@ -189,7 +192,7 @@ class Categoriser
 				if releaseData.isManual
 					userIds = @database[:download_queue_user].where(queue_id: releaseData.id).select(:user_id).all
 					if userIds.empty?
-						output "Error: Unable to find a user ID associated with queue entry #{queue_id} (#{release})"
+						output "Error: Unable to find a user ID associated with queue entry #{releaseData.id} (#{release})"
 						return
 					end
 					userId = userIds.first[:user_id]

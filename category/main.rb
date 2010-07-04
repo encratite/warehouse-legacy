@@ -9,11 +9,11 @@ require 'configuration/Configuration'
 require 'category/Categoriser'
 require 'shared/ConnectionContainer'
 
-if ARGV.size != 1
+if ARGV.size < 1
 	puts "ruby #{__FILE__} <release>"
 	exit
 end
 
-release = File.basename(ARGV[0])
+release = File.basename(ARGV.join(' '))
 categoriser = Categoriser.new(Configuration, ConnectionContainer.new)
 categoriser.categorise(release)

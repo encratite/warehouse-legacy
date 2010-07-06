@@ -166,10 +166,12 @@ class NotificationServer < Nil::IPCServer
 			user = client.user
 			user.address = client.socket.peeraddr[3]
 			returnValue = @rpc.processRPCRequests(client, input)
+			#puts "Input: #{input.inspect}"
+			#puts "Output keys: #{returnValue.keys.inspect}"
 			output =
 			{
 				'type' => 'rpcResult',
-				'data' => output,
+				'data' => returnValue,
 			}
 			client.sendData(output)
 		rescue SystemCallError => exception

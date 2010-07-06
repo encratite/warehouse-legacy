@@ -162,10 +162,15 @@ class NotificationServer < Nil::IPCServer
 	end
 	
 	def rpcHandler(client, input)
-		user = client.user
-		user.address = client.socket.peeraddr[3]
-		output = @rpc.processRPCRequests(client, input)
-		client.sendData(output)
+		begin
+			user = client.user
+			user.address = client.socket.peeraddr[3]
+			output = @rpc.processRPCRequests(client, input)
+			client.sendData(output)
+		rescue SystemCallError => exception
+			puts "RPC handling error: #{exception.message}"
+			return nil
+		end
 	end
 	
 	def clientError(client, message)

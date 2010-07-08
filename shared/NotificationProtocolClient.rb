@@ -14,6 +14,7 @@ class NotificationProtocolClient
 		if @client == nil
 			begin
 				@client = Nil::IPCClient.new(@path)
+				return @client.notify(target, type, content)
 			rescue Nil::IPCError => message
 				if @throwOnError
 					raise message
@@ -22,7 +23,6 @@ class NotificationProtocolClient
 				end
 			end
 		end
-		return @client.notify(target, type, content)
 	end
 	
 	def queuedNotification(target, releaseData)

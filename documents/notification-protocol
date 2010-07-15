@@ -25,7 +25,7 @@ This data type is used in the "data" component of notifications as described in 
 {
 	"time": <Int, UNIX timestamp associated with this event (UTC!)>,
 	"type": <String describing the nature of the notification>,
-	"content": <String, arbitrary JSON data suited for this type of notification>
+	"content": <arbitrary JSON data suited for this type of notification>
 }
 
 2.2 ReleaseData

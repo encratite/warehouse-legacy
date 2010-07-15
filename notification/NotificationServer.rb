@@ -93,6 +93,8 @@ class NotificationServer < Nil::IPCServer
 				socket = @sslServer.accept
 				Thread.new { handleClient(socket) }
 			rescue OpenSSL::SSL::SSLError => exception
+				#"SSL_write:: bad write retry" appears to occur rather randomly here, wreaking havoc
+				socket.close
 				output "An SSL exception occured: #{exception.message}"
 			rescue RuntimeError => exception
 				socket.close

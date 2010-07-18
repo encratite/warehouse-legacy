@@ -94,12 +94,19 @@ class NotificationServer < Nil::IPCServer
 				Thread.new { handleClient(socket) }
 			rescue OpenSSL::SSL::SSLError => exception
 				#"SSL_write:: bad write retry" appears to occur rather randomly here, wreaking havoc
-				socket.close
+				closeSocket socket
 				output "An SSL exception occured: #{exception.message}"
 			rescue RuntimeError => exception
-				socket.close
+				closeSocket socket
 				output "Runtime error: #{exception.message}"
 			end
+		end
+	end
+	
+	def closeSocket(socket)
+		begin
+			socket.close
+		rescue IOError
 		end
 	end
 	

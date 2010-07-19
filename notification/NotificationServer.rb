@@ -105,7 +105,7 @@ class NotificationServer < Nil::IPCServer
 	
 	def closeSocket(socket)
 		begin
-			socket.close
+			socket.close if socket != nil
 		rescue IOError
 		end
 	end

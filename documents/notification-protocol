@@ -180,7 +180,17 @@ Should the client send invalid data (containing unrecognised types/data and such
 
 Mind you - this is NOT for JSON RPC error handling - that will occur within the JSON RPC layer using "rpcResult" as described in section 3 of this document.
 
-6. Actual examples
+6. Keep-alive packets
+---------------------
+
+The nature of the persistent connections requires the use of keep-alive data. The server will continuously send the following unit every 60 seconds:
+
+{
+	"type": "ping",
+	"data": null
+}
+
+7. Actual examples
 ------------------
 
 At first the client connects via TLS. The user is identified based on the N field in the subject of their certificate.

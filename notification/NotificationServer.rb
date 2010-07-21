@@ -18,6 +18,8 @@ class NotificationServer < Nil::IPCServer
 	}
 	
 	def initialize(configuration, connections)
+		Thread.abort_on_exception = true
+
 		path = configuration::Notification::Socket
 		FileUtils.mkdir_p(File.dirname(path))
 		
@@ -79,6 +81,10 @@ class NotificationServer < Nil::IPCServer
 		#run IPC server in separate threads
 		Thread.new { super }
 		@tcpServer = TCPServer.new(@port)
+		#option = [3, 0].pack("L_2")
+		#puts @tcpServer.getsockopt(Socket::SOL_SOCKET, Socket::SO_RCVTIMEO).inspect
+		#@tcpServer.setsockopt(Socket::SOL_SOCKET, Socket::SO_RCVTIMEO, option)
+		#puts @tcpServer.getsockopt(Socket::SOL_SOCKET, Socket::SO_RCVTIMEO).inspect
 		@sslServer = OpenSSL::SSL::SSLServer.new(@tcpServer, @ctx)
 		runServer
 	end
@@ -91,11 +97,12 @@ class NotificationServer < Nil::IPCServer
 		while true
 			begin
 				socket = @sslServer.accept
+				output "accept returned: #{socket.inspect}"
 				Thread.new { handleClient(socket) }
 			rescue OpenSSL::SSL::SSLError => exception
 				#"SSL_write:: bad write retry" appears to occur rather randomly here, wreaking havoc
+				output "An SSL exception occured: #{exception.message} (socket: #{socket.inspect})"
 				closeSocket socket
-				output "An SSL exception occured: #{exception.message}"
 			rescue RuntimeError => exception
 				closeSocket socket
 				output "Runtime error: #{exception.message}"
@@ -105,7 +112,12 @@ class NotificationServer < Nil::IPCServer
 	
 	def closeSocket(socket)
 		begin
-			socket.close if socket != nil
+			if socket == nil
+				output 'Attempted to close a nil socket!'
+			else
+				output "Closing socket #{socket.inspect}"
+				socket.close
+			end
 		rescue IOError
 		end
 	end
@@ -131,14 +143,13 @@ class NotificationServer < Nil::IPCServer
 				result = client.receiveData
 			rescue Nil::SerialisedCommunication::CommunicationError => exception
 				output "Erroneous communication with user #{name}: #{exception.message}"
-				begin
-					client.socket.close
-				rescue
-				end
+				closeSocket(client.socket)
 				return
 			end
 			if result.connectionClosed
 				output "User #{name} disconnected"
+				#unnecessary, I guess
+				closeSocket(client.socket)
 				return
 			end
 			
@@ -184,7 +195,7 @@ class NotificationServer < Nil::IPCServer
 			}
 			client.sendData(output)
 		rescue SystemCallError => exception
-			puts "RPC handling error: #{exception.message}"
+			output "RPC handling error: #{exception.message}"
 			return nil
 		end
 	end

@@ -1,5 +1,12 @@
 To do:
 
+There is currently an extremely bizarre issue with the notification server.
+When a TLS connection dies without being closed properly by packets it doesn't appear to time out on its own and even changing the SO_RCV timeout setting with setsockopt doesn't appear to do anything about it.
+However, all the dead TLS connections are cleaned up when an IPC socket in the same process is closed - however, it does not happen when other TLS sockets are closed.
+
+Also, once in a while "bad retry" SSL errors will occur in the TLS thread of the notification server and once they do it no longer appears to accept new connections on the UNIX domain socket, which is bad. Very bad.
+
+the watchdog should restart the torrent client on a regular basis
 the categoriser will retrieve the permissions of the target of a symlink instead of the permissions of the symlink itself in its debug output
 add a function to remove the SSH key
 take care of the "unfinished chunks error" by enforcing rehashing somehow

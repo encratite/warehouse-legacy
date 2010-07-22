@@ -319,6 +319,10 @@ class UserShell
 		indexStrings = @arguments[1..-1]
 		
 		indices = convertFilterIndexStrings(indexStrings)
+		if indices.index(nil) != nil
+			error 'You have specified an invalid filter index.'
+			return
+		end
 		@api.assignCategoryToFilters(category, indices)
 		
 		if indices.size == 1

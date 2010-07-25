@@ -1,5 +1,6 @@
 require 'openssl'
 require 'fileutils'
+require 'json'
 
 require 'nil/file'
 require 'nil/ipc'
@@ -241,7 +242,7 @@ class NotificationServer < Nil::IPCServer
 		{
 			'user_id' => user.id,
 			'notification_type' => type,
-			'content' => content.to_s
+			'content' => JSON::unparse(content)
 		}
 		@database[:user_notification].insert(data)
 		

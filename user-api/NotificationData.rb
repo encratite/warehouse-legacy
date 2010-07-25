@@ -1,3 +1,5 @@
+require 'json'
+
 require 'json/JSONObject'
 
 class NotificationData < JSONObject
@@ -5,6 +7,6 @@ class NotificationData < JSONObject
 		super()
 		@time = input[:notification_time].utc
 		@type = input[:notification_type]
-		@content = input[:content]
+		@content = JSON::parse(input[:content])
 	end
 end

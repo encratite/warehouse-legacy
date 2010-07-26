@@ -107,6 +107,9 @@ class NotificationServer < Nil::IPCServer
 			rescue RuntimeError => exception
 				closeSocket socket
 				output "Runtime error: #{exception.message}"
+			rescue SystemCallError => exception
+				closeSocket socket
+				output "Syscall error: #{exception.message}"
 			end
 		end
 	end

@@ -215,7 +215,7 @@ class ReleaseHandler
 		rescue ReleaseData::Error => exception
 			output "Error: Unable to parse data of release #{release}: #{exception.message}"
 		rescue Bencode::Error => exception
-			error "A Bencode error occured: #{exception.message}"
+			output "A Bencode error occured: #{exception.message}"
 		end
 	end
 end

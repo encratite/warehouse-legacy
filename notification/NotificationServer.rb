@@ -224,12 +224,18 @@ class NotificationServer < Nil::IPCServer
 		
 		unit = NotificationProtocol.notificationUnit(type, content)
 		isOnline = false
+		clientsToSendTheUnitTo = []
 		@clientMutex.synchronize do
 			@clients.each do |client|
 				next if client.user.id != user.id
-				client.sendData(unit)
+				clientsToSendTheUnitTo << client
 				isOnline = true
 			end
+		end
+		
+		#not sure if this is safe
+		clientsToSendTheUnitTo.each do |client|
+			client.sendData(unit)
 		end
 		
 		if isOnline

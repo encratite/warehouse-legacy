@@ -1,5 +1,5 @@
-require_relative 'json/JSONRPCHandler'
-require_relative 'json/JSONRPCNotificationAPI'
+require 'json/JSONRPCHandler'
+require 'json/JSONRPCNotificationAPI'
 
 class JSONRPCNotificationHandler < JSONRPCHandler
 	def initialize(configuration, connections, outputHandler)

@@ -1,4 +1,4 @@
-require_relative 'json/JSONObject'
+require 'json/JSONObject'
 
 class SiteStatistics < JSONObject
 	attr_reader :releaseCount, :totalSize

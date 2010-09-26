@@ -1,7 +1,7 @@
-require_relative 'site/sceneaccess/SceneAccessReleaseData'
-require_relative 'site/sceneaccess/SceneAccessIRCHandler'
+require 'site/sceneaccess/SceneAccessReleaseData'
+require 'site/sceneaccess/SceneAccessIRCHandler'
 
-require_relative 'secret/SceneAccess'
+require 'secret/SceneAccess'
 
 module SceneAccessConfiguration
 	module HTTP

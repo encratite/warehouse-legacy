@@ -1,5 +1,5 @@
 require 'nil/ipc'
-require_relative 'notification/NotificationProtocol'
+require 'notification/NotificationProtocol'
 
 class NotificationProtocolClient
 	attr_writer :throwOnError

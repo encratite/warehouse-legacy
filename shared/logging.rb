@@ -1,4 +1,4 @@
-require_relative 'configuration/Configuration'
+require 'configuration/Configuration'
 
 require 'nil/file'
 

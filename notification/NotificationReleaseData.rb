@@ -1,6 +1,6 @@
-require_relative 'json/JSONObject'
+require 'json/JSONObject'
 
-require_relative 'shared/torrent'
+require 'shared/torrent'
 
 class NotificationReleaseData < JSONObject
 	#required for self.fromTable/Categoriser usage

@@ -1,10 +1,10 @@
 require 'nil/file'
 require 'nil/environment'
 
-require_relative 'shared/sites'
-require_relative 'shared/User'
-require_relative 'shared/QueueHandler'
-require_relative 'shared/OwnershipHandler'
+require 'shared/sites'
+require 'shared/User'
+require 'shared/QueueHandler'
+require 'shared/OwnershipHandler'
 
 [
 	'general',
@@ -15,7 +15,7 @@ require_relative 'shared/OwnershipHandler'
 	'rtorrent',
 	'notifications',
 ].each do |name|
-	require_relative "user-api/UserAPI/#{name}"
+	require "user-api/UserAPI/#{name}"
 end
 
 class UserAPI

@@ -4,12 +4,12 @@ require 'set'
 
 require 'nil/file'
 
-require_relative 'shared/ReleaseData'
-require_relative 'shared/Bencode'
-require_relative 'shared/QueueHandler'
-require_relative 'shared/OwnershipHandler'
+require 'shared/ReleaseData'
+require 'shared/Bencode'
+require 'shared/QueueHandler'
+require 'shared/OwnershipHandler'
 
-require_relative 'notification/NotificationReleaseData'
+require 'notification/NotificationReleaseData'
 
 class ReleaseHandler
 	def initialize(site, connections, configuration)

@@ -3,10 +3,10 @@ require 'sequel'
 require 'nil/environment'
 require 'nil/console'
 
-require_relative 'shared/ConnectionContainer'
-require_relative 'shared/http/HTTPHandler'
+require 'shared/ConnectionContainer'
+require 'shared/http/HTTPHandler'
 
-require_relative 'configuration/Configuration'
+require 'configuration/Configuration'
 
 require 'shell/UserShell'
 require 'shell/ShellUser'

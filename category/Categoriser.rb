@@ -5,10 +5,10 @@ require 'nil/time'
 require 'nil/file'
 require 'nil/environment'
 
-require_relative 'shared/sites'
-require_relative 'shared/torrent'
+require 'shared/sites'
+require 'shared/torrent'
 
-require_relative 'notification/NotificationReleaseData'
+require 'notification/NotificationReleaseData'
 
 class Categoriser
 	def initialize(configuration, connections)

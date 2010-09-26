@@ -10,9 +10,9 @@
 	'torrentCommands',
 ].each { |x| require "shell/UserShell/#{x}" }
 
-require_relative 'shared/sites'
+require 'shared/sites'
 
-require_relative 'user-api/UserAPI'
+require 'user-api/UserAPI'
 
 class UserShell
 	def initialize(configuration, connections, user)

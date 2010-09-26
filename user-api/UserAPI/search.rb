@@ -1,4 +1,4 @@
-require_relative 'user-api/SearchResult'
+require 'user-api/SearchResult'
 
 class UserAPI
 	def search(target)

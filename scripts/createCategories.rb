@@ -1,7 +1,7 @@
-require_relative 'configuration/Configuration'
-require_relative 'shared/sqlDatabase'
+require 'configuration/Configuration'
+require 'shared/sqlDatabase'
 
-require_relative 'category/Categoriser'
+require 'category/Categoriser'
 
 require 'nil/file'
 

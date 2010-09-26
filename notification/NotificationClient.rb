@@ -3,7 +3,7 @@ require 'json'
 
 require 'nil/communication'
 
-require_relative 'shared/ssl'
+require 'shared/ssl'
 
 class NotificationClient < Nil::SerialisedCommunication
 	attr_reader :socket, :user

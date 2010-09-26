@@ -1,8 +1,8 @@
-require_relative 'user-api/TorrentData'
+require 'user-api/TorrentData'
 
 require 'xmlrpc/client'
 
-require_relative 'shared/Timer'
+require 'shared/Timer'
 
 class UserAPI
 	#this returns an array of the hashes (strings) associated with the torrents in rtorrent

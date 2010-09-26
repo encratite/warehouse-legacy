@@ -2,7 +2,7 @@ require 'readline'
 
 require 'nil/console'
 
-require_relative 'user-api/UserAPI'
+require 'user-api/UserAPI'
 
 class UserShell	
 	def run

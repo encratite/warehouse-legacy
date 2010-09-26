@@ -5,12 +5,12 @@ require 'json'
 require 'nil/file'
 require 'nil/ipc'
 
-require_relative 'shared/User'
+require 'shared/User'
 
-require_relative 'notification/NotificationClient'
-require_relative 'notification/NotificationProtocol'
+require 'notification/NotificationClient'
+require 'notification/NotificationProtocol'
 
-require_relative 'json/JSONRPCNotificationHandler'
+require 'json/JSONRPCNotificationHandler'
 
 class NotificationServer < Nil::IPCServer
 	TypeHandlers =

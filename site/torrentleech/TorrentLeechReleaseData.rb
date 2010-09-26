@@ -3,10 +3,10 @@ require 'sequel'
 
 require 'nil/string'
 
-require_relative 'shared/timeString'
-require_relative 'shared/ReleaseData'
+require 'shared/timeString'
+require 'shared/ReleaseData'
 
-require_relative 'site/torrentleech/extractName'
+require 'site/torrentleech/extractName'
 
 class TorrentLeechReleaseData < ReleaseData
 	Debugging = false

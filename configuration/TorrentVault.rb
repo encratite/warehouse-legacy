@@ -1,7 +1,7 @@
-require_relative 'site/torrentvault/TorrentVaultReleaseData'
-require_relative 'site/torrentvault/TorrentVaultIRCHandler'
+require 'site/torrentvault/TorrentVaultReleaseData'
+require 'site/torrentvault/TorrentVaultIRCHandler'
 
-require_relative 'secret/TorrentVault'
+require 'secret/TorrentVault'
 
 module TorrentVaultConfiguration
 	module HTTP

@@ -1,13 +1,13 @@
-require_relative 'site/sceneaccess/SceneAccessSite'
-require_relative 'configuration/SceneAccess'
+require 'site/sceneaccess/SceneAccessSite'
+require 'configuration/SceneAccess'
 
-require_relative 'site/torrentvault/TorrentVaultSite'
-require_relative 'configuration/TorrentVault'
+require 'site/torrentvault/TorrentVaultSite'
+require 'configuration/TorrentVault'
 
-require_relative 'site/torrentleech/TorrentLeechSite'
-require_relative 'configuration/TorrentLeech'
+require 'site/torrentleech/TorrentLeechSite'
+require 'configuration/TorrentLeech'
 
-require_relative 'configuration/Configuration'
+require 'configuration/Configuration'
 
 def getReleaseSites(connections)
 	return [

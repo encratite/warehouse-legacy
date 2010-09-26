@@ -3,11 +3,11 @@ require 'fileutils'
 
 require 'nil/file'
 
-require_relative 'configuration/Configuration'
+require 'configuration/Configuration'
 
-require_relative 'shared/sqlDatabase'
+require 'shared/sqlDatabase'
 
-require_relative 'setup/PipeHandler'
+require 'setup/PipeHandler'
 
 def rootCheck
 	if Process.euid != 0

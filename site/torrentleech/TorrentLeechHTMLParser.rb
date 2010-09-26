@@ -1,6 +1,6 @@
-require_relative 'shared/HTMLParser'
+require 'shared/HTMLParser'
 
-require_relative 'site/torrentleech/TorrentLeechHTTPRelease'
+require 'site/torrentleech/TorrentLeechHTTPRelease'
 
 class TorrentLeechHTMLParser < HTMLParser
 	Pattern = /download\.php\/(\d+)\/(.+?)\.torrent/

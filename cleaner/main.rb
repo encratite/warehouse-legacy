@@ -1,6 +1,6 @@
-require_relative 'configuration/Configuration'
-require_relative 'cleaner/Cleaner'
-require_relative 'shared/ConnectionContainer'
+require 'configuration/Configuration'
+require 'cleaner/Cleaner'
+require 'shared/ConnectionContainer'
 
 cleaner = Cleaner.new(Configuration, ConnectionContainer.new)
 begin

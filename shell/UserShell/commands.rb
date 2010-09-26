@@ -5,9 +5,9 @@ require 'nil/string'
 require 'nil/file'
 require 'nil/network'
 
-require_relative 'shared/Timer'
+require 'shared/Timer'
 
-require_relative 'user-api/SearchResult'
+require 'user-api/SearchResult'
 
 class UserShell
 	def commandHelp

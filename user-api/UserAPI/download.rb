@@ -6,9 +6,9 @@ require 'nil/file'
 require 'nil/string'
 require 'nil/environment'
 
-require_relative 'shared/Bencode'
+require 'shared/Bencode'
 
-require_relative 'notification/NotificationReleaseData'
+require 'notification/NotificationReleaseData'
 
 class UserAPI
 	def prepareTorrentDownload(site, target)

@@ -1,4 +1,4 @@
-require_relative 'user-api/UserAPI'
+require 'user-api/UserAPI'
 
 class JSONRPCAPI
 	attr_reader :requestHandlers

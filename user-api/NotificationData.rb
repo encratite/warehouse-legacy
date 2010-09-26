@@ -1,6 +1,6 @@
 require 'json'
 
-require_relative 'json/JSONObject'
+require 'json/JSONObject'
 
 class NotificationData < JSONObject
 	def initialize(input)

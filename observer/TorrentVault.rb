@@ -1,7 +1,9 @@
-require_relative 'site/torrentvault/TorrentVaultSite'
-require_relative 'configuration/TorrentVault'
-require_relative 'configuration/Configuration'
-require_relative 'shared/ConnectionContainer'
+$: << '.'
+
+require 'site/torrentvault/TorrentVaultSite'
+require 'configuration/TorrentVault'
+require 'configuration/Configuration'
+require 'shared/ConnectionContainer'
 
 site = TorrentVaultSite.new(TorrentVaultConfiguration, Configuration::Torrent, ConnectionContainer.new, Configuration)
 site.run

@@ -1,11 +1,11 @@
 require 'nil/file'
 require 'nil/network'
 
-require_relative 'user-api/SiteStatistics'
+require 'user-api/SiteStatistics'
 
-require_relative 'shared/torrent'
+require 'shared/torrent'
 
-require_relative 'notification/NotificationReleaseData'
+require 'notification/NotificationReleaseData'
 
 class UserAPI
 	def getSiteStatistics(site)

@@ -1,3 +1,5 @@
+$: << '.'
+
 require 'nil/file'
 
 #hack for the rtorrent cwd

@@ -1,6 +1,6 @@
-require 'shared/ReleaseData'
-require 'shared/sizeString'
-require 'shared/timeString'
+require_relative 'shared/ReleaseData'
+require_relative 'shared/sizeString'
+require_relative 'shared/timeString'
 
 require 'cgi'
 

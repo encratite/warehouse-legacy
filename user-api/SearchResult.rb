@@ -3,7 +3,7 @@ require 'nil/string'
 
 require 'shell/stringColour'
 
-require 'json/JSONObject'
+require_relative 'json/JSONObject'
 
 class SearchResult < JSONObject
 	attr_reader :id, :name, :date

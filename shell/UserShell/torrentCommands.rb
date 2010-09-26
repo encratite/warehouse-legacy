@@ -1,7 +1,7 @@
 require 'nil/string'
 require 'nil/console'
 
-require 'shared/Timer'
+require_relative 'shared/Timer'
 
 class UserShell
 	def getSpeedString(input)

@@ -1,9 +1,9 @@
 require 'socket'
 require 'openssl'
 
-require 'notification/NotificationClient'
+require_relative 'notification/NotificationClient'
 
-require 'configuration/Configuration'
+require_relative 'configuration/Configuration'
 
 class TestClient < NotificationClient
 	def rpc(*arguments)

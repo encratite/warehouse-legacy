@@ -1,10 +1,10 @@
-require 'json/JSONRPCHTTPRequest'
-require 'json/JSONRPCAPI'
+require_relative 'json/JSONRPCHTTPRequest'
+require_relative 'json/JSONRPCAPI'
 
-require 'shared/OutputHandler'
-require 'shared/User'
+require_relative 'shared/OutputHandler'
+require_relative 'shared/User'
 
-require 'user-api/UserAPI'
+require_relative 'user-api/UserAPI'
 
 require 'xmlrpc/client'
 

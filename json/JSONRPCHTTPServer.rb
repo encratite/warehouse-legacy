@@ -1,6 +1,6 @@
 require 'json'
 
-require 'json/JSONRPCHandler'
+require_relative 'json/JSONRPCHandler'
 
 require 'www-library/RequestManager'
 require 'www-library/RequestHandler'

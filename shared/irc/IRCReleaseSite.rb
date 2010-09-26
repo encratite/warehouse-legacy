@@ -1,6 +1,6 @@
-require 'shared/ReleaseSite'
-require 'shared/irc/IRCHandler'
-require 'shared/ConsoleHandler'
+require_relative 'shared/ReleaseSite'
+require_relative 'shared/irc/IRCHandler'
+require_relative 'shared/ConsoleHandler'
 
 class IRCReleaseSite < ReleaseSite
 	attr_reader :ircHandler

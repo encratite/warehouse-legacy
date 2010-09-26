@@ -1,5 +1,5 @@
 require 'nil/file'
-require 'shared/SceneAccessReleaseData'
+require_relative 'shared/SceneAccessReleaseData'
 
 def processFile(path)
 	input = Nil.readFile(path)

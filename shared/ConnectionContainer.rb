@@ -1,8 +1,8 @@
-require 'shared/sqlDatabase'
-require 'shared/xmlRPC'
-require 'shared/NotificationProtocolClient'
+require_relative 'shared/sqlDatabase'
+require_relative 'shared/xmlRPC'
+require_relative 'shared/NotificationProtocolClient'
 
-require 'configuration/Configuration'
+require_relative 'configuration/Configuration'
 
 class ConnectionContainer
 	attr_reader :sqlDatabase, :xmlRPCClient, :notificationClient

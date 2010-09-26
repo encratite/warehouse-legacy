@@ -49,9 +49,9 @@ def loadConfigurationFiles
 		target = entry.target
 		customPath = Nil.joinPaths(customPath, target.name)
 		if File.exists?(customPath)
-			require customPath
+			require_relative customPath
 		else
-			require target.path
+			require_relative target.path
 		end
 	end
 end

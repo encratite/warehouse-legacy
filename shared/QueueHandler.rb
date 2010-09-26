@@ -1,6 +1,6 @@
 require 'sequel'
 
-require 'shared/User'
+require_relative 'shared/User'
 
 class QueueHandler
 	def initialize(database)

@@ -5,9 +5,9 @@ base = File.expand_path(File.dirname(__FILE__))
 target = Nil.joinPaths(base, '..')
 Dir.chdir(target)
 
-require 'configuration/Configuration'
-require 'category/Categoriser'
-require 'shared/ConnectionContainer'
+require_relative 'configuration/Configuration'
+require_relative 'category/Categoriser'
+require_relative 'shared/ConnectionContainer'
 
 if ARGV.size < 1
 	puts "ruby #{__FILE__} <release>"

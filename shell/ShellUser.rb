@@ -1,4 +1,4 @@
-require 'shared/User'
+require_relative 'shared/User'
 require 'nil/console'
 
 class ShellUser < User

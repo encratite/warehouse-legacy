@@ -1,4 +1,4 @@
-require 'json/JSONObject'
+require_relative 'json/JSONObject'
 
 class TorrentData < JSONObject
 	attr_reader :infoHash, :name, :downloadSpeed, :uploadSpeed, :fileCount, :size, :bytesDone, :torrentPath

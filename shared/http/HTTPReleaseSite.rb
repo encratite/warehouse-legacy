@@ -1,4 +1,4 @@
-require 'shared/ReleaseSite'
+require_relative 'shared/ReleaseSite'
 
 class HTTPReleaseSite < ReleaseSite
 	attr_reader :downloadDelay

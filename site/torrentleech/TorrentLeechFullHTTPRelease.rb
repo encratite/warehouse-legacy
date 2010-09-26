@@ -1,7 +1,7 @@
-require 'shared/http/HTTPRelease'
-require 'shared/sizeString'
+require_relative 'shared/http/HTTPRelease'
+require_relative 'shared/sizeString'
 
-require 'site/torrentleech/extractName'
+require_relative 'site/torrentleech/extractName'
 
 class TorrentLeechFullHTTPRelease < HTTPRelease
 	def initialize(data, symbols)

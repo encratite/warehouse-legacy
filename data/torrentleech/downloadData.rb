@@ -2,10 +2,10 @@ require 'digest/sha2'
 
 require 'nil/file'
 
-require 'configuration/TorrentLeech'
+require_relative 'configuration/TorrentLeech'
 
-require 'shared/sqlDatabase'
-require 'shared/http/HTTPHandler'
+require_relative 'shared/sqlDatabase'
+require_relative 'shared/http/HTTPHandler'
 
 def getHTTPHandler(configuration)
 	data = TorrentLeechConfiguration::HTTP

@@ -1,10 +1,10 @@
-require 'shared/http/HTTPHandler'
-require 'shared/ReleaseHandler'
-require 'shared/OutputHandler'
+require_relative 'shared/http/HTTPHandler'
+require_relative 'shared/ReleaseHandler'
+require_relative 'shared/OutputHandler'
 
-require 'shared/irc/IRCData'
+require_relative 'shared/irc/IRCData'
 
-require 'shared/logging'
+require_relative 'shared/logging'
 
 class ReleaseSite
 	#database/connections reader required by the ReleaseHandler

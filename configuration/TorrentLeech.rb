@@ -1,7 +1,7 @@
-require 'site/torrentleech/TorrentLeechReleaseData'
-require 'site/torrentleech/TorrentLeechHTMLParser'
+require_relative 'site/torrentleech/TorrentLeechReleaseData'
+require_relative 'site/torrentleech/TorrentLeechHTMLParser'
 
-require 'secret/TorrentLeech'
+require_relative 'secret/TorrentLeech'
 
 module TorrentLeechConfiguration
 	module HTTP

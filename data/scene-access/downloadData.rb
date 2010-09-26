@@ -1,7 +1,7 @@
 require 'nil/file'
-require 'shared/sqlDatabase'
-require 'shared/http/HTTPHandler'
-require 'configuration/Configuration'
+require_relative 'shared/sqlDatabase'
+require_relative 'shared/http/HTTPHandler'
+require_relative 'configuration/Configuration'
 
 def getHTTPHandler(configuration)
 	data = configuration::SceneAccess::HTTP

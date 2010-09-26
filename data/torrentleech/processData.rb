@@ -1,7 +1,7 @@
 require 'nil/file'
-require 'configuration/TorrentLeech'
-require 'shared/sqlDatabase'
-require 'site/torrentleech/TorrentLeechFullHTMLParser'
+require_relative 'configuration/TorrentLeech'
+require_relative 'shared/sqlDatabase'
+require_relative 'site/torrentleech/TorrentLeechFullHTMLParser'
 require 'pg'
 
 files = Nil.readDirectory 'html/torrentleech'

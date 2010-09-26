@@ -1,9 +1,9 @@
 require 'nil/file'
 
-require 'shared/timeString'
-require 'shared/sizeString'
-require 'shared/sqlDatabase'
-require 'configuration/Configuration'
+require_relative 'shared/timeString'
+require_relative 'shared/sizeString'
+require_relative 'shared/sqlDatabase'
+require_relative 'configuration/Configuration'
 
 class TorrentVaultReleaseData
 	attr_reader :id

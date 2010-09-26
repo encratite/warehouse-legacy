@@ -1,5 +1,5 @@
-require 'shared/http/HTTPRelease'
-require 'shared/sizeString'
+require_relative 'shared/http/HTTPRelease'
+require_relative 'shared/sizeString'
 
 require 'cgi'
 

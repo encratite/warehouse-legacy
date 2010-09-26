@@ -1,7 +1,7 @@
 require 'nil/string'
 
-require 'shared/timeString'
-require 'shared/ReleaseData'
+require_relative 'shared/timeString'
+require_relative 'shared/ReleaseData'
 
 require 'cgi'
 

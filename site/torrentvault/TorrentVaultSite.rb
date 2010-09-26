@@ -1,5 +1,5 @@
-require 'shared/irc/IRCReleaseSite'
-require 'configuration/TorrentVault'
+require_relative 'shared/irc/IRCReleaseSite'
+require_relative 'configuration/TorrentVault'
 
 class TorrentVaultSite < IRCReleaseSite
 	def initialize(siteData, torrentData, connections, configuration)

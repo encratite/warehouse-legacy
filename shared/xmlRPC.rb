@@ -1,6 +1,6 @@
-require 'configuration/Configuration'
+require_relative 'configuration/Configuration'
 
-require 'shared/XMLRPCClient'
+require_relative 'shared/XMLRPCClient'
 
 def getXMLRPCClient(configuration = Configuration::XMLRPC)
 	client = XMLRPCClient.new(

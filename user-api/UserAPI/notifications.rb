@@ -1,7 +1,7 @@
 require 'sequel'
 
-require 'user-api/NotificationData'
-require 'notification/NotificationProtocol'
+require_relative 'user-api/NotificationData'
+require_relative 'notification/NotificationProtocol'
 
 class UserAPI
 	#internal use only

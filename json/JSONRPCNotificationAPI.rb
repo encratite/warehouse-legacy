@@ -1,4 +1,4 @@
-require 'json/JSONRPCAPI'
+require_relative 'json/JSONRPCAPI'
 
 #extended JSONRPCAPI which can generate notifications for the JSON RPC API available through the notification server
 class JSONRPCNotificationAPI < JSONRPCAPI

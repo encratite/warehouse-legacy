@@ -1,4 +1,4 @@
-require 'configuration/Configuration'
+require_relative 'configuration/Configuration'
 
 source = Configuration::User.getPath('torrent/complete')
 target = '/home/warehouse/user/'

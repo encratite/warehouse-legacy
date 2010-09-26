@@ -1,6 +1,6 @@
 require 'nil/irc'
 
-require 'shared/irc/IRCHandler'
+require_relative 'shared/irc/IRCHandler'
 
 class TorrentVaultIRCHandler < IRCHandler
 	attr_writer :inviteBot, :inviteCode

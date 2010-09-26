@@ -1,9 +1,9 @@
 require 'nil/file'
 
-require 'site/sceneaccess/SceneAccessSite'
-require 'configuration/SceneAccess'
-require 'configuration/Configuration'
-require 'shared/ConnectionContainer'
+require_relative 'site/sceneaccess/SceneAccessSite'
+require_relative 'configuration/SceneAccess'
+require_relative 'configuration/Configuration'
+require_relative 'shared/ConnectionContainer'
 
 site = SceneAccessSite.new(SceneAccessConfiguration, Configuration::Torrent, ConnectionContainer.new, Configuration)
 

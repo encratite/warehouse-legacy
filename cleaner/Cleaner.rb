@@ -6,11 +6,11 @@ require 'nil/file'
 require 'nil/time'
 require 'nil/ipc'
 
-require 'user-api/UserAPI'
-require 'user-api/TorrentData'
+require_relative 'user-api/UserAPI'
+require_relative 'user-api/TorrentData'
 
-require 'shared/OutputHandler'
-require 'shared/QueueHandler'
+require_relative 'shared/OutputHandler'
+require_relative 'shared/QueueHandler'
 
 class Cleaner
 	Debugging = false

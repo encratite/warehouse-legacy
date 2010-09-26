@@ -1,6 +1,6 @@
-require 'configuration/Configuration'
-require 'shared/ConnectionContainer'
-require 'watchdog/Watchdog'
+require_relative 'configuration/Configuration'
+require_relative 'shared/ConnectionContainer'
+require_relative 'watchdog/Watchdog'
 
 watchdog = Watchdog.new(Configuration, ConnectionContainer.new)
 watchdog.run

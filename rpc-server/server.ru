@@ -1,3 +1,5 @@
+$: << '.'
+
 require 'nil/file'
 require 'json/JSONRPCHTTPServer'
 require 'configuration/Configuration'

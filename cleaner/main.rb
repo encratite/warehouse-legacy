@@ -1,3 +1,5 @@
+$: << '.'
+
 require 'configuration/Configuration'
 require 'cleaner/Cleaner'
 require 'shared/ConnectionContainer'

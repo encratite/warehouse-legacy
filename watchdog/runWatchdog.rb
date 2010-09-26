@@ -1,3 +1,5 @@
+$: << '.'
+
 require 'configuration/Configuration'
 require 'shared/ConnectionContainer'
 require 'watchdog/Watchdog'

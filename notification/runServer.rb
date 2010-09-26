@@ -1,3 +1,5 @@
+$: << '.'
+
 require 'configuration/Configuration'
 require 'notification/NotificationServer'
 require 'shared/ConnectionContainer'

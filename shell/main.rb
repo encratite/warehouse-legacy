@@ -1,3 +1,5 @@
+$: << '.'
+
 require 'sequel'
 
 require 'nil/environment'

@@ -8,3 +8,7 @@ Extend all "i4 int" handlers to "i4 i8 int" pretty much for 64-bit handling with
 replace "i4 int" "i4 i8 int" < parser.rb > parser.rb.patched
 mv parser.rb parser.rb.original
 cp parser.rb.patched parser.rb
+
+Another replacement is necessary:
+
+"i4", "int" -> "i4", "i8", "int"

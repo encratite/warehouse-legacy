@@ -7,7 +7,7 @@ class UserShell
 	
 		timer = Timer.new
 		
-		siteResults = @api.search(target)
+		siteResults = @api.search(target, useRegex)
 		count = 0
 		siteResults.each do |siteName, results|
 			count += results.size

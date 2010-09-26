@@ -12,7 +12,7 @@ class UserAPI
 			@sites.each do |site|
 				table = site.table.to_s
 				key = site.name
-				operator = isRegex ? '~*' : 'like'
+				operator = isRegex ? '~*' : 'ilike'
 				results = @database["select site_id, section_name, name, release_date, release_size, seeder_count from #{table} where name #{operator} ? order by site_id desc limit ?", target, @searchResultMaximum].all
 				siteResults[key] = results.map do |result|
 					SearchResult.new(site, result)

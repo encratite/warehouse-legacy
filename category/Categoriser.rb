@@ -214,6 +214,8 @@ class Categoriser
 					end
 					username = users.first[:name]
 					processMatch(releaseData, username, @manualPath)
+					#notify the user
+					@notification.downloadedNotification(userId, releaseData)
 				end
 				
 				@queue.where(name: releaseData.name).delete

@@ -23,6 +23,7 @@ class IRCReleaseSite < ReleaseSite
 		@ircData = IRCData.new(
 			ircData::Server,
 			ircData::Port,
+			ircData::TLS,
 			ircData::Nick,
 			ircData::Channels,
 			ircData::Bots,

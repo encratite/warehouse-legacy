@@ -12,6 +12,7 @@ module SceneAccessConfiguration
 	module IRC
 		Server = 'irc.sceneaccess.org'
 		Port = 6667
+		TLS = false
 		#Nick is secret
 		Channels = ['#scc-announce']
 		Bots =

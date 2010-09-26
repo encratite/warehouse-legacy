@@ -15,6 +15,7 @@ class IRCHandler
 		@irc.setUser(nick, user, localHost, realName)
 		@irc.onEntry = method(:onEntry)
 		@irc.onChannelMessage = method(:onChannelMessage)
+		@irc.ssl = ircData.tls
 		
 		@releaseChannels = ircData.channels
 		@bots = ircData.bots

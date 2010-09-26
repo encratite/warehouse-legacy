@@ -61,7 +61,7 @@ class JSONRPCHTTPServer < JSONRPCHandler
 	def warehouseHandler(request)
 		user = getUser(request)
 		user.address = request.address
-		content = JSON::unparse(processRPCRequests(user, request.jsonInput))
+		content = processRPCRequests(user, request.jsonInput).to_json
 		reply = HTTPReply.new(content)
 		reply.contentType = 'application/json-rpc'
 		return reply

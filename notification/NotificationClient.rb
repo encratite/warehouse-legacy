@@ -15,7 +15,7 @@ class NotificationClient < Nil::SerialisedCommunication
 	end
 	
 	def serialiseData(input)
-		return JSON.unparse(input)
+		return input.to_json
 	end
 	
 	def deserialiseData(input)

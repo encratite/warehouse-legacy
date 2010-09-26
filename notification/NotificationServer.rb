@@ -238,20 +238,23 @@ class NotificationServer < Nil::IPCServer
 			client.sendData(unit)
 		end
 		
+		info = "\"#{user.name}\" of type \"#{type}\": #{content.inspect}"
+		
 		if isOnline
-			output "Notification for user \"#{user.name}\" of type \"#{type}\": #{content}"
+			output "Notification for user #{info}"
 			#update the last notification timestamp so getNewNotifications really only returns the new ones
 			newTime = Time.now.utc
 			@database[:user_data].where(id: user.id).update(last_notification: newTime)
 		else
-			output "Storing notification for offline user #{user.name} of type \"#{type}\": #{content}"
+			output "Storing notification for offline user #{info}"
 		end
+		
 		#notifications should be stored either way really - we want a full history anyways
 		data =
 		{
 			'user_id' => user.id,
 			'notification_type' => type,
-			'content' => JSON::unparse(content)
+			'content' => content.to_json
 		}
 		@database[:user_notification].insert(data)
 		

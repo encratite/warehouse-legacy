@@ -1,3 +1,5 @@
+$: << '.'
+
 require 'shared/ConnectionContainer'
 
 connections = ConnectionContainer.new

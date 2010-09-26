@@ -9,7 +9,8 @@ class JSONRPCNotificationAPI < JSONRPCAPI
 	
 	def getLocalHandlers
 		output = super
-		output[:generateNotification] = [String, String]
+		#this function is supposed to support any argument type for the second argument
+		output[:generateNotification] = [String, JSONAnyType]
 		return output
 	end
 	

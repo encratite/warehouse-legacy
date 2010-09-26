@@ -1,5 +1,9 @@
 require 'user-api/UserAPI'
 
+#this is used to pass any argument type to the generateNotification function - otherwise it would be limited to, say, String
+class JSONAnyType
+end
+
 class JSONRPCAPI
 	attr_reader :requestHandlers
 	
@@ -91,13 +95,14 @@ class JSONRPCAPI
 	end
 	
 	def typeCheck(input, type)
-		if type.class == Array
+		case type.class
+		when Array
 			return false if input.class != type.class
 			arrayType = type[0]
 			input.each do |element|
 				return false if !typeCheck(element, arrayType)
 			end
-		elsif type.class == Hash
+		when Hash
 			return false if input.class != type.class
 			keyType, valueType = type.each_pair.first
 			input.each do |key, value|
@@ -105,6 +110,8 @@ class JSONRPCAPI
 					!typeCheck(key, keyType) ||
 					!typeCheck(value, valueType)
 			end
+		when JSONAnyType
+			return true
 		else
 			return false if input.class != type
 		end

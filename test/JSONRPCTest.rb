@@ -41,7 +41,7 @@ class JSONClient
 			callData = callData[0]
 		end
 			
-		request += JSON.unparse(callData)
+		request += callData.to_json
 		socket = TCPSocket.open(@host, @port)
 		socket.print(request)
 		puts 'Reading...'

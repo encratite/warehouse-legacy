@@ -11,18 +11,19 @@ class NotificationProtocolClient
 	end
 	
 	def notify(target, type, content)
-		if @client == nil
-			begin
+		begin
+			if @client == nil
 				@client = Nil::IPCClient.new(@path)
-				return @client.notify(target, type, content)
-			rescue Nil::IPCError => message
-				if @throwOnError
-					raise message
-				else
-					puts "Unable to connect to IPC server to deliver notification: #{message}"
-				end
+			end
+			return @client.notify(target, type, content)
+		rescue Nil::IPCError => message
+			if @throwOnError
+				raise message
+			else
+				puts "Unable to connect to IPC server to deliver notification: #{message}"
 			end
 		end
+		
 	end
 	
 	def queuedNotification(target, releaseData)

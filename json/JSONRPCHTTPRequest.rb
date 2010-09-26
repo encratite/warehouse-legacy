@@ -3,6 +3,8 @@ require 'cgi'
 
 require 'www-library/HTTPRequest'
 
+require 'json/parse'
+
 class JSONRPCHTTPRequest < HTTPRequest
 	attr_reader :jsonInput, :commonName, :name, :serial, :isMultiCall
 		
@@ -18,7 +20,7 @@ class JSONRPCHTTPRequest < HTTPRequest
 		 if @rawInput.empty?
 			@jsonInput = []
 		else
-			@jsonInput = JSON.parse(@rawInput)
+			@jsonInput = parseJSON(@rawInput)
 		end
 		
 		subject = environment['HTTP_SSL_SUBJECT']

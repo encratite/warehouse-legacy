@@ -5,6 +5,8 @@ require 'nil/communication'
 
 require 'shared/ssl'
 
+require 'json/parse'
+
 class NotificationClient < Nil::SerialisedCommunication
 	attr_reader :socket, :user
 	
@@ -19,7 +21,7 @@ class NotificationClient < Nil::SerialisedCommunication
 	end
 	
 	def deserialiseData(input)
-		return JSON.parse(input)
+		return parseJSON(input)
 	end
 	
 	def sendData(input)

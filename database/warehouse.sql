@@ -2,8 +2,6 @@ set client_min_messages = warning;
 
 drop table if exists user_data cascade;
 
---alter table user_data add column last_notification timestamp default now();
-
 create table user_data
 (
 	id serial primary key,
@@ -17,10 +15,6 @@ drop table if exists user_release_filter cascade;
 drop type if exists filter_type;
 create type filter_type as enum ('name', 'nfo', 'genre');
 
---\d user_release_filter
---alter table user_release_filter drop constraint user_release_filter_user_id_fkey;
---alter table user_release_filter add constraint user_id_deletion foreign key (user_id) references user_data(id) on delete cascade;
-
 create table user_release_filter
 (
 	id serial primary key,
@@ -33,10 +27,6 @@ create table user_release_filter
 
 drop table if exists user_command_log;
 
---\d user_command_log
---alter table user_command_log drop constraint user_command_log_user_id_fkey;
---alter table user_command_log add constraint user_id_deletion foreign key (user_id) references user_data(id) on delete cascade;
-
 create table user_command_log
 (
 	id serial primary key,
@@ -46,9 +36,6 @@ create table user_command_log
 );
 
 drop table if exists sceneaccess_data cascade;
-
---alter table scene_access_data rename to sceneaccess_data;
---alter index scene_access_data_name_index rename to sceneaccess_data_name_index;
 
 create table sceneaccess_data
 (
@@ -155,7 +142,7 @@ create table download_queue
 	--refers to the site_id column in one of the release tables
 	site_id integer not null,
 	name text not null,
-	--the name of the torrent has to be extracted from the bencoded data so you cannot deducde it from the `name` column only
+	--the name of the torrent has to be extracted from the bencoded data so you cannot deduce it from the `name` column only
 	torrent text not null,
 	queue_time timestamp default now() not null,
 	release_size bigint not null,

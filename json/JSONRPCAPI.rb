@@ -28,6 +28,7 @@ class JSONRPCAPI
 			
 			#search
 			search: [String],
+			regexSearch: [String],
 			
 			#rtorrent
 			getTorrents: [],
@@ -180,8 +181,8 @@ class JSONRPCAPI
 		return @api.getSiteStatistics(site).serialise
 	end
 	
-	def search(target)
-		results = @api.search(target)
+	def performSearch(target, isRegex)
+		results = @api.search(target, isRegex)
 		serialisedResults = []
 		results.each do |key, values|
 			serialisedResult =
@@ -192,6 +193,14 @@ class JSONRPCAPI
 			serialisedResults << serialisedResult
 		end
 		return serialisedResults
+	end
+	
+	def search(target)
+		return performSearch(target, false)
+	end
+	
+	def regexSearch(target)
+		return performSearch(target, true)
 	end
 	
 	def getTorrents

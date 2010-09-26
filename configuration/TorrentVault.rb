@@ -17,15 +17,15 @@ module TorrentVaultConfiguration
 		Channels = ['#tv', '#tv-spam']
 		Bots =
 		[
-			{nick: 'InfoVault', host: 'services.torrentvault'}
+			{nick: 'InfoVault', host: 'torrentvault.org'}
 		]
 		
 		InviteBot = 'TorrentVault'
 		#InviteCode is secret
 		
 		module Regexp
-			Release = /NEW.+-> (.+) by [^ ]+ \[/
-			URL = /(https:\/\/.+?) \]/
+			Release = /Name: (.+?) \[/
+			URL = /(https?:\/\/[\S]+)/
 		end
 	end
 	

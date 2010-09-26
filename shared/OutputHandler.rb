@@ -26,7 +26,7 @@ class OutputHandler
 	
 	def onChannelMessage(channel, user, message)
 		message = Nil::IRCClient.stripTags(message)
-		output "\##{channel} <#{user.nick}> #{message}"
+		output "#{channel} <#{user.nick}> #{message}"
 	end
 	
 	def onSendLine(line)

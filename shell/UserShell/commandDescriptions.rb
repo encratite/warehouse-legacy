@@ -10,7 +10,7 @@ class UserShell
 		['delete-filter <index 1> <...>', 'removes one or several filters which are identified by their numeric index', :commandDeleteFilter],
 		['clear-filters', 'remove all your release filters', :commandClearFilters],
 		['database', 'get statistics on the database', :commandDatabase],
-		['search <pattern>', 'search the database for release names starting with <pattern>', :commandSearch],
+		['search <pattern>', 'search the database for release names containing <pattern>', :commandSearch],
 		['like-search <pattern>', 'search the database for release names matching the SQL LIKE pattern specified', :commandLikeSearch],
 		['re-search <regex>', 'search the database for release names matching the regular expression', :commandRegexSearch],
 		['download <name>', 'start the download of a release from the first site that matches the name', :commandDownload],

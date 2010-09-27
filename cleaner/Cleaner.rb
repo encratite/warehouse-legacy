@@ -47,14 +47,12 @@ class Cleaner
 	def run
 		while true
 			begin
-				#experimental memory usage reduction test
-				GC.start
+				removeDeadSymlinks
 				processTorrents
 				removeOldQueueEntries(@queueEntryAgeMaximum)
 				while true
 					break if !freeSomeSpace || Debugging
 				end
-				GC.start
 				sleep @checkDelay
 			rescue Nil::IPCError => exception
 				output "An IPC error occured: #{exception.message}"
@@ -94,7 +92,7 @@ class Cleaner
 		return getSortedFiles @torrentPath
 	end
 	
-	def removeSymlinks(directory, release)
+	def recursivelyRemoveDeadSymlinks(directory)
 		data = Nil.readDirectory(directory, true)
 		if data == nil
 			output "Unable to process directory #{directory}"
@@ -102,15 +100,22 @@ class Cleaner
 		end
 		directories, files = data
 		directories.each do |directory|
-			removeSymlinks(directory.path, release)
+			recursivelyRemoveDeadSymlinks(directory.path)
 		end
-		
 		files.each do |file|
-			if file.name == release
-				output "Getting rid of a symlink for the release #{release}"
+			originalPath = Nil.joinPaths(@downloadDonePath, file.name)
+			if !File.exist?(originalPath)
+				output "Discovered a dead symlink: #{file.path}"
 				deleteFile(file.path)
-				break
 			end
+		end
+	end
+	
+	def removeDeadSymlinks
+		users = Nil.readDirectory(@userPath)
+		users.each do |user|
+			filteredPath = Nil.joinPaths(user.path, @filteredPath)
+			recursivelyRemoveDeadSymlinks(filteredPath)
 		end
 	end
 	
@@ -118,12 +123,7 @@ class Cleaner
 		output "Deleting directory #{path}"
 		FileUtils.remove_dir(path, true) if !Debugging
 		release = File.basename(path)
-		users = Nil.readDirectory(@userPath)
-		users.each do |user|
-			filteredPath = Nil.joinPaths(user.path, @filteredPath)
-			#output "Commencing symlink removal scan for release #{release} in #{filteredPath}"
-			removeSymlinks(filteredPath, release)
-		end
+		#removing the symlinks at this point is no longer necessary because of the general removeDeadSymlinks
 		return
 	end
 	

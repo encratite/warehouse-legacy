@@ -10,17 +10,23 @@ class NotificationProtocolClient
 		@throwOnError = false
 	end
 	
-	def notify(target, type, content)
+	def notify(target, type, content, isRetry = false)
 		begin
 			if @client == nil
 				@client = Nil::IPCClient.new(@path)
 			end
 			return @client.notify(target, type, content)
 		rescue Nil::IPCError => message
-			if @throwOnError
-				raise message
+			@client = nil
+			if isRetry
+				if @throwOnError
+					raise message
+				else
+					puts "Unable to connect to IPC server to deliver notification: #{message}"
+				end
 			else
-				puts "Unable to connect to IPC server to deliver notification: #{message}"
+				#retry once before throwing
+				notify(target, type, content, true)
 			end
 		end
 		

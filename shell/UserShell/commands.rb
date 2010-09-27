@@ -123,7 +123,7 @@ class UserShell
 	end
 	
 	def commandSearch
-		performSearch(@argument + '%', false)
+		performSearch("%#{@argument}%", false)
 	end
 	
 	def commandLikeSearch

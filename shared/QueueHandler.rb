@@ -37,6 +37,7 @@ class QueueHandler
 			torrent: torrent,
 			release_size: releaseData.size,
 			is_manual: releaseData.isManual,
+			queue_time: Time.now.utc,
 		}
 		
 		@database.transaction do
@@ -46,7 +47,6 @@ class QueueHandler
 				{
 					user_id: id,
 					queue_id: queueId,
-					queue_time: Time.now.utc,
 				}
 				@queueUser.insert(queueUserData)
 			end

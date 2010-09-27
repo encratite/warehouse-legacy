@@ -252,9 +252,10 @@ class NotificationServer < Nil::IPCServer
 		#notifications should be stored either way really - we want a full history anyways
 		data =
 		{
-			'user_id' => user.id,
-			'notification_type' => type,
-			'content' => content.to_json
+			user_id: user.id,
+			notification_type: type,
+			content: content.to_json,
+			notification_time: Time.now.utc,
 		}
 		@database[:user_notification].insert(data)
 		

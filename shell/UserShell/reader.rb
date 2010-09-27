@@ -25,7 +25,7 @@ class UserShell
 				validCommand = false
 				
 				#it's 1984 all over again
-				@logs.insert(user_id: @user.id, command: line)
+				@logs.insert(user_id: @user.id, command: line, command_time: Time.now.utc)
 				
 				Commands.each do |data|
 					arguments, description, symbol = data

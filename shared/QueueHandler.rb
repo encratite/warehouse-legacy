@@ -46,6 +46,7 @@ class QueueHandler
 				{
 					user_id: id,
 					queue_id: queueId,
+					queue_time: Time.now.utc,
 				}
 				@queueUser.insert(queueUserData)
 			end

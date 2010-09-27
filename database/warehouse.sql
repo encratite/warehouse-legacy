@@ -7,7 +7,10 @@ create table user_data
 	id serial primary key,
 	name text unique not null,
 	is_administrator boolean not null default false,
-	last_notification timestamp default now()
+	--used to default to now() - bad idea
+	--alter table user_data alter column last_notification drop default;
+	--alter table user_data alter column last_notification set not null;
+	last_notification timestamp not null
 );
 
 drop table if exists user_release_filter cascade;
@@ -31,7 +34,9 @@ create table user_command_log
 (
 	id serial primary key,
 	user_id integer references user_data(id) on delete cascade not null,
-	command_time timestamp default now() not null,
+	--used to default to now() - bad idea
+	--alter table user_command_log alter column command_time drop default;
+	command_time timestamp not null,
 	command text not null
 );
 
@@ -78,7 +83,6 @@ create table torrentvault_data
 	genre text,
 	--unluckily the release date is not always available - use the added/release_date_offset fields otherwise
 	release_date timestamp,
-	added timestamp default now(),
 	release_date_offset integer,
 	release_size bigint not null,
 	download_count integer not null,
@@ -123,7 +127,10 @@ create table user_notification
 (
 	id serial primary key,
 	user_id integer references user_data(id) on delete cascade not null,
-	notification_time timestamp default now(),
+	--used to default to now() - bad idea
+	--alter table user_notification alter column notification_time drop default;
+	--alter table user_notification alter column notification_time set not null;
+	notification_time timestamp not null,
 	--this is just a string
 	notification_type text not null,
 	--this is serialised JSON data as a string
@@ -144,7 +151,9 @@ create table download_queue
 	name text not null,
 	--the name of the torrent has to be extracted from the bencoded data so you cannot deduce it from the `name` column only
 	torrent text not null,
-	queue_time timestamp default now() not null,
+	--used to default to now() - bad idea
+	--alter table download_queue alter column queue_time drop default;
+	queue_time timestamp not null,
 	release_size bigint not null,
 	is_manual boolean not null
 );

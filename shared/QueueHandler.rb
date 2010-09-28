@@ -18,7 +18,7 @@ class QueueHandler
 		
 		selection =
 		[
-			:id, :name, :is_administrator, :last_notification
+			:id, :name, :is_administrator
 		].map do |x|
 			('user_data__' + x.to_s).to_sym.as(x)
 		end

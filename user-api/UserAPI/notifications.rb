@@ -12,20 +12,6 @@ class UserAPI
 		return output
 	end
 	
-	#needs to be serialised in the JSON RPC API
-	def getNewNotifications
-		@database.transaction do
-			notifications = @database[:user_notification].select(:notification_time, :notification_type, :content)
-			notifications = notifications.where(user_id: @user.id).filter{|x| x.notification_time > @user.lastNotification}.all
-			newTime = Time.now.utc
-			@user.lastNotification = newTime
-			#update the time of the last notification for this user to the current timestamp
-			#this will no longer return the current new notifications when this function is called again
-			@database[:user_data].where(id: @user.id).update(last_notification: newTime)
-			return convertNotifications(notifications)
-		end
-	end
-	
 	#internal use only
 	def getUserNotifications
 		notifications = @database[:user_notification].where(user_id: @user.id)
@@ -37,7 +23,7 @@ class UserAPI
 	end
 	
 	#needs to be serialised in the JSON RPC API
-	def getOldNotifications(offset, count)
+	def getNotifications(offset, count)
 		begin
 			notifications = @database[:user_notification].where(user_id: @user.id).reverse_order(:notification_time).limit(count, offset).all
 			return convertNotifications(notifications)

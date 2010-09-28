@@ -76,10 +76,9 @@ begin
 	end
 	
 	client.rpc('getNotificationCount')
-	client.rpc('getNewNotifications')
-	notifications = client.rpc('getOldNotifications', 0, 5)
+	notifications = client.rpc('getNotifications', 0, 5)
 	puts "Notification count: #{notifications['result'].size}"
-	notifications = client.rpc('getOldNotifications', -1, 100)
+	notifications = client.rpc('getNotifications', -1, 100)
 	client.rpc('generateNotification', 'test', 'test')	
 rescue OpenSSL::SSL::SSLError => exception
 	puts "An SSL exception occured: #{exception.message}"

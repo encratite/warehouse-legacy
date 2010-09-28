@@ -7,9 +7,6 @@ create table user_data
 	id serial primary key,
 	name text unique not null,
 	is_administrator boolean not null default false,
-	--used to default to now() - bad idea
-	--alter table user_data alter column last_notification drop default;
-	--alter table user_data alter column last_notification set not null;
 	last_notification timestamp not null
 );
 
@@ -34,8 +31,6 @@ create table user_command_log
 (
 	id serial primary key,
 	user_id integer references user_data(id) on delete cascade not null,
-	--used to default to now() - bad idea
-	--alter table user_command_log alter column command_time drop default;
 	command_time timestamp not null,
 	command text not null
 );
@@ -127,9 +122,6 @@ create table user_notification
 (
 	id serial primary key,
 	user_id integer references user_data(id) on delete cascade not null,
-	--used to default to now() - bad idea
-	--alter table user_notification alter column notification_time drop default;
-	--alter table user_notification alter column notification_time set not null;
 	notification_time timestamp not null,
 	--this is just a string
 	notification_type text not null,
@@ -151,8 +143,6 @@ create table download_queue
 	name text not null,
 	--the name of the torrent has to be extracted from the bencoded data so you cannot deduce it from the `name` column only
 	torrent text not null,
-	--used to default to now() - bad idea
-	--alter table download_queue alter column queue_time drop default;
 	queue_time timestamp not null,
 	release_size bigint not null,
 	is_manual boolean not null

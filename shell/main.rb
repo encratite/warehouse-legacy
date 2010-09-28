@@ -25,15 +25,14 @@ def getUser(database)
 		dataset = userData.where(name: username)
 		if dataset.empty?
 			#new user, possibly even the first user
-			time = Time.now.utc
 			if userData.count == 0
 				#make the user an administrator, they are the first user to connect
-				id = userData.insert(name: username, is_administrator: true, last_notification: time)
+				id = userData.insert(name: username, is_administrator: true)
 				puts "Welcome, #{highlightedName}! You have been made an administrator."
 				user = ShellUser.new(id, username, true)
 			else
 				#it's not the first user, add them to the system
-				id = userData.insert(name: username, last_notification: time)
+				id = userData.insert(name: username)
 				puts "Welcome to the system, #{highlightedName}!"
 				user = ShellUser.new(id, username, false)
 			end

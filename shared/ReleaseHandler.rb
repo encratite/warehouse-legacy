@@ -62,6 +62,7 @@ class ReleaseHandler
 		end
 		target = releaseData.instance_variable_get(symbol)
 		results = @database["#{select} where #{regexpCondition} and #{filterCondition} and #{idCondition}", target, typeString]
+		puts "Debug: #{results.sql}"
 		matchCount = results.count
 		if matchCount > 0
 			output "Matches for release #{release}: #{matchCount}"

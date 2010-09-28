@@ -34,8 +34,7 @@ class JSONRPCAPI
 			getTorrents: [],
 			
 			#notifications
-			getNewNotifications: [],
-			getOldNotifications: [Fixnum, Fixnum],
+			getNotifications: [Fixnum, Fixnum],
 		}
 	end
 	
@@ -208,13 +207,8 @@ class JSONRPCAPI
 		return torrents
 	end
 	
-	def getNewNotifications
-		notifications = @api.getNewNotifications.map{|x| x.serialise}
-		return notifications
-	end
-	
-	def getOldNotifications(first, last)
-		notifications = @api.getOldNotifications(first, last).map{|x| x.serialise}
+	def getNotifications(first, last)
+		notifications = @api.getNotifications(first, last).map{|x| x.serialise}
 		return notifications
 	end
 end

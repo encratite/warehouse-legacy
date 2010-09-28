@@ -242,9 +242,6 @@ class NotificationServer < Nil::IPCServer
 		
 		if isOnline
 			output "Notification for user #{info}"
-			#update the last notification timestamp so getNewNotifications really only returns the new ones
-			newTime = Time.now.utc
-			@database[:user_data].where(id: user.id).update(last_notification: newTime)
 		else
 			output "Storing notification for offline user #{info}"
 		end

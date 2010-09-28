@@ -12,9 +12,6 @@ class User
 			@id = data[:id]
 			@name = data[:name]
 			@isAdministrator = data[:is_administrator]
-			if @lastNotification == nil
-				raise "Last notification is not set for user #{@name}"
-			end
 		else
 			@id, @name, @isAdministrator = arguments
 		end

@@ -58,8 +58,7 @@ class UserAPI
 			FileUtils.rm(torrent)
 			@database.transaction do
 				#notify the user about the removal of the torrent
-				releaseData = NotificationReleaseData.fromTable(target, @database)
-				@notification.deletedNotification(@user.id, releaseData)
+				@notification.downloadDeletedNotification(@user.id, target, "Release #{target} was removed at your request")
 				#remove the corresponding entry from the queue
 				@queue.removeQueueEntry(target)
 			end

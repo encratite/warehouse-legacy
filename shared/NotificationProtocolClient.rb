@@ -40,7 +40,21 @@ class NotificationProtocolClient
 		notify(target, 'downloaded', releaseData.serialise)
 	end
 	
-	def deletedNotification(target, releaseData)
-		notify(target, 'downloadDeleted', releaseData.serialise)
+	def downloadErrorNotification(target, releaseName, message)
+		content =
+		{
+			'release' => releaseName,
+			'message' => message,
+		}
+		notify(target, 'downloadError', content)
+	end
+	
+	def downloadDeletedNotification(target, releaseName, reason)
+		content =
+		{
+			'release' => releaseName,
+			'reason' => reason,
+		}
+		notify(target, 'downloadDeleted', content)
 	end
 end

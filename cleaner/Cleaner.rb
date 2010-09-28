@@ -127,7 +127,7 @@ class Cleaner
 		return
 	end
 	
-	def notifyUsersAboutDeletionOfTorrent(release, type, content)
+	def notifyUsersAboutDeletionOfTorrent(release, message, isError)
 		users = @queue.getQueueEntryUsers(release)
 		if users == nil
 			output "Unable to retrieve users for release #{release}"
@@ -136,14 +136,18 @@ class Cleaner
 		
 		users.each do |user|
 			output "Notifying user #{user}: #{type}: #{content}"
-			@notification.notify(user.name, type, content)
+			if isError
+				@notification.downloadErrorNotification(user.name, release, message)
+			else
+				@notification.downloadDeletedNotification(user.name, release, message)
+			end
 		end
 		return true
 	end
 	
-	def deleteTorrent(path, message, type = 'downloadDeleted')
+	def deleteTorrent(path, message, isError = false)
 		release = getReleaseNameFromPath(path)
-		notifyUsersAboutDeletionOfTorrent(release, type, message)
+		notifyUsersAboutDeletionOfTorrent(release, message, isError)
 		@queue.removeQueueEntry(File.basename(path))
 		deleteFile(path)
 	end
@@ -200,7 +204,7 @@ class Cleaner
 				name = torrent.name
 				downloadPath = Nil.joinPaths(@downloadPath, name)
 				output "Getting rid of unseeded torrent #{name}"
-				deleteTorrent(torrentPath, "Removed unseeded release #{name}", 'downloadError')
+				deleteTorrent(torrentPath, "Removed unseeded release #{name}", true)
 				deleteDirectory(downloadPath)
 			end
 		end

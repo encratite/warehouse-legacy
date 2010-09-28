@@ -78,7 +78,7 @@ Occurs when a new release is done downloading and is ready to be retrieved via F
 ------------------
 
 Type: "downloadError"
-Content type: {"release": ReleaseData, "message": String}
+Content type: {"release": String, "message": String}
 
 Description:
 Occurs when a release which was either queued manually by the user or queued due to one of their filters could not be downloaded and was cancelled/deleted because the download could not be finished in time or because no seeds could be found.
@@ -88,7 +88,7 @@ The "message" string describes the nature of the error that occured.
 --------------------
 
 Type: "downloadDeleted"
-Content type: ReleaseData
+Content type: {"release": String, "reason": String}
 
 Description:
 Occurs when a download associated with the user (manual or filtered) is removed from the server because the cleaner needs to free up disk space or because the user cancelled/deleted it manually.

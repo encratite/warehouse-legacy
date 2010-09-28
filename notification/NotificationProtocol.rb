@@ -14,6 +14,7 @@ module NotificationProtocol
 	def self.notification(type, content)
 		data =
 		{
+			#UNIX timestamp
 			'time' => Time.now.utc.to_i,
 			'type' => type,
 			'content' => content

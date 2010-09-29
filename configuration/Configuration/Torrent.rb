@@ -3,7 +3,7 @@
 module Configuration
 	module Torrent
 		Gigabyte = 2**30
-		SizeLimit = 25 * Gigabyte
+		SizeLimit = 50 * Gigabyte
 		
 		NIC = 'eth0'
 	end

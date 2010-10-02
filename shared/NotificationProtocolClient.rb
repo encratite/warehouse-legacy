@@ -57,4 +57,13 @@ class NotificationProtocolClient
 		}
 		notify(target, 'downloadDeleted', content)
 	end
+	
+	def serviceMessage(target, severity, message)
+		content =
+		{
+			'severity' => severity,
+			'messsage' => message,
+		}
+		notify(target, 'serviceMessage', content)
+	end
 end

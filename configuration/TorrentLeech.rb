@@ -11,6 +11,7 @@ module TorrentLeechConfiguration
 		NFOPath = '/viewnfo.php?id=%s'
 		
 		#Cookies are secret
+		SSL = false
 	end
 	
 	Log = 'torrentleech.log'

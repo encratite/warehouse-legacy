@@ -1,11 +1,11 @@
 require 'nil/file'
 require 'shared/sqlDatabase'
-require 'shared/http/HTTPHandler'
+require 'nil/http'
 require 'configuration/Configuration'
 
 def getHTTPHandler(configuration)
 	data = configuration::TorrentVault::HTTP
-	http = HTTPHandler.new(data::Server, data::Cookies)
+	http = Nil::HTTP.new(data::Server, data::Cookies)
 	return http
 end
 

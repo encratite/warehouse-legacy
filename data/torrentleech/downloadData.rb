@@ -5,11 +5,11 @@ require 'nil/file'
 require 'configuration/TorrentLeech'
 
 require 'shared/sqlDatabase'
-require 'shared/http/HTTPHandler'
+require 'nil/http'
 
 def getHTTPHandler(configuration)
 	data = TorrentLeechConfiguration::HTTP
-	http = HTTPHandler.new(data::Server, data::Cookies)
+	http = Nil::HTTP.new(data::Server, data::Cookies)
 	return http
 end
 

@@ -1,5 +1,6 @@
 require 'sys/proctable'
 require 'watchdog/WatchedProcess'
+require 'watchdog/WatchedSite'
 require 'shared/OutputHandler'
 require 'nil/file'
 require 'shared/sites'

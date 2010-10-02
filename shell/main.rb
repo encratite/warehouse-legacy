@@ -6,7 +6,6 @@ require 'nil/environment'
 require 'nil/console'
 
 require 'shared/ConnectionContainer'
-require 'shared/http/HTTPHandler'
 
 require 'configuration/Configuration'
 

@@ -6,6 +6,7 @@ require 'secret/SceneAccess'
 module SceneAccessConfiguration
 	module HTTP
 		Server = 'sceneaccess.org'
+		SSL = false
 		#Cookies are secret
 	end
 	

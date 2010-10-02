@@ -7,6 +7,7 @@ module TorrentVaultConfiguration
 	module HTTP
 		Server = 'torrentvault.org'
 		#Cookies are secret
+		SSL = true
 	end
 	
 	module IRC

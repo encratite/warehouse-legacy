@@ -1,4 +1,5 @@
-require 'shared/http/HTTPHandler'
+require 'nil/http'
+
 require 'shared/ReleaseHandler'
 require 'shared/OutputHandler'
 
@@ -9,19 +10,12 @@ require 'shared/logging'
 class ReleaseSite
 	#database/connections reader required by the ReleaseHandler
 	attr_reader :log, :table, :name, :abbreviation, :database, :connections
-	attr_reader :httpHandler, :outputHandler, :releaseHandler
+	attr_reader :httpHandler, :outputHandler, :releaseHandler, :dataset
 	
 	#Used by ReleaseHandler
 	attr_reader :torrentPath, :releaseSizeLimit, :releaseDataClass
 	
 	def initialize(siteData, torrentData, connections, configuration)
-		"""
-		Dependencies:
-		HTTPHandler: None
-		OutputHandler: None
-		ReleaseHandler: HTTPHandler, OutputHandler
-		"""
-		
 		@connections = connections
 		@database = connections.sqlDatabase
 		@log = getSiteLogPath(siteData::Log)
@@ -36,7 +30,8 @@ class ReleaseSite
 		@releaseDataClass = siteData::ReleaseDataClass
 		
 		http = siteData::HTTP
-		@httpHandler = HTTPHandler.new(http::Server, http::Cookies)
+		@httpHandler = Nil::HTTP.new(http::Server, http::Cookies)
+		@httpHandler.ssl = http::SSL
 		@outputHandler = OutputHandler.new(@log)
 		@releaseHandler = ReleaseHandler.new(self, connections, configuration::API)
 	end

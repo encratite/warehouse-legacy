@@ -49,7 +49,7 @@ class Watchdog
 				program.isActive = true
 			end
 			@programs.each do |program|
-				if program.oldIsActive != program.isActive
+				if program.oldIsActive != program.isActive && program.oldIsActive != nil
 					#a change occured
 					if program.isActive
 						#the process was relaunched - this does not require any notification really because the administrator is responsible for this

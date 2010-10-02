@@ -62,7 +62,7 @@ class NotificationProtocolClient
 		content =
 		{
 			'severity' => severity,
-			'messsage' => message,
+			'message' => message,
 		}
 		notify(target, 'serviceMessage', content)
 	end

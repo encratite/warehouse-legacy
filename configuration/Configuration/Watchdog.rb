@@ -12,8 +12,12 @@ module Configuration
 		]
 		
 		#delay between checks in seconds
-		Delay = 1.0
+		Delay = 5.0
 		
+		#time in seconds until an observer is being reported as inactive if no new releases are detected
+		GracePeriod = 24 * 60 * 60
+		
+		#name of the log file
 		Log = 'watchdog.log'
 	end
 end

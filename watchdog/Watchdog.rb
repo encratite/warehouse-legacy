@@ -2,6 +2,7 @@ require 'sys/proctable'
 require 'watchdog/WatchedProcess'
 require 'shared/OutputHandler'
 require 'nil/file'
+require 'shared/sites'
 
 class Watchdog
 	def initialize(configuration, connections)
@@ -13,8 +14,10 @@ class Watchdog
 		@programs = watchdogData::Programs.map do |name, pattern|
 			WatchedProcess.new(name, Regexp.new(pattern))
 		end
+		@gracePeriod = watchdogData::GracePeriod
 		@delay = watchdogData::Delay
 		@adminIDs = getAdminIDs
+		@sites = getReleaseSites(connections).map{|site| WatchedSite.new(site)}
 		puts "Number of administrators: #{@adminIDs.size}"
 	end
 	
@@ -37,32 +40,58 @@ class Watchdog
 		end
 	end
 	
+	def performProcessChecks
+		@programs.each do |program|
+			program.isActive = false
+		end
+		Sys::ProcTable.ps do |process|
+			offset = @programs.index(process)
+			next if offset == nil
+			program = @programs[offset]
+			program.isActive = true
+		end
+		@programs.each do |program|
+			if program.oldIsActive != nil && program.oldIsActive != program.isActive
+				#a change occured
+				if program.isActive
+					#the process was relaunched - this does not require any notification really because the administrator is responsible for this
+					output "Service \"#{program.name}\" has been restored"
+				else
+					#the process terminated - this should never happen
+					#notify the adminstrator about this problem
+					notifyAdmins "Service \"#{program.name}\" terminated unexpectedly"
+				end
+			end
+			program.oldIsActive = program.isActive
+		end
+	end
+	
+	def performReleaseTimeChecks
+		@sites.each do |site|
+			rows = site.dataset.select(:release_date).reverse_order(:release_date).limit(1).all
+			if rows.empty?
+				#the site doesn't have any releases yet
+				next
+			end
+			lastReleaseTime = rows[0][:release_date]
+			difference = Time.now.utc - lastReleaseTime
+			isLate = difference > @gracePeriod
+			if !site.isLate && isLate
+				#something is wrong - no new releases have been detected in a long time
+				#this means that the observers are failing to get data for some reason
+				#intervention by a developer is required
+				notifyAdmins "The observer of site \"#{site.name}\" no longer detects new releases and must be fixed"
+			elsif site.isLate && !isLate
+				notifyAdmins "The observer of site \"#{site.name}\" appears to be back to normal after previously malfunctioning"
+			end
+			site.isLate = isLate
+		end
+	end
+	
 	def run
 		while true
-			@programs.each do |program|
-				program.isActive = false
-			end
-			Sys::ProcTable.ps do |process|
-				offset = @programs.index(process)
-				next if offset == nil
-				program = @programs[offset]
-				program.isActive = true
-			end
-			@programs.each do |program|
-				if program.oldIsActive != program.isActive && program.oldIsActive != nil
-					#a change occured
-					if program.isActive
-						#the process was relaunched - this does not require any notification really because the administrator is responsible for this
-						output "Service \"#{program.name}\" has been restored"
-					else
-						#the process terminated - this should never happen
-						#notify the adminstrator about this problem
-						message = "Service \"#{program.name}\" terminated unexpectedly"
-						notifyAdmins message
-					end
-				end
-				program.oldIsActive = program.isActive
-			end
+			performProcessChecks
+			performReleaseTimeChecks
 			sleep @delay
 		end
 	end

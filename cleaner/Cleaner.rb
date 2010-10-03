@@ -135,7 +135,7 @@ class Cleaner
 		end
 		
 		users.each do |user|
-			output "Notifying user #{user}: #{type}: #{content}"
+			output "Notifying user #{user.name} about the deletion of release #{release}: #{message}"
 			if isError
 				@notification.downloadErrorNotification(user.name, release, message)
 			else

@@ -33,9 +33,8 @@ class Watchdog
 		@output.output(line)
 	end
 	
-	def notifyAdmins(message)
-		output message
-		severity = 'error'
+	def notifyAdmins(message, severity = 'error')
+		output message		
 		@adminIDs.each do |id|
 			@notification.serviceMessage(id, severity, message)
 		end
@@ -88,7 +87,7 @@ class Watchdog
 				#intervention by a developer is required
 				notifyAdmins "The observer of site \"#{site.name}\" no longer detects new releases and must be fixed"
 			elsif site.isLate && !isLate
-				notifyAdmins "The observer of site \"#{site.name}\" appears to be back to normal after previously malfunctioning"
+				notifyAdmins("The observer of site \"#{site.name}\" appears to be back to normal after previously malfunctioning", 'information')
 			end
 			site.isLate = isLate
 		end

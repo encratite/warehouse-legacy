@@ -9,7 +9,7 @@ class TorrentVaultReleaseData < ReleaseData
 	
 	Targets =
 	[
-		['ID', /groupid=(\d+)"/, :id],
+		['ID', /<input type="hidden" name="groupid" value="(\d+)" \/>/, :id],
 		['Release', /<title>(.+?) - TorrentVault/, :name],
 		['Section', /<li>Category: (.+?)<\/li>/, :sectionName],
 		['Uploader', /<li>Uploader: (.+?)<\/a>/, :uploader],

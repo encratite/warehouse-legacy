@@ -5,7 +5,7 @@ require 'secret/TorrentVault'
 
 module TorrentVaultConfiguration
 	module HTTP
-		Server = 'torrentvault.org'
+		Server = 'www.torrentvault.org'
 		#Cookies are secret
 		SSL = true
 	end

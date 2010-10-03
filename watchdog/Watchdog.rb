@@ -45,11 +45,16 @@ class Watchdog
 		@programs.each do |program|
 			program.isActive = false
 		end
-		Sys::ProcTable.ps do |process|
-			offset = @programs.index(process)
-			next if offset == nil
-			program = @programs[offset]
-			program.isActive = true
+		begin
+			Sys::ProcTable.ps do |process|
+				offset = @programs.index(process)
+				next if offset == nil
+				program = @programs[offset]
+				program.isActive = true
+			end
+		rescue SystemCallError => exception
+			puts "An exception occured: #{exception.inspect}"
+			return
 		end
 		@programs.each do |program|
 			if program.oldIsActive != nil && program.oldIsActive != program.isActive

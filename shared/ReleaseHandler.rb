@@ -103,17 +103,19 @@ class ReleaseHandler
 	end
 	
 	def insertData(releaseData)
+		sql = nil
 		begin
 			insertData = releaseData.getData
 			dataset = @database[@releaseTableSymbol]
 			result = dataset.where(site_id: insertData[:site_id])
+			sql = result.sql
 			if result.count > 0
 				puts 'This entry already exists - overwriting it'
 				dataset.delete
 			end
 			dataset.insert(insertData)
 		rescue	Sequel::DatabaseError => exception
-			output "DBMS exception: #{exception.message}"
+			output "DBMS exception: #{exception.message}, SQL: #{sql}"
 		end
 	end
 	

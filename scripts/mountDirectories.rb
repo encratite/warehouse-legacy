@@ -1,3 +1,5 @@
+$: << '.'
+
 require 'configuration/Configuration'
 
 source = Configuration::User.getPath('torrent/complete')

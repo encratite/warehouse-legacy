@@ -11,6 +11,11 @@ class SceneAccessIRCHandler < IRCHandler
 			'invite' => 'invite'
 		}
 		output 'Trying to enter the announce channel'
-		@httpHandler.post('/irc.php', data)
+		reply = @httpHandler.post('/irc.php', data)
+		if reply == nil
+			output 'Failed to perform the HTTP post required! Reconnecting...'
+			#Recursion? Bad?
+			@irc.reconnect
+		end
 	end
 end

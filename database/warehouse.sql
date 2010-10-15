@@ -53,7 +53,7 @@ create table sceneaccess_data
 	file_count integer not null,
 	release_date timestamp not null,
 	release_size bigint not null,
-	hit_count integer not null,
+	hit_count integer,
 	download_count integer not null,
 	seeder_count integer not null,
 	leecher_count integer not null

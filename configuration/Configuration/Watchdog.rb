@@ -2,6 +2,7 @@ module Configuration
 	module Watchdog
 		Programs =
 		[
+			['RTorrent', 'rtorrent'],
 			['Cleaner', 'ruby cleaner/main.rb'],
 			['Notification server', 'ruby notification/runServer.rb'],
 			['SceneAccess observer', 'ruby observer/SceneAccess.rb'],

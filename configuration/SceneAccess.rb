@@ -18,7 +18,7 @@ module SceneAccessConfiguration
 		Channels = ['#scc-announce']
 		Bots =
 		[
-			{nick: 'SCC', host: 'csops.sceneaccess.org'}
+			{nick: 'SCC', host: 'bot.sceneaccess.org'}
 		]
 		
 		module Regexp

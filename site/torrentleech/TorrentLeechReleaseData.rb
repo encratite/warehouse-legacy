@@ -5,8 +5,7 @@ require 'nil/string'
 
 require 'shared/timeString'
 require 'shared/ReleaseData'
-
-require 'site/torrentleech/extractName'
+require 'shared/sizeString'
 
 class TorrentLeechReleaseData < ReleaseData
 	Debugging = false
@@ -19,10 +18,10 @@ class TorrentLeechReleaseData < ReleaseData
 		#['Info hash', /<td valign="top" align=left>(.+?)<\/td>/, :infoHash],
 		['Category', /<td class="label">Category<\/td><td>(.+?)<\/td>/, :category],
 		#this requires some parsing
-		['Size', /<td class="label">Size</td><td>(.+?)</td>/, :sizeString],
+		['Size', /<td class="label">Size<\/td><td>(.+?)<\/td>/, :sizeString],
 		#same here
 		['Release date', /<td class="label">Added<\/td><td>(.+?)<\/td>/, :releaseDateString],
-		['Snatched', /<td class="label">Snatched</td><td>(\d+) times<\/td>/, :downloads],
+		['Snatched', /<td class="label">Snatched<\/td><td>(\d+) times<\/td>/, :downloads],
 		['Seeders', /<span class="uploaded"><b>Seeders:<\/b><\/span> (\d+)/, :seeders],
 		['Leechers', /<span class="downloaded"><b>Leechers:<\/b><\/span> (\d+)/, :leechers],
 		['ID', /<a href="\/download\/(\d+)"><button id="downloadButton"><b>Download Torrent<\/b><\/button><\/a>/, :id],
@@ -33,24 +32,59 @@ class TorrentLeechReleaseData < ReleaseData
 		super(detailsPage)
 	end
 	
-	def postProcessing(input)
-		if !size.isNumber
-			errorMessage = "Invalid file size specified: #{@sizeString}"
-			raise Error.new(errorMessage)
-		end
-		@size = size.to_i
-		
+	def postProcessing(input)		
 		@id = @id.to_i
+		@size = convertSizeString(@sizeString)
+		@date = TorrentLeechReleaseData.parseDateString(@releaseDateString)
+		if @date == nil
+			raise Error.new("Unable to parse date string: #{@releaseDateString.inspect}")
+		end
 		@downloads = @downloads.to_i
 		@seeders = @seeders.to_i
 		@leechers = @leechers.to_i
 		
 		@path = "/#{@path}" if !@path.empty? && @path[0] != '/'
 		
-		#the original @name is actually being ignored - this site is too much of a mess
-		@name = extractNameFromTorrent(@path)
-		
 		#releaseDate requires some parsing here
+	end
+	
+	def self.parseDateString(input)
+		pattern = /.+? (\d+).+? (.+?) (\d+) (\d+):(\d+):(\d+) (.+?)/
+		match = pattern.match(input)
+		return nil if match == nil
+		day = match[1].to_i
+		monthString = match[2]
+		year = match[3].to_i
+		hour = match[4].to_i
+		minute = match[5].to_i
+		second = match[6].to_i
+		ampm = match[7]
+		if ampm == 'PM'
+			hour += 12
+		end
+		
+		months =
+		[
+			'January',
+			'February',
+			'March',
+			'April',
+			'June',
+			'July',
+			'August',
+			'September',
+			'October',
+			'November',
+			'December',
+		]
+		
+		index = months.index(monthString)
+		return nil if index == nil
+		
+		month = index + 1
+		
+		output = Time.gm(year, month, day, hour, minute, second)
+		return output
 	end
 	
 	def getData

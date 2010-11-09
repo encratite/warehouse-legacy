@@ -3,7 +3,7 @@ require 'shared/HTMLParser'
 require 'site/torrentleech/TorrentLeechHTTPRelease'
 
 class TorrentLeechHTMLParser < HTMLParser
-	Pattern = /<a href="\/torrent\/(\d+)">/
+	Pattern = /<a href="\/torrent\/(\d+)">(.+?)<\/a>/
 	
 	Symbols =
 	[

@@ -27,12 +27,7 @@ class TorrentLeechReleaseData < ReleaseData
 		['ID', /<a href="\/download\/(\d+)"><button id="downloadButton"><b>Download Torrent<\/b><\/button><\/a>/, :id],
 	]
 	
-	def processInput(pages)
-		detailsPage = pages[0]
-		super(detailsPage)
-	end
-	
-	def postProcessing(input)		
+	def postProcessing(input)
 		@id = @id.to_i
 		@size = convertSizeString(@sizeString)
 		@date = TorrentLeechReleaseData.parseDateString(@releaseDateString)

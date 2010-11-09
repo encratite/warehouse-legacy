@@ -9,9 +9,8 @@ class TorrentLeechSite < HTTPReleaseSite
 		name = release.name
 		idString = release.siteId.to_s
 		detailsPath = sprintf(@detailsPath, idString)
-		paths = [detailsPath]
 		output "Discovered a new release: #{name} (ID: #{release.siteId})"
 		sleep @downloadDelay
-		@releaseHandler.processReleasePaths(name, paths)
+		@releaseHandler.processReleasePath(name, detailsPath)
 	end
 end

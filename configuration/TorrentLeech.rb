@@ -6,9 +6,8 @@ require 'secret/TorrentLeech'
 module TorrentLeechConfiguration
 	module HTTP
 		Server = 'www.torrentleech.org'
-		BrowsePath = '/browse.php'
-		DetailsPath = '/details.php?id=%s'
-		NFOPath = '/viewnfo.php?id=%s'
+		BrowsePath = '/torrents/browse'
+		DetailsPath = '/torrent/%s'
 		
 		#Cookies are secret
 		SSL = false

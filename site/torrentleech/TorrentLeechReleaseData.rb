@@ -13,29 +13,27 @@ class TorrentLeechReleaseData < ReleaseData
 	
 	Targets =
 	[
-		['Release', /<h1>(.+?)<\/h1>/, :name],
-		['Path', /"(download\.php.+?)"/, :path],
-		['Info hash', /<td valign="top" align=left>(.+?)<\/td>/, :infoHash],
-		['Category', /Type<\/td><td valign="top" align=left>(.+?)<\/td>/, :category],
-		['Size', /Size<\/td><td valign="top" align=left>.+?\((.+?) bytes\)/, :sizeString],
-		['Release date', /Added<\/td><td valign="top" align=left>(.+?)<\/td>/, :releaseDate],
-		['Snatched', /Snatched<\/td><td valign="top" align=left>(\d+) time\(s\)<\/td>/, :downloads],
-		['Uploader', /Upped by<\/td><td valign="top" align=left>.+?>([^><]+)<.+?>/, :uploader],
-		['File count', /\[See full list\]<\/a><\/td><td valign="top" align=left>(\d+) files<\/td>/, :fileCount, false],
-		['Seeders', /<td valign="top" align=left>(\d+) seeder\(s\), /, :seeders],
-		['Leechers', /, (\d+) leecher\(s\) = /, :leechers],
-		['ID', /download\.php\/(\d+)\//, :id],
+		['Release', /<td class="label">Torrent Name<\/td><td>(.+?)<\/td>/, :name],
+		['Path', /<a href="(\/download\/\d+)"><button id="downloadButton"><b>Download Torrent<\/b><\/button><\/a>/, :path],
+		#info hash is no longer available
+		#['Info hash', /<td valign="top" align=left>(.+?)<\/td>/, :infoHash],
+		['Category', /<td class="label">Category<\/td><td>(.+?)<\/td>/, :category],
+		#this requires some parsing
+		['Size', /<td class="label">Size</td><td>(.+?)</td>/, :sizeString],
+		#same here
+		['Release date', /<td class="label">Added<\/td><td>(.+?)<\/td>/, :releaseDateString],
+		['Snatched', /<td class="label">Snatched</td><td>(\d+) times<\/td>/, :downloads],
+		['Seeders', /<span class="uploaded"><b>Seeders:<\/b><\/span> (\d+)/, :seeders],
+		['Leechers', /<span class="downloaded"><b>Leechers:<\/b><\/span> (\d+)/, :leechers],
+		['ID', /<a href="\/download\/(\d+)"><button id="downloadButton"><b>Download Torrent<\/b><\/button><\/a>/, :id],
 	]
 	
 	def processInput(pages)
 		detailsPage = pages[0]
-		nfoPage = pages[1]
 		super(detailsPage)
-		processNFO(nfoPage)
 	end
 	
 	def postProcessing(input)
-		size = @sizeString.gsub(',', '')
 		if !size.isNumber
 			errorMessage = "Invalid file size specified: #{@sizeString}"
 			raise Error.new(errorMessage)
@@ -43,7 +41,6 @@ class TorrentLeechReleaseData < ReleaseData
 		@size = size.to_i
 		
 		@id = @id.to_i
-		@hits = @hits.to_i
 		@downloads = @downloads.to_i
 		@seeders = @seeders.to_i
 		@leechers = @leechers.to_i
@@ -53,20 +50,7 @@ class TorrentLeechReleaseData < ReleaseData
 		#the original @name is actually being ignored - this site is too much of a mess
 		@name = extractNameFromTorrent(@path)
 		
-		if @fileCount == nil
-			@fileCount = 1
-		else
-			@fileCount = @fileCount.to_i
-		end
-	end
-	
-	def processNFO(input)
-		match = /<pre>.+?>([\s\S]+?)<\//.match(input)
-		raise Error.new('Failed to get a match on the NFO data') if match == nil
-		
-		@nfo = CGI::unescapeHTML(match[1])
-		@nfo.force_encoding 'CP437'
-		@nfo = @nfo.encode 'UTF-8'
+		#releaseDate requires some parsing here
 	end
 	
 	def getData
@@ -76,16 +60,19 @@ class TorrentLeechReleaseData < ReleaseData
 			info_hash: @infoHash,
 			section_name: @category,
 			name: @name,
-			nfo: @nfo.to_sequel_blob,
+			#not sure what to do about the lack of NFO data now - it's all mixed...
+			nfo: nil,
 			release_date: @releaseDate,
 			release_size: @size,
-			file_count: @fileCount,
+			#no longer available,
+			file_count: nil,
 			#screw it
 			comment_count: nil,
 			download_count: @downloads,
 			seeder_count: @seeders,
 			leecher_count: @leechers,
-			uploader: @uploader,
+			#no longer available
+			uploader: nil,
 		}
 	end
 end

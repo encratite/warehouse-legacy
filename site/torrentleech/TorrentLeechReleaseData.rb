@@ -30,8 +30,8 @@ class TorrentLeechReleaseData < ReleaseData
 	def postProcessing(input)
 		@id = @id.to_i
 		@size = convertSizeString(@sizeString)
-		@date = TorrentLeechReleaseData.parseDateString(@releaseDateString)
-		if @date == nil
+		@releaseDate = TorrentLeechReleaseData.parseDateString(@releaseDateString)
+		if @releaseDate == nil
 			raise Error.new("Unable to parse date string: #{@releaseDateString.inspect}")
 		end
 		@downloads = @downloads.to_i

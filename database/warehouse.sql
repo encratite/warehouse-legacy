@@ -111,7 +111,7 @@ create table torrentleech_data
 	download_count integer not null,
 	seeder_count integer not null,
 	leecher_count integer not null,
-	uploader text not null
+	uploader text
 );
 
 create index torrentleech_name_index on torrentleech_data(name);

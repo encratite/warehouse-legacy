@@ -40,6 +40,9 @@ class TorrentLeechReleaseData < ReleaseData
 		
 		@path = "/#{@path}" if !@path.empty? && @path[0] != '/'
 		
+		#minor adjustment
+		@name = @name.gsub(' ', '.')
+		
 		#releaseDate requires some parsing here
 	end
 	

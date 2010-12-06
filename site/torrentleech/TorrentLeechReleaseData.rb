@@ -13,7 +13,7 @@ class TorrentLeechReleaseData < ReleaseData
 	Targets =
 	[
 		['Release', /<td class="label">Torrent Name<\/td><td>(.+?)<\/td>/, :name],
-		['Path', /<form action="(.+?)" method="get"><button id="downloadButton"><b>Download Torrent<\/b><\/button><\/form>/, :path],
+		['Path', /<form action="(.+?)" method="get">.+?<button id="downloadButton"><b>Download Torrent<\/b><\/button>/m, :path],
 		#info hash is no longer available
 		#['Info hash', /<td valign="top" align=left>(.+?)<\/td>/, :infoHash],
 		['Category', /<td class="label">Category<\/td><td>(.+?)<\/td>/, :category],

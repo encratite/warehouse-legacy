@@ -13,7 +13,7 @@ class TorrentLeechReleaseData < ReleaseData
 	Targets =
 	[
 		['Release', /<td class="label">Torrent Name<\/td><td>(.+?)<\/td>/, :name],
-		['Path', /<form action="(.+?)" method="get">.+?<button id="downloadButton"><b>Download Torrent<\/b><\/button>/m, :path],
+		['Path', /<form action="(\/download\/\d+\/.+?\.torrent)" method="get">/, :path],
 		#info hash is no longer available
 		#['Info hash', /<td valign="top" align=left>(.+?)<\/td>/, :infoHash],
 		['Category', /<td class="label">Category<\/td><td>(.+?)<\/td>/, :category],
@@ -28,12 +28,14 @@ class TorrentLeechReleaseData < ReleaseData
 	]
 	
 	def postProcessing(input)
+		puts @path
 		pathTokens = @path.split('/')
 		if pathTokens.empty?
 			raise Error.new("Invalid path: #{@path}")
 		end
 		lastToken = pathTokens[-1]
 		lastToken.replace(CGI.escape(lastToken))
+		@path = pathTokens.join('/')
 		@id = @id.to_i
 		@size = convertSizeString(@sizeString)
 		@releaseDate = TorrentLeechReleaseData.parseDateString(@releaseDateString)

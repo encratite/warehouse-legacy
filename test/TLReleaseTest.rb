@@ -20,7 +20,7 @@ puts "Getting #{id}"
 
 site = TorrentLeechSite.new(TorrentLeechConfiguration, Configuration::Torrent, ConnectionContainer.new, Configuration)
 output = site.httpHandler.get(path)
-puts output
+#puts output
 puts "Parsing..."
-data = TorrentLeechReleaseData.new([output])
+data = TorrentLeechReleaseData.new(output)
 puts data.inspect

@@ -12,8 +12,8 @@ require 'category/Categoriser'
 require 'shared/ConnectionContainer'
 
 if ARGV.size < 1
-	puts "ruby #{__FILE__} <release>"
-	exit
+  puts "ruby #{__FILE__} <release>"
+  exit
 end
 
 release = File.basename(ARGV.join(' '))

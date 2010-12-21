@@ -10,9 +10,9 @@ require 'configuration/TorrentLeech'
 require 'configuration/Configuration'
 
 def getReleaseSites(connections)
-	return [
-		TorrentLeechSite.new(TorrentLeechConfiguration, Configuration::Torrent, connections, Configuration),
-		SceneAccessSite.new(SceneAccessConfiguration, Configuration::Torrent, connections, Configuration),
-		TorrentVaultSite.new(TorrentVaultConfiguration, Configuration::Torrent, connections, Configuration),
-	]
+  return [
+          TorrentLeechSite.new(TorrentLeechConfiguration, Configuration::Torrent, connections, Configuration),
+          SceneAccessSite.new(SceneAccessConfiguration, Configuration::Torrent, connections, Configuration),
+          TorrentVaultSite.new(TorrentVaultConfiguration, Configuration::Torrent, connections, Configuration),
+         ]
 end

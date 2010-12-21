@@ -9,5 +9,5 @@ site = SceneAccessSite.new(SceneAccessConfiguration, Configuration::Torrent, Con
 
 lines = Nil.readLines('test/input/sceneaccess.log')
 lines.each do |line|
-	site.ircHandler.irc.processLine(line)
+  site.ircHandler.irc.processLine(line)
 end

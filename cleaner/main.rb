@@ -6,8 +6,8 @@ require 'shared/ConnectionContainer'
 
 cleaner = Cleaner.new(Configuration, ConnectionContainer.new)
 begin
-	cleaner.run
+  cleaner.run
 rescue Interrupt
-	exit
+  exit
 end
 

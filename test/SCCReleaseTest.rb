@@ -9,8 +9,8 @@ require 'shared/ConnectionContainer'
 require 'site/sceneaccess/SceneAccessReleaseData'
 
 if ARGV.size != 1
-	puts 'Invalid argument count'
-	exit
+  puts 'Invalid argument count'
+  exit
 end
 
 id = ARGV[0]

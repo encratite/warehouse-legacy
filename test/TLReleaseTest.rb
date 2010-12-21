@@ -10,8 +10,8 @@ require 'configuration/TorrentLeech'
 require 'shared/ConnectionContainer'
 
 if ARGV.size != 1
-	puts 'Invalid argument count'
-	exit
+  puts 'Invalid argument count'
+  exit
 end
 
 id = ARGV[0]

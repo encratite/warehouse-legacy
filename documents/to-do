@@ -1,5 +1,6 @@
 To do:
 
+The setup torrent directory needs to be chmoded to 775 instead of just the chown
 The default setup of 700 for ~ disrupts the access of the Warehouse shell
 The setup incorrectly creates the intermediate torrent directories as root:root
 

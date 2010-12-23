@@ -1,5 +1,8 @@
 To do:
 
+The default setup of 700 for ~ disrupts the access of the Warehouse shell
+The setup incorrectly creates the intermediate torrent directories as root:root
+
 There is currently an extremely bizarre issue with the notification server.
 When a TLS connection dies without being closed properly by packets it doesn't appear to time out on its own and even changing the SO_RCV timeout setting with setsockopt doesn't appear to do anything about it.
 However, all the dead TLS connections are cleaned up when an IPC socket in the same process is closed - however, it does not happen when other TLS sockets are closed.

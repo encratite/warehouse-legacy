@@ -7,7 +7,7 @@ require 'shared/Timer'
 class UserAPI
   #this returns an array of the hashes (strings) associated with the torrents in rtorrent
   def getInfoHashes
-    return @rpc.call('download_list')
+    return @rpc.call('download_list', 'main')
   end
 
   def getTorrentName(infoHash)

@@ -61,16 +61,19 @@ class UserAPI
     #puts "Got #{infoHashes.size} hashes after #{timer.stop} ms"
 
     callData = []
+    callCountPerTorrent = nil
     infoHashes.each do |infoHash|
-      callData.concat [
-                       ['d.get_name', infoHash],
-                       ['d.get_down_rate', infoHash],
-                       ['d.get_up_rate', infoHash],
-                       ['d.get_size_files', infoHash],
-                       ['d.get_size_bytes', infoHash],
-                       ['d.get_bytes_done', infoHash],
-                       ['d.get_tied_to_file', infoHash],
-                      ]
+      newCallData = [
+                     ['d.get_name', infoHash],
+                     ['d.get_down_rate', infoHash],
+                     ['d.get_up_rate', infoHash],
+                     ['d.get_size_files', infoHash],
+                     ['d.get_size_bytes', infoHash],
+                     ['d.get_bytes_done', infoHash],
+                     ['d.get_tied_to_file', infoHash],
+                    ]
+      callCountPerTorrent = newCallData.size
+      callData.concat newCallData
     end
 
     #puts "Created multicall arguments in #{timer.stop} ms"
@@ -80,7 +83,6 @@ class UserAPI
     #puts "The multicall itself took #{timer.stop} ms"
 
     offset = 0
-    callCountPerTorrent = 7
     output = []
     infoHashes.each do |infoHash|
       values = rpcData[offset..(offset + callCountPerTorrent - 1)]

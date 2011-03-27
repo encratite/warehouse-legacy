@@ -10,8 +10,10 @@ require 'site/torrentvault/TorrentVaultReleaseData'
 
 id = ARGV[0]
 
+puts 'Creating the site object'
 site = TorrentVaultSite.new(TorrentVaultConfiguration, Configuration::Torrent, ConnectionContainer.new, Configuration)
+puts 'Retrieving the data'
 output = site.httpHandler.get("/torrents.php?id=#{id}")
-puts "Parsing..."
+puts 'Parsing the data'
 data = TorrentVaultReleaseData.new(output)
-puts data.name
+puts "Name: #{data.name}"

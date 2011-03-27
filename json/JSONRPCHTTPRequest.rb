@@ -5,7 +5,7 @@ require 'www-library/HTTPRequest'
 
 require 'json/parse'
 
-class JSONRPCHTTPRequest < HTTPRequest
+class JSONRPCHTTPRequest < WWWLib::HTTPRequest
   attr_reader :jsonInput, :commonName, :name, :serial, :isMultiCall
 
   SubjectData =

@@ -15,7 +15,7 @@ module SceneAccessConfiguration
     Port = 6667
     TLS = false
     #Nick is secret
-    Channels = ['#scc-announce']
+    Channels = ['#announce']
     Bots =
       [
        {nick: 'SCC', host: 'bot.sceneaccess.org'}

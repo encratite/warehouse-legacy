@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <grp.h>
+#include <errno.h>
 
 typedef std::vector<gid_t> gidVector;
 
@@ -27,11 +28,11 @@ void printUsage(char ** argv)
 
 gidVector getUserGroups(std::string const & user, passwd * passwordData)
 {
-  int groupCount;
-  gidVector groups(sysconf(_SC_NGROUPS_MAX) + 1);
+  int groupCount = sysconf(_SC_NGROUPS_MAX) + 1;
+  gidVector groups(static_cast<std::size_t>(groupCount));
   int result = getgrouplist(user.c_str(), passwordData->pw_gid, &groups.front(), &groupCount);
   if(result == -1)
-    throw std::runtime_error("Failed to retrieve the list of groups associated with the user");
+    throw std::runtime_error("Failed to retrieve the list of groups associated with the user \"" + user + "\"");
 
   groups.resize(groupCount);
 

@@ -12,6 +12,8 @@ require 'shared/OwnershipHandler'
 require 'notification/NotificationReleaseData'
 
 class ReleaseHandler
+  attr_writer :httpHandler
+
   def initialize(site, connections, configuration)
     @site = site
 
@@ -152,7 +154,7 @@ class ReleaseHandler
         return
       end
       pages << result
-      sleep @downloadDelay
+      sleep(@downloadDelay)
     end
     processReleaseData(release, pages)
   end

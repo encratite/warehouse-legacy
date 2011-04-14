@@ -9,5 +9,6 @@ class TorrentVaultSite < IRCReleaseSite
     @ircHandler.inviteBot = ircData::InviteBot
     @ircHandler.inviteCode = ircData::InviteCode
     @httpHandler = TorrentVaultHTTP.new(siteData)
+    @releaseHandler.httpHandler = @httpHandler
   end
 end

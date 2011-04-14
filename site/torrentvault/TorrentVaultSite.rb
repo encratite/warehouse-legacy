@@ -1,6 +1,6 @@
 require 'shared/irc/IRCReleaseSite'
 require 'configuration/TorrentVault'
-require 'site/TorrentVault/TorrentVaultHTTP'
+require 'site/torrentvault/TorrentVaultHTTP'
 
 class TorrentVaultSite < IRCReleaseSite
   def initialize(siteData, torrentData, connections, configuration)

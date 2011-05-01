@@ -69,20 +69,20 @@ class TorrentLeechReleaseData < ReleaseData
       hour += 12
     end
 
-    months =
-      [
-       'January',
-       'February',
-       'March',
-       'April',
-       'June',
-       'July',
-       'August',
-       'September',
-       'October',
-       'November',
-       'December',
-      ]
+    months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ]
 
     index = months.index(monthString)
     return nil if index == nil

@@ -3,23 +3,21 @@ require 'shared/HTMLParser'
 require 'site/torrentleech/TorrentLeechFullHTTPRelease'
 
 class TorrentLeechFullHTMLParser < HTMLParser
-  Pattern = /browse\.php\?cat=.+?alt="(.+?)"[\s\S]+?details\.php\?id=(\d+)&amp;.+?<b>(.+?)<\/b>.+?#666666'>(.+?)<\/font>[\s\S]+?<a href="(download\.php.+?)">[\s\S]+?<td align="right".*?>(\d+)<.*?\/td>[\s\S]+?<td align=center>(.+?)<br>(.+?)<\/td>[\s\S]+?<td align=center>([\d,]+)<br>[\s\S]+?>(\d+)<[\s\S]+?>(\d+)<[\s\S]+?<td align=center>(.+?)<\/td>/
+  Pattern = /<tr class="even" id=(\d+)>.*<a href="\/torrent\/\d+">(.+?)<\/a>.+Added in <b>(.+?)<\/b> on (.+?)<\/td>.+?<a href="(\/download\/\d+\/.+?\.torrent)">.+?<td>(\d+) (KB|MB|GB)<\/td>.+?<td>(\d+)<br>times<\/td>.+?<td class="seeders">(\d+)<\/td>.+?<td class="leechers">(\d+)<\/td>/m
 
   Symbols =
     [
-     :category,
-     :siteId,
-     :name,
-     :date,
-     :torrentPath,
-     :commentCount,
-     :size,
-     :sizeUnit,
-     :downloads,
-     :seeders,
-     :leechers,
-     :uploader,
-    ]
+    :siteId,
+    :name,
+    :category,
+    :date,
+    :torrentPath,
+    :size,
+    :sizeUnit,
+    :downloads,
+    :seeders,
+    :leechers
+  ]
 
   def initialize
     super(TorrentLeechFullHTTPRelease)

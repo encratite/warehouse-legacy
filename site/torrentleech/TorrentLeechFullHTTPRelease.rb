@@ -20,7 +20,7 @@ class TorrentLeechFullHTTPRelease < HTTPRelease
 
     #the original @name is actually being ignored - this site is too much of a mess
     @name = extractNameFromTorrent(@torrentPath)
-    puts "Debug: #{@name} (#{@name.inspect})"
+    #puts "Debug: #{@name} (#{@name.inspect})"
 
     match = />([^><]+)</.match(@uploader)
     if match != nil

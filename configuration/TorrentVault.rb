@@ -18,7 +18,7 @@ module TorrentVaultConfiguration
     Channels = ['#tv']
     Bots =
       [
-       {nick: 'InfoVault', host: 'torrentvault.org'}
+       {nick: 'InfoVault', host: 'unknown.user'}
       ]
 
     InviteBot = 'TorrentVault'

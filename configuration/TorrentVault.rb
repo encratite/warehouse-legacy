@@ -15,7 +15,7 @@ module TorrentVaultConfiguration
     Port = 9022
     TLS = true
     #Nick is secret
-    Channels = ['#tv', '#tv-spam']
+    Channels = ['#tv']
     Bots =
       [
        {nick: 'InfoVault', host: 'torrentvault.org'}
@@ -23,6 +23,7 @@ module TorrentVaultConfiguration
 
     InviteBot = 'TorrentVault'
     #InviteCode is secret
+    #Password is secret
 
     module Regexp
       Release = /Name: (.+?) \[/

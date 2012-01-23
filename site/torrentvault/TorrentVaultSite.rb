@@ -8,6 +8,7 @@ class TorrentVaultSite < IRCReleaseSite
     ircData = siteData::IRC
     @ircHandler.inviteBot = ircData::InviteBot
     @ircHandler.inviteCode = ircData::InviteCode
+    @ircHandler.password = ircData::Password
     @httpHandler = TorrentVaultHTTP.new(siteData)
     @releaseHandler.httpHandler = @httpHandler
   end

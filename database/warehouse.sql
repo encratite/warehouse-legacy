@@ -25,6 +25,8 @@ create table user_release_filter
 	category text default null
 );
 
+create index user_release_filter_user_id_index on user_release_filter(user_id);
+
 drop table if exists user_command_log;
 
 create table user_command_log
@@ -34,6 +36,8 @@ create table user_command_log
 	command_time timestamp not null,
 	command text not null
 );
+
+create index user_command_log_user_id_index on user_command_log(user_id);
 
 drop table if exists sceneaccess_data cascade;
 
@@ -129,6 +133,8 @@ create table user_notification
 	content text not null
 );
 
+create index user_notification_user_id_index on user_notification(user_id);
+
 drop table if exists download_queue cascade;
 
 --keep a cache of stuff currently queued in here with copies of values from the big tables in order to reduce lookup times
@@ -157,3 +163,5 @@ create table download_queue_user
 	queue_id integer references download_queue(id) on delete cascade not null,
 	unique(user_id, queue_id)
 );
+
+create index download_queue_user_user_id_queue_id_index on download_queue_user(user_id, queue_id);

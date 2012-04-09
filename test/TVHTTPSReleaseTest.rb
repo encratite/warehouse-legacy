@@ -17,3 +17,4 @@ output = site.httpHandler.get("/torrents.php?id=#{id}")
 puts 'Parsing the data'
 data = TorrentVaultReleaseData.new(output)
 puts "Name: #{data.name}"
+puts data.inspect

@@ -12,7 +12,7 @@ class TorrentVaultReleaseData < ReleaseData
      ['ID', /<input type="hidden" name="groupid" value="(\d+)" \/>/, :id],
      ['Release', /<title>(.+?) - TorrentVault/, :name],
      ['Section', /<li>Category: (.+?)<\/li>/, :sectionName],
-     ['Uploader', /<li>Uploader: (?:<a href=".+?">)*(.+?)(?:<\/a>)*<\/li>/, :uploader],
+     ['Uploader', /<li>Uploader: (?:(?:<a href=".+?">)+|<i>)(.+?)(?:<\/i>)?(?:<\/a>)+<\/li>/, :uploader],
      #annoying format
      ['Pre time', /<li>Pre: (.+?)<\//, :preTimeString],
      ['Snatched', /<li>Snatched: (\d+)<\//, :downloads],
@@ -48,15 +48,6 @@ class TorrentVaultReleaseData < ReleaseData
     end
 
     @path = '/' + CGI::unescapeHTML(@path)
-
-    match = />([^><]+)</.match(@uploader)
-    if match == nil
-      @uploader = nil
-    else
-      @uploader = match[1]
-    end
-
-    puts "Uploader: #{@uploader.inspect}"
   end
 
   def getData

@@ -11,5 +11,6 @@ loginData = {
   'password' => TorrentVaultConfiguration::HTTP::Password,
   'login' => 'Log In!',
 }
+puts 'Posting'
 http.post('/login.php', loginData)
 puts http.get('/torrents.php').inspect

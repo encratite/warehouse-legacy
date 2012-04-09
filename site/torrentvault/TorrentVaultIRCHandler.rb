@@ -16,12 +16,16 @@ class TorrentVaultIRCHandler < IRCHandler
     @irc.sendMessage(@inviteBot, "login #{@irc.nick} #{@inviteCode}")
   end
 
+  def joinAnnounceChannels
+    @releaseChannels.each do |channel|
+      output "Joining announce channel #{channel}"
+      @irc.joinChannel(channel)
+    end
+  end
+
   def onNotice(user, text)
     if user.nick == @inviteBot && text.index('Welcome') != nil
-      @releaseChannels.each do |channel|
-        output "Joining announce channel #{channel}"
-        @irc.joinChannel(channel)
-      end
+      joinAnnounceChannels
     end
   end
 end

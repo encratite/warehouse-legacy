@@ -19,7 +19,7 @@ class UserAPI
   end
 
   def getNotificationCount
-    return getUserNotifications.count
+    return @database[:user_notification].where(user_id: @user.id).count
   end
 
   #needs to be serialised in the JSON RPC API

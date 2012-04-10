@@ -109,7 +109,7 @@ The severity may be one of the following values:
 "warning": A minor hiccup occured in one of the services - might be worth investigating.
 "error": A fatal error occured and the service had to be terminated - immediate intervention is necessary.
 
-3. Remote procedure calls (RPC)
+4. Remote procedure calls (RPC)
 -------------------------------
 
 As already mentioned in section 1 of this document, this protocol also supports RPC. The JSON data used to achieve this it look as follows:
@@ -125,12 +125,12 @@ For results:
 For the first time the IDs in the JSON RPC data actually become important because this system is basically intended to return results asynchronously/out of order to guarantee early delivery of results.
 On the long run I might actually integrate the entire regular JSON RPC API into this system - I am not sure yet.
 
-4. Notification system specific remote procedure calls
+5. Notification system specific remote procedure calls
 ------------------------------------------------------
 
 This system introduces a few methods which are not available in the old pure JSON RPC interface.
 
-4.1 Retrieve new notifications
+5.1 Retrieve new notifications
 ------------------------------
 
 Method: "getNewNotifications"
@@ -140,7 +140,7 @@ Return value: Array of notifications ([NotificationData1, NotificationData2, ...
 Description:
 This method is invoked in order to retrieve notifications which were stored for the user while their notification processing client was offline.
 
-4.2 Retrieve number of notifications stored in the archive
+5.2 Retrieve number of notifications stored in the archive
 ----------------------------------------------------------
 
 Method: "getNotificationCount"
@@ -150,7 +150,7 @@ Return value: Number of notifications stored for this user.
 Description:
 This is intended to be used in combination with getOldNotification to retrieve a range of old notifications.
 
-4.3 Retrieve old notifications
+5.3 Retrieve old notifications
 ------------------------------
 
 Method: "getOldNotifications"
@@ -161,7 +161,7 @@ Description:
 Returns a range of notifications from the stored notifications for this user. The first argument represents the first index into the archive, the second one represents the last index.
 For example, getOldNotifications(0, 9) will return the 10 first notifications stored for this user (assuming there are at least 10 notifications overall).
 
-4.4 Generate notification for debugging purposes
+5.4 Generate notification for debugging purposes
 ------------------------------------------------
 
 Method: "generateNotification"
@@ -171,7 +171,7 @@ Return value: null
 Description:
 This call will simply "echo" back the notification to the client for debugging purposes so the developer can test if their notification processing works as intended.
 
-5. Error handling
+6. Error handling
 -----------------
 
 Should the client send invalid data (containing unrecognised types/data and such) to the server it will respond with:
@@ -180,7 +180,7 @@ Should the client send invalid data (containing unrecognised types/data and such
 
 Mind you - this is NOT for JSON RPC error handling - that will occur within the JSON RPC layer using "rpcResult" as described in section 3 of this document.
 
-6. Keep-alive packets
+7. Keep-alive packets
 ---------------------
 
 The nature of the persistent connections requires the use of keep-alive data. The server will continuously send the following unit every 60 seconds:
@@ -190,7 +190,7 @@ The nature of the persistent connections requires the use of keep-alive data. Th
 	"data": null
 }
 
-7. Actual examples
+8. Actual examples
 ------------------
 
 At first the client connects via TLS. The user is identified based on the N field in the subject of their certificate.

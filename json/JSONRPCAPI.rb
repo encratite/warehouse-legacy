@@ -95,14 +95,13 @@ class JSONRPCAPI
   end
 
   def typeCheck(input, type)
-    case type.class
-    when Array
+    if type == Array
       return false if input.class != type.class
       arrayType = type[0]
       input.each do |element|
         return false if !typeCheck(element, arrayType)
       end
-    when Hash
+    elsif type == Hash
       return false if input.class != type.class
       keyType, valueType = type.each_pair.first
       input.each do |key, value|
@@ -110,10 +109,10 @@ class JSONRPCAPI
           !typeCheck(key, keyType) ||
           !typeCheck(value, valueType)
       end
-    when JSONAnyType
+    elsif type == JSONAnyType
       return true
     else
-      return false if input.class != type
+      return input.class == type
     end
     return true
   end
@@ -148,7 +147,8 @@ class JSONRPCAPI
     while offset < arguments.size
       argument = arguments[offset]
       argumentType = handlerArguments[offset]
-      if !typeCheck(argument, argumentType)
+      typeCheckSuccess = typeCheck(argument, argumentType)
+      if !typeCheckSuccess
         error("The argument type of argument #{offset + 1} for method \"#{method}\" is invalid (expected: #{argumentType}, given: #{argument.class})")
       end
       offset += 1

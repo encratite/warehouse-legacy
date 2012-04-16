@@ -34,10 +34,12 @@ class IRCHandler
   end
 
   def onChannelMessage(channel, user, message)
-    channelMatch = @releaseChannels.include?(channel)
+    channelMatch = @releaseChannels.include?(channel.downcase)
     identifier = [user.nick, user.host]
     userMatch = @bots.include?(identifier)
     isBotMessage = channelMatch && userMatch
+
+    puts "channelMatch #{channelMatch}, userMatch #{userMatch}, bots #{@bots.inspect}, identifier #{identifier.inspect}"
 
     if isBotMessage
       message = Nil::IRCClient::stripTags(message)

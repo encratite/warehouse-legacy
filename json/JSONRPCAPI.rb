@@ -207,8 +207,8 @@ class JSONRPCAPI
     return torrents
   end
 
-  def getNotifications(first, last)
-    notifications = @api.getNotifications(first, last).map{|x| x.serialise}
+  def getNotifications(offset, count)
+    notifications = @api.getNotifications(offset, count).map{|x| x.serialise}
     return notifications
   end
 end

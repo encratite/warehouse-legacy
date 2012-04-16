@@ -154,12 +154,12 @@ This is intended to be used in combination with getOldNotification to retrieve a
 ------------------------------
 
 Method: "getNotifications"
-Arguments: [Int, Int] - the integers represent zero based indices into the stored notifications for this user
+Arguments: [Int, Int] - the first integer represents a zero based index into the notifications where 0 is the most recent notification while the second integer represents the number of notifications to be retrieved
 Return value: Array of notifications ([NotificationData1, NotificationData2, ...])
 
 Description:
-Returns a range of notifications from the stored notifications for this user. The first argument represents the first index into the archive, the second one represents the last index.
-For example, getNotifications(0, 9) will return the 10 first notifications stored for this user (assuming there are at least 10 notifications overall).
+Returns a range of notifications from the stored notifications for this user. The first argument represents the first index into the archive, the second one is the number of notifications to be retrievd.
+For example, getNotifications(0, 10) will return the 10 first notifications stored for this user (assuming there are at least 10 notifications overall).
 
 5.4 Generate notification for debugging purposes
 ------------------------------------------------

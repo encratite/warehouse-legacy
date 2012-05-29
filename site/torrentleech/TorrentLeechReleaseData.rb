@@ -22,8 +22,8 @@ class TorrentLeechReleaseData < ReleaseData
      #same here
      ['Release date', /<td class="label">Added<\/td><td>(.+?)<\/td>/, :releaseDateString],
      ['Snatched', /<td class="label">Snatched<\/td><td>(\d+) times<\/td>/, :downloads],
-     ['Seeders', /<span class="uploaded"><b>Seeders:<\/b><\/span> (\d+)/, :seeders],
-     ['Leechers', /<span class="downloaded"><b>Leechers:<\/b><\/span> (\d+)/, :leechers],
+     ['Seeders', /<strong>Seeders:<\/strong><\/span> (\d+)/, :seeders],
+     ['Leechers', /<span class="downloaded"><strong>Leechers:<\/strong><\/span> (\d+)/, :leechers],
      ['ID', /<input type="hidden" name="torrentID" value="(\d+)">/, :id],
     ]
 

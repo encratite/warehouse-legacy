@@ -5,13 +5,13 @@ require 'secret/SceneAccess'
 
 module SceneAccessConfiguration
   module HTTP
-    Server = 'sceneaccess.org'
-    SSL = false
+    Server = 'sceneaccess.eu'
+    SSL = true
     #Cookies are secret
   end
 
   module IRC
-    Server = 'irc.sceneaccess.org'
+    Server = 'irc.sceneaccess.eu'
     Port = 6667
     TLS = false
     #Nick is secret

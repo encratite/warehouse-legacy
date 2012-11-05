@@ -45,6 +45,8 @@ class IRCHandler
       message = Nil::IRCClient::stripTags(message)
       releaseMatch = @releasePattern.match(message)
       urlMatch = @urlPattern.match(message)
+      puts releaseMatch.inspect
+      puts urlMatch.inspect
       if releaseMatch != nil && urlMatch != nil
         release = releaseMatch[1]
         url = urlMatch[1]

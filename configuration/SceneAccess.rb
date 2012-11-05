@@ -23,7 +23,7 @@ module SceneAccessConfiguration
 
     module Regexp
       Release = /-> ([^ ]+) \(Uploaded/
-      URL = /(http:\/\/[^\)]+)\)/
+      URL = /(https:\/\/[^\)]+)\)/
     end
   end
 

@@ -5,10 +5,12 @@ class SceneAccessIRCHandler < IRCHandler
   attr_writer :httpHandler
 
   def onEntry
-    data =
-      {
+    data = {
       'announce' => 'yes',
-      'invite' => 'invite'
+      #'pre' => 'yes',
+      #'sceneaccess' => 'yes',
+      'submit.x' => '28',
+      'submit.y' => '12',
     }
     output 'Trying to enter the announce channel'
     reply = @httpHandler.post('/irc.php', data)

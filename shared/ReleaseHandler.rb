@@ -9,6 +9,8 @@ require 'shared/Bencode'
 require 'shared/QueueHandler'
 require 'shared/OwnershipHandler'
 
+require 'secret/BanConfiguration'
+
 require 'notification/NotificationReleaseData'
 
 class ReleaseHandler
@@ -170,10 +172,21 @@ class ReleaseHandler
       releaseData = @releaseDataClass.new(input)
       isOfInterest = false
       matchingUsers = nil
-      @database.transaction do
-        insertData(releaseData)
-        matchingUsers = getMatchingFilterUsers(releaseData)
-        isOfInterest = !matchingUsers.empty?
+      isBanned = false
+      releaseName = releaseData.name
+      BanConfiguration::Patterns.each do |pattern|
+        if pattern.match(releaseName) != nil
+          puts "Encountered a banned release that matches #{pattern.inspect}: #{releaseName}"
+          isBanned = true
+          break
+        end
+      end
+      if !isBanned
+        @database.transaction do
+          insertData(releaseData)
+          matchingUsers = getMatchingFilterUsers(releaseData)
+          isOfInterest = !matchingUsers.empty?
+        end
       end
       if isOfInterest
         output "Discovered a release of interest: #{release}"

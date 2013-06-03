@@ -39,6 +39,11 @@ class UserAPI
     return @rpc.call('d.get_bytes_done', infoHash)
   end
 
+  #manually rehashes a torrent, risky
+  def rehashTorrent(infoHash)
+    return @rpc.call('d.check_hash', infoHash)
+  end
+
   #this is for internal usage with the cleaner - apparently sometimes deleted torrents stay in the cache - bug in some component
   def removeTorrentEntry(infoHash)
     callData =

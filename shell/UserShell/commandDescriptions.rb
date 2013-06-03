@@ -27,6 +27,7 @@ class UserShell
 
      ['torrents', 'retrieve a list of all torrents of the BT client', :commandListAllTorrents],
      ['incomplete-torrents', 'retrieve a list of all the incomplete torrents of the BT client', :commandListIncompleteTorrents],
+     ['rehash <release>', 'force the rehashing of a download that was corrupted', :commandRehash],
 
      ['read-logs <user 1> <...>', 'read the commands typed by users or a single user', :commandReadCommandLogs, true],
     ]

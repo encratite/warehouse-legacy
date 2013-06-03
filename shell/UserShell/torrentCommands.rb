@@ -44,4 +44,21 @@ class UserShell
     torrents = getTorrents
     visualiseTorrents(torrents)
   end
+
+  def commandRehash
+    release = @argument
+    if release.empty?
+      puts 'Please specify a release to rehash'
+      return
+    end
+    torrents = getTorrents
+    torrents.each do |torrent|
+      if torrent.name == release
+        puts "Rehasing #{release}"
+        @api.rehashTorrent(torrent.infoHash)
+        return
+      end
+    end
+    puts 'Unable to find that release'
+  end
 end

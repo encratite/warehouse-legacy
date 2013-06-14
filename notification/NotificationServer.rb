@@ -105,11 +105,11 @@ class NotificationServer < Nil::IPCServer
         output "An SSL exception occured: #{exception.message} (socket: #{socket.inspect})"
         closeSocket socket
       rescue RuntimeError => exception
-        closeSocket socket
         output "Runtime error: #{exception.message}"
-      rescue SystemCallError => exception
         closeSocket socket
+      rescue SystemCallError => exception
         output "Syscall error: #{exception.message}"
+        closeSocket socket
       end
     end
   end

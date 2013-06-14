@@ -11,6 +11,5 @@ Dir.foreach target do |user|
   puts "Processing #{user}"
   current = target + user + '/' + directory
   `mkdir #{current}`
-  `mount --bind #{source} #{current}`
-  `mount -o remount,ro #{current}`
+  `mount --bind -o ro #{source} #{current}`
 end

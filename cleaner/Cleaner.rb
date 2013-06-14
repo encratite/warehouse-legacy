@@ -61,7 +61,7 @@ class Cleaner
   end
 
   def removeOldQueueEntries(ageMaximum)
-    limit = "(now() - '#{ageMaximum} seconds'::interval)".lit
+    limit = Sequel.lit("(now() - '#{ageMaximum} seconds'::interval)")
     @database[:download_queue].filter{|x| x.queue_time <= limit}.delete
   end
 

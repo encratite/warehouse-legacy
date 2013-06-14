@@ -7,7 +7,6 @@ then
 fi
 
 LOGIN=$1
-SFTP_LOGIN=$1-sftp
 LENGTH=20
 PASSWORD_FILE=logins
 USER_HOME=/home/warehouse/user/$LOGIN
@@ -16,20 +15,15 @@ ORIGINAL_DOWNLOAD_DIRECTORY=/home/void/torrent/complete
 USER_DOWNLOAD_DIRECTORY=$USER_HOME/all
 USER_FILTERED_DIRECTORY=$USER_HOME/filtered
 SHELL_GROUP=warehouse-shell
-SFTP_GROUP=warehouse-sftp
 
 echo -n $LOGIN":">$PASSWORD_FILE
 ruby password.rb $LENGTH>>$PASSWORD_FILE
-echo -n $SFTP_LOGIN":">>$PASSWORD_FILE
-ruby password.rb $LENGTH>>$PASSWORD_FILE
-useradd -M -N -g $SHELL_GROUP -s /bin/warehouse-shell -d $USER_HOME $LOGIN
-useradd -M -N -g $SFTP_GROUP -s /bin/false -d $USER_HOME $SFTP_LOGIN
+useradd -M -N -g $SHELL_GROUP -s /usr/bin/warehouse-shell -d $USER_HOME $LOGIN
 mkdir $USER_HOME
 mkdir $SSH_DIRECTORY
 chown $LOGIN:$SHELL_GROUP $SSH_DIRECTORY
 mkdir $USER_DOWNLOAD_DIRECTORY
-mount --bind $ORIGINAL_DOWNLOAD_DIRECTORY $USER_DOWNLOAD_DIRECTORY
-mount -o remount,ro $USER_DOWNLOAD_DIRECTORY
+mount --bind -o ro $ORIGINAL_DOWNLOAD_DIRECTORY $USER_DOWNLOAD_DIRECTORY
 mkdir $USER_FILTERED_DIRECTORY
 chmod 775 $USER_FILTERED_DIRECTORY
 chown $LOGIN:$SHELL_GROUP $USER_FILTERED_DIRECTORY

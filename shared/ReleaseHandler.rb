@@ -182,10 +182,19 @@ class ReleaseHandler
         end
       end
       if !isBanned
-        @database.transaction do
-          insertData(releaseData)
-          matchingUsers = getMatchingFilterUsers(releaseData)
-          isOfInterest = !matchingUsers.empty?
+        begin
+          @database.transaction do
+            insertData(releaseData)
+            matchingUsers = getMatchingFilterUsers(releaseData)
+            isOfInterest = !matchingUsers.empty?
+          end
+        rescue Sequel::DatabaseError => exception
+          if exception.message.index('invalid byte sequence') != nil
+            output "Release \"#{releaseName}\" ignored because it contains an invalid byte sequence"
+            return
+          else 
+            throw exception
+          end
         end
       end
       if isOfInterest

@@ -34,7 +34,7 @@ class UserAPI
     return result
   end
 
-  def performTorrentDownload(site, data)
+  def performTorrentDownload(site, data, retrying = false)
     administrator = 'please contact the administrator'
 
     begin
@@ -49,7 +49,7 @@ class UserAPI
         httpPath = data[:torrent_path]
       end
 
-      if @user.isAdministrator
+      if @user.isAdministrator && !retrying
         puts "Downlading #{httpPath}"
       end
 
@@ -81,7 +81,14 @@ class UserAPI
     rescue ReleaseData::Error => exception
       error "An error occured parsing the details: #{exception.message} - #{administrator}."
     rescue Bencode::Error => exception
-      error "A Bencode error occured: #{exception.message} - #{administrator}."
+      #This is a horrifying hack
+      if site == 'TL' && !retrying
+        #Try to log in, then try again
+        site.login
+        performTorrentDownload(site, data, true)
+      else
+        error "A Bencode error occured: #{exception.message} - #{administrator}."
+      end
     end
   end
 

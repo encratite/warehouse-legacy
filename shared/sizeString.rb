@@ -13,7 +13,8 @@ def convertSizeString(input)
      'B',
      'KB',
      'MB',
-     'GB'
+     'GB',
+	 'TB',
     ]
 
   factor = 1024

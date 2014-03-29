@@ -8,10 +8,7 @@ class TorrentVaultHTTP
   end
 
   def isInvalidData(data)
-    if data.index('You will be banned') != nil
-      return true
-    end
-    return ['', nil].include?(data)
+    return data == nil || data.index('You will be banned') != nil
   end
 
   def get(path)

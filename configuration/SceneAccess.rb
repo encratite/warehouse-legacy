@@ -11,19 +11,19 @@ module SceneAccessConfiguration
   end
 
   module IRC
-    Server = 'irc.sceneaccess.eu'
+    Server = 'irc.sceneaccess.org'
     Port = 6667
     TLS = false
     #Nick is secret
     Channels = ['#announce']
     Bots =
       [
-       {nick: 'SCC', host: 'bot.sceneaccess.org'}
+       {nick: 'SCC', host: 'op.sceneaccess.org'}
       ]
 
     module Regexp
-      Release = /-> ([^ ]+) \(Uploaded/
-      URL = /(https:\/\/[^\)]+)\)/
+      Release = /-> (.+?) \(.+?\)/
+      URL = /(https:\/\/.+?)\)/
     end
   end
 

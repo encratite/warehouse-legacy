@@ -11,7 +11,7 @@ class SceneAccessReleaseData < ReleaseData
   Targets =
     [
      ['Release', /<h1>(.+?)<\/h1>/, :name],
-     ['ID', /<a class="index" href="download\/(\d+)/, :id],
+     ['ID', /<input type="hidden" name="tid" value="(\d+)" \/>/, :id],
      #info hashes are no longer available
      #['Info hash', /<td valign=\"top\" align=left>(.+?)<\/td>/, :infoHash],
      #pre-time no longer available (wtf?)
@@ -25,7 +25,7 @@ class SceneAccessReleaseData < ReleaseData
      ['Files', /<td class="td_col">(\d+) files?<\/td>/, :files],
      ['Seeders', />(\d+) seeder\(s\)/, :seeders],
      ['Leechers', /, (\d+) leecher\(s\)/, :leechers],
-     ['Torrent path', /<a class="index" href="(download\/.+?\.torrent)">/, :path],
+     ['Torrent path', /<a class="downloadlink" href="(.+?)">/, :path],
      ['NFO', /<tr><td class="td_head">Description<\/td><td class="td_col"><br \/>([\s\S]+?)<\/td><\/tr>/, :nfo, false],
     ]
 

@@ -13,8 +13,6 @@ class TorrentVaultReleaseData < ReleaseData
      ['Release', /<title>(.+?) - TorrentVault/, :name],
      ['Section', /<li>Category: (.+?)<\/li>/, :sectionName],
      ['Uploader', /<li>Uploader: (?:(?:<a href=".+?">)+|<i>)(.+?)(?:<\/i>)?(?:<\/a>)+<\/li>/, :uploader],
-     #annoying format
-     ['Pre time', /<li>Pre: (.+?)<\//, :preTimeString],
      ['Snatched', /<li>Snatched: (\d+)<\//, :downloads],
      ['Seeders', /<li>Seeders: (\d+)<\//, :seeders],
      ['Leechers', /<li>Leechers: (\d+)<\//, :leechers],
@@ -35,7 +33,7 @@ class TorrentVaultReleaseData < ReleaseData
 
     @id = @id.to_i
 
-    @preTime = parseTimeString(@preTimeString)
+    @preTime = nil
 
     @downloads = @downloads.to_i
     @seeders = @seeders.to_i

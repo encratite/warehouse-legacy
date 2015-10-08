@@ -10,7 +10,7 @@ module TorrentLeechConfiguration
     DetailsPath = '/torrent/%s'
 
     #Cookies are secret
-    SSL = false
+    SSL = true
   end
 
   Log = 'torrentleech.log'

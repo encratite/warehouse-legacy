@@ -20,7 +20,7 @@ class TorrentLeechReleaseData < ReleaseData
      #this requires some parsing
      ['Size', /<td class="label">Size<\/td><td>(.+?)<\/td>/, :sizeString],
      #same here
-     ['Release date', /<td class="label">Added<\/td><td>(.+?)<\/td>/, :releaseDateString],
+     ['Release date', /<td class="label">Added<\/td>.*?<td>(.+?)<\/td>/m, :releaseDateString],
      ['Snatched', /<td class="label">Snatched<\/td><td>(\d+) times<\/td>/, :downloads],
      ['Seeders', /<strong>Seeders:<\/strong><\/span> (\d+)/, :seeders],
      ['Leechers', /<span class="downloaded"><strong>Leechers:<\/strong><\/span> (\d+)/, :leechers],
@@ -55,42 +55,11 @@ class TorrentLeechReleaseData < ReleaseData
   end
 
   def self.parseDateString(input)
-    pattern = /.+? (\d+).+? (.+?) (\d+) (\d+):(\d+):(\d+) (.+?)/
-    match = pattern.match(input)
-    return nil if match == nil
-    day = match[1].to_i
-    monthString = match[2]
-    year = match[3].to_i
-    hour = match[4].to_i
-    minute = match[5].to_i
-    second = match[6].to_i
-    ampm = match[7]
-    if ampm == 'PM'
-      hour += 12
+    begin
+      return Date.parse(input)
+    rescue
+      return nil
     end
-
-    months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ]
-
-    index = months.index(monthString)
-    return nil if index == nil
-
-    month = index + 1
-
-    output = Time.gm(year, month, day, hour, minute, second)
-    return output
   end
 
   def getData

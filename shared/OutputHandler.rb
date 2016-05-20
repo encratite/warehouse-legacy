@@ -14,10 +14,14 @@ class OutputHandler
 
   def output(line)
     line = "#{getTimestamp} #{line}"
-    @log = File.open(@logPath, 'ab') if @log == nil
     puts line
-    @log.puts line
-    @log.flush
+    begin
+      @log = File.open(@logPath, 'ab') if @log == nil
+      @log.puts line
+      @log.flush
+    rescue
+      puts 'Failed to write to log file'
+    end
   end
 
   def onLine(line)

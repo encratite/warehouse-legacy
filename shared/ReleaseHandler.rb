@@ -148,17 +148,21 @@ class ReleaseHandler
   end
 
   def processReleasePaths(release, paths)
-    pages = []
-    paths.each do |path|
-      result = @httpHandler.get(path)
-      if result == nil
-        output "Error: Failed to retrieve path #{path} for release #{release}"
-        return
+    begin
+      pages = []
+      paths.each do |path|
+        result = @httpHandler.get(path)
+        if result == nil
+          output "Error: Failed to retrieve path #{path} for release #{release}"
+          return
+        end
+        pages << result
+        sleep(@downloadDelay)
       end
-      pages << result
-      sleep(@downloadDelay)
-    end
-    processReleaseData(release, pages)
+      processReleaseData(release, pages)
+	rescue => exception
+      output "Failed to process release data: #{exception.message}"
+	end
   end
 
   def processReleaseData(release, pages)

@@ -13,7 +13,7 @@ class TorrentLeechReleaseData < ReleaseData
   Targets =
     [
      ['Release', /<td id="torrentName" style="width:70%;">(.+?)<\/td>/, :name],
-     ['Path', /<form action="https:\/\/www.torrentleech.org(\/download\/.+?\/.+?\.torrent)" method="get">/, :path],
+     ['Path', /<form action="(\/download\/.+?\/.+?\.torrent)" method="get">/, :path],
      ['Category', /<td><span class="label label-primary categorylabel">(.+?)<\/span><\/td>/, :category],
      ['Size', /<td class="label">Size<\/td><td>(.+?)<\/td>/, :sizeString],
      ['Release date', /<td class="label">Added<\/td>.*?<td>(.+?)<\/td>/m, :releaseDateString],

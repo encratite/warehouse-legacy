@@ -12,15 +12,15 @@ class TorrentLeechReleaseData < ReleaseData
 
   Targets =
     [
-     ['Release', /<td id="torrentName" style="width:70%;">(.+?)<\/td>/, :name],
-     ['Path', /<form action="(\/download\/.+?\/.+?\.torrent)" method="get">/, :path],
-     ['Category', /<td><span class="label label-primary categorylabel">(.+?)<\/span><\/td>/, :category],
+     ['Release', /<td id="torrentName">(.+?)<\/td>/, :name],
+     ['Path', /<form action="(https:\/\/www\.torrentleech\.org\/download\/.+?\/.+?\.torrent)" method="get">/, :path],
+     ['Category', /<td class="label">Category<\/td><td>(.+?)<\/td>/, :category],
      ['Size', /<td class="label">Size<\/td><td>(.+?)<\/td>/, :sizeString],
      ['Release date', /<td class="label">Added<\/td>.*?<td>(.+?)<\/td>/m, :releaseDateString],
      ['Snatched', /<td class="label">Snatched<\/td><td>(\d+) times<\/td>/, :downloads],
      ['Seeders', /<td class="label">Peers<\/td><td>\d+ Peers \((\d+) Seeders and \d+ leechers\)<\/td>/, :seeders],
      ['Leechers', /<td class="label">Peers<\/td><td>\d+ Peers \(\d+ Seeders and (\d+) leechers\)<\/td>/, :leechers],
-     ['ID', /<input type="hidden" name="torrentID" value="(\d+)">/, :id],
+     ['ID', /<input type="hidden" name="torrent_id" value="(\d+)"\/>/, :id],
     ]
 
   def postProcessing(input)

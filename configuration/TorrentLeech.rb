@@ -5,7 +5,7 @@ require 'secret/TorrentLeech'
 
 module TorrentLeechConfiguration
   module HTTP
-    Server = 'www.torrentleech.org'
+    Server = 'classic.torrentleech.org'
     BrowsePath = '/torrents/browse'
     DetailsPath = '/torrent/%s'
 

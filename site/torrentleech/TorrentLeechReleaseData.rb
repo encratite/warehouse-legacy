@@ -1,5 +1,6 @@
 require 'cgi'
 require 'sequel'
+require 'time'
 
 require 'nil/string'
 
@@ -12,15 +13,15 @@ class TorrentLeechReleaseData < ReleaseData
 
   Targets =
     [
-     ['Release', /<td id="torrentName">(.+?)<\/td>/, :name],
-     ['Path', /<form action="(https:\/\/www\.torrentleech\.org\/download\/.+?\/.+?\.torrent)" method="get">/, :path],
-     ['Category', /<td class="label">Category<\/td><td>(.+?)<\/td>/, :category],
-     ['Size', /<td class="label">Size<\/td><td>(.+?)<\/td>/, :sizeString],
-     ['Release date', /<td class="label">Added<\/td>.*?<td>(.+?)<\/td>/m, :releaseDateString],
-     ['Snatched', /<td class="label">Snatched<\/td><td>(\d+) times<\/td>/, :downloads],
-     ['Seeders', /<td class="label">Peers<\/td><td>\d+ Peers \((\d+) Seeders and \d+ leechers\)<\/td>/, :seeders],
-     ['Leechers', /<td class="label">Peers<\/td><td>\d+ Peers \(\d+ Seeders and (\d+) leechers\)<\/td>/, :leechers],
-     ['ID', /<input type="hidden" name="torrent_id" value="(\d+)"\/>/, :id],
+     ['Release', /<h2 id="torrentnameid" class="mb-20 text-center page-heading">(.+)?<\/h2>/, :name],
+     ['Path', /<a id="detailsDownloadButton" class="btn tl-btn btn-success" title="Download Torrent" href="(\/download\/.+?)">Download Torrent<\/a>/, :path],
+     ['Category', /<tr><td class="description">Category<\/td><td>(.+?)<\/td><\/tr>/, :category],
+     ['Size', /<tr><td class="description">Size<\/td><td>(.+?)<\/td><\/tr>/, :sizeString],
+     ['Release date', /<tr><td class="description">Added<\/td>\s*<td>(.+?)<strong>/m, :releaseDateString],
+     ['Downloaded', /<tr><td class="description">Downloaded<\/td><td>(\d+) times<\/td><\/tr>/, :downloads],
+     ['Seeders', /<tr><td class="description">Seeders<\/td><td><span class="seeders-text">(\d+)/, :seeders],
+     ['Leechers', /<tr><td class="description">Leechers<\/td><td><span class="leechers-text">(\d+)/, :leechers],
+     ['ID', /<input type="hidden" name="torrentID" value="(\d+)">/, :id],
     ]
 
   def postProcessing(input)
@@ -34,7 +35,7 @@ class TorrentLeechReleaseData < ReleaseData
     @path = pathTokens.join('/')
     @id = @id.to_i
     @size = convertSizeString(@sizeString)
-    @releaseDate = TorrentLeechReleaseData.parseDateString(@releaseDateString)
+    @releaseDate = Time.parse(@releaseDateString + " UTC")
     if @releaseDate == nil
       raise Error.new("Unable to parse date string: #{@releaseDateString.inspect}")
     end
